@@ -1,0 +1,5 @@
+SocksPort 9050 # what port to open for local application connections
+SocksListenAddress 127.0.0.1 # accept connections only from localhost
+ExitNodes {us}
+StrictNodes 1
+# exitnodes desync,whistlersmother,lefkada,bettyboop,croeso,TorLuwakOrg,nixnix,inap1,redpineapple,cronic,sasquatch,slowturtle2
