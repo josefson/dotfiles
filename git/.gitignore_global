@@ -1,0 +1,15 @@
+#OSX
+*~
+.DS_Store
+.DS_Store?
+.AppleDouble
+.LSOverride
+.Spotlight-V100
+.Trashes
+#vim
+*.swp
+.netrwhist
+#projects
+*.pyc
+tags
+.env

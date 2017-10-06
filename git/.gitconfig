@@ -1,0 +1,11 @@
+[user]
+	name = Josefson Fraga
+	email = josefson@users.noreply.github.com
+[core]
+	editor = vim
+	excludesfile = /Users/josefson/.gitignore_global
+[merge]
+	tool = vimdiff
+[filter "media"]
+	clean = git-media-clean %f
+	smudge = git-media-smudge %f
