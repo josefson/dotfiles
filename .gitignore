@@ -1,0 +1,14 @@
+/* weechat */
+/* weechat/.weechat/irc.conf */
+/* weechat/.weechat/logs/** */
+/* weechat/.weechat/weechat.log */
+/* weechat/.weechat/weechat_crash_** */
+/* weechat/.weechat/script/plugins.xml.gz */
+
+/* tmux_plugins */
+/* tmux/.tmux/plugins/** */
+/* tmux/.tmux/resurrect/** */
+
+/* vim plugins */
+vim/.vim/bundle/**
+vim/.ctags

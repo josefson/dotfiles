@@ -1,0 +1,31 @@
+" VIM EDUCATIONAL
+" Plug 'dahu/LearnVim'
+" IDE LOOKS/VIEW
+Plug 'vim-airline/vim-airline' | Plug 'vim-airline/vim-airline-themes'
+" Plug 'edkolev/tmuxline.vim'             " Set Themes for tmux
+" Plug 'itchyny/lightline.vim'
+" THEMES
+Plug 'altercation/vim-colors-solarized', { 'frozen': 1 }
+Plug 'sjl/badwolf'
+Plug 'morhetz/gruvbox'
+Plug 'nanotech/jellybeans.vim'
+Plug 'tomasr/molokai'
+Plug 'dunckr/vim-monokai-soda'
+Plug 'crusoexia/vim-monokai'
+Plug 'flazz/vim-colorschemes'
+" ONE LINERS CONFIG
+let g:gundo_prefer_python3 = 1
+" AIRLINE ----------------------------------------------------------------- {{{
+let g:airline_powerline_fonts = 1
+let g:airline#extensions#tabline#enabled = 0
+" }}}
+" AIRLINE-TMUXLINE ---------------------------------------------------------------- {{{
+let g:airline_theme='wombat'
+let g:airline#extensions#whitespace#enabled = 0
+let g:tmuxline_preset = {
+      \'a'    : '#S:#I.#P',
+      \'win'  : ['#I #W'],
+      \'cwin' : ['#I #W', '#F'],
+      \'y'    : ['%a | #(date +"%Y-%m-%d")'],
+      \'z'    : '#(whoami)@#H'}
+" }}}

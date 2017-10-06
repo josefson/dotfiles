@@ -1,0 +1,82 @@
+priority 999
+global !p
+from vimsnippets import complete
+endglobal
+
+snippet " "Docstring" b
+"""${1:Docstring}.""
+endsnippet
+
+snippet # "Inline Comment"
+# ${1:Comment here}.
+endsnippet
+
+snippet docs
+	"""
+	Author: Josefson Fraga Souza
+	Email: josefson.br@gmail.com
+	"""
+endsnippet
+
+snippet todo "TODO Comments" b
+# TODO (${1:Name or Email}): ${2:TODO Description}
+endsnippet
+
+snippet def "Function without docstrings" b
+def ${1:function}(`!p
+if snip.indent:  
+	snip.rv = 'self' + (", " if len(t[2]) else "")`${2:arg1}):
+	${5:${VISUAL:pass}}
+endsnippet
+
+snippet property "Property-Deorators" b
+@property
+def ${1:name}(self):
+	"""${2:Docstring for $1}."""
+	self._$1
+
+@$1.setter
+def $1(self, value):
+	self._$1 = value
+
+@$1.deleter
+def $1(self):
+	del self._$1
+$0
+endsnippet
+
+#EXEMPLES OF HACKY THINGS FOR FUTURE
+
+# global !p
+# def complete(t, opts, default=""):
+#   if t:
+#     opts = [ m for m in opts if m.startswith(t) ]
+#   else:
+#     return default
+#   if len(opts) == 1:
+#     return opts[0][len(t):]
+#   return "… (" + " | ".join(opts) + ")"
+# endglobal
+
+# global !p
+# def complete(t, opts):
+#   if t:
+#     opts = [ m for m in opts if m.startswith(t) ]
+#   if len(opts) == 1:
+#     return opts[0][len(t):]
+#   return "… (" + " | ".join(opts) + ")"
+# endglobal
+
+#snippet # "#define/#ifdef/#ifndef/#if/#endif" b
+#${1}`!p snip.rv = complete( t[1], ['define', 'ifdef', 'ifndef', 'if', 'endif'])`
+#endsnippet
+
+#snippet inc "#include <>" b
+#include <$1`!p snip.rv = complete( t[1], [snip.basename + '.h', 'stdio.h', 'stdlib.h'] )`>
+#endsnippet
+
+snippet test "Test"
+`!p
+import os
+snip.rv = os.path.abspath(path)`
+endsnippet
