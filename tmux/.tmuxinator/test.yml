@@ -1,0 +1,21 @@
+# ~/.tmuxinator/test.yml
+
+name: test
+root: ~/Applications/
+# pre_window: cd ~/Applications/
+
+windows:
+  - editor:
+        root: ~/Applications/pianobar/
+        layout: main-vertical
+        panes:
+            - vim
+            - top
+  - server:
+        panes:
+            - echo 'server'
+            - echo 'server 1'
+  - logs:
+        panes:
+            - echo 'logs'
+            - echo 'logs 1'

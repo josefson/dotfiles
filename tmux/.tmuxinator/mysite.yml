@@ -1,0 +1,32 @@
+# ~/.tmuxinator/pandora.yml
+
+name: mysite
+root: ~/Workspace/Python/mysite/
+
+# Optional tmux socket
+# socket_name: foo
+
+# Runs before everything. Use it to start daemons etc.
+# pre: sudo /etc/rc.d/mysqld start
+
+# Runs in each window and pane before window/pane specific commands. Useful for setting up interpreter versions.
+# pre_window: rbenv shell 2.0.0-p247
+
+# Pass command line options to tmux. Useful for specifying a different tmux.conf.
+# tmux_options: -f ~/.tmux.mac.conf
+
+# Change the command to call tmux.  This can be used by derivatives/wrappers like byobu.
+# tmux_command: byobu
+
+
+pre_window: workon django_py3; clear
+windows:
+    - Editor:
+        panes:
+            - vim -S vimsession
+    - Tasks:
+        layout: 21b3,179x47,0,0{89x47,0,0,17,89x47,90,0[89x23,90,0,46,89x23,90,24,47]}
+        panes:
+            - ./manage.py shell
+            - ./manage.py runserver
+            - while true; do find . -name '*.py' | entr -d ctags; done
