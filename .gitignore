@@ -6,8 +6,8 @@
 /* weechat/.weechat/script/plugins.xml.gz */
 
 /* tmux_plugins */
-/* tmux/.tmux/plugins/** */
-/* tmux/.tmux/resurrect/** */
+tmux/.tmux/plugins/**
+tmux/.tmux/resurrect/**
 
 /* vim plugins */
 vim/.vim/bundle/**
