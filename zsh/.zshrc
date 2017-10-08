@@ -36,28 +36,22 @@ source $HOME/.zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 source $HOME/.zsh/zsh-history-substring-search/zsh-history-substring-search.zsh
 # }}}
 #3rd party packages {{{
-3rdparty(){echo 'Please run dotfiles/start.sh in orser to install necessary packages'}
 if [[ -f $HOME/bin/z/z.sh ]]; then
     source $HOME/bin/z/z.sh # z  - Recent/Frequent cd
-else
-    3rdparty()
-if [[ -f $HOME/bin/autoenv/activate.sh ]]; then
+elif [[ -f $HOME/bin/autoenv/activate.sh ]]; then
     source $HOME/bin/autoenv/activate.sh
-else
-    3rdparty()
-if [[ -f $HOME/bin/zaw/zaw.zsh ]]; then
+elif [[ -f $HOME/bin/zaw/zaw.zsh ]]; then
     source $HOME/bin/zaw/zaw.zsh # compleion?
     bindkey '^@' zaw
 else
-    3rdparty()
-# FZF {{{
+    echo 'Please run dotfiles/start.sh in orser to install necessary packages'
+fi
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh      # Must be after set -o vi
 export FZF_COMPLETION_TRIGGER='**'
 export FZF_TMUX=1
 export FZF_DEFAULT_OPTS="--multi --no-height"
 export FZF_CTRL_T_OPTS="--no-height --select-1 --exit-0 --preview '(highlight -O ansi -l {} 2> /dev/null || cat {} || tree -C {}) 2> /dev/null | head -200'"
 # export FZF_CTRL_R_OPTS=''
-# }}}
 # }}}
 
 ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE=6
