@@ -102,6 +102,9 @@ fi
 # PYTHON {{{
 export PYTHONUSERBASE="$HOME/.local"
 # PYENV
+export VIRTUAL_ENV_DISABLE_PROMPT="true" # let my theme manage the prompt
+export WORKON_HOME="$HOME/.virtualenvs"
+export PROJECT_HOME="$HOME/Workspace/Python"
 export PYENV_ROOT="$HOME/.pyenv"
 export PATH="$PYENV_ROOT/bin:$PATH"
 eval "$(pyenv init -)"
@@ -110,10 +113,14 @@ alias py='pyenv'
 alias pya='pyenv activate'
 alias pyd='pyenv deactivate'
 alias pyg='pyenv global'
+alias pys='pyenv shell'
 alias pyi='pyenv install'
+alias pyii='pyenv virtualenv'
 alias pyu='pyenv uninstall'
 alias pyv='pyenv virtualenvwrapper'
+alias pyenvs='pyenv virtualenvs'
 pyenv virtualenvwrapper # load virtualenvwrapper for cdv/workon/etc
+# source $HOME/.local/bin/virtualenvwrapper.sh
 # If wanna use pyenv instead of virtualev
     # export PYENV_VIRTUALENVWRAPPER_PREFER_PYVENV="true"
     # alias workon='pyenv activate'
