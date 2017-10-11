@@ -1,7 +1,7 @@
 # git 3rd party tools
 git clone https://github.com/rupa/z.git $HOME/bin/z
 git clone https://github.com/kennethreitz/autoenv.git $HOME/bin/autoenv
-git clone https://github.com/sunaku/dasha.gitt $HOME/bin/dasht
+git clone https://github.com/sunaku/dasht.git $HOME/bin/dasht
 git clone https://github.com/junegunn/fzf.git $HOME/bin/fzf
 git clone https://github.com/pyenv/pyenv.git $HOME/.pyenv
 git clone https://github.com/pyenv/pyenv-virtualenv.git $HOME/.pyenv/plugins/pyenv-virtualenv
