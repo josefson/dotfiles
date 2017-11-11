@@ -46,12 +46,6 @@ elif [[ -f $HOME/bin/zaw/zaw.zsh ]]; then
 else
     echo 'Please run dotfiles/start.sh in orser to install necessary packages'
 fi
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh      # Must be after set -o vi
-export FZF_COMPLETION_TRIGGER='**'
-export FZF_TMUX=1
-export FZF_DEFAULT_OPTS="--multi --no-height"
-export FZF_CTRL_T_OPTS="--no-height --select-1 --exit-0 --preview '(highlight -O ansi -l {} 2> /dev/null || cat {} || tree -C {}) 2> /dev/null | head -200'"
-# export FZF_CTRL_R_OPTS=''
 # }}}
 
 ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE=6
@@ -61,6 +55,15 @@ ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE=6
 export KEYTIMEOUT=1
 set -o vi
 bindkey -v
+if [[ -f $HOME/bin/fzf/bin/fzf ]]; then
+    [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh      # Must be after set -o vi
+    export FZF_COMPLETION_TRIGGER='**'
+    export FZF_TMUX=1
+    export FZF_DEFAULT_OPTS="--multi --no-height"
+    export FZF_CTRL_T_OPTS="--no-height --select-1 --exit-0 --preview '(highlight -O ansi -l {} 2> /dev/null || cat {} || tree -C {}) 2> /dev/null | head -200'"
+    # export FZF_CTRL_R_OPTS=''
+    source $HOME/.zsh/fzf_snippets.sh
+fi
 # COMMAND MODE
 bindkey -M vicmd 'k' history-substring-search-up                    # fish up
 bindkey -M vicmd 'j' history-substring-search-down                  # fish down
@@ -90,6 +93,11 @@ bindkey -M viins '^y' vi-yank-whole-line
 bindkey '^p' history-substring-search-up                # best search ever fishUp
 bindkey '^n' history-substring-search-down              # love  fisheDown
 bindkey '^f' autosuggest-accept                         # fish-like autosuggestion
+bindkey -r '^j'
+bindkey -r '^s'
+bindkey '^j' fz_pane
+bindkey '^s' fz_session
+# Avaliable keys -> ^o;^c;^i;^j;^m;^s;^q;^v;^y;^z
 # }}}
 #EXPORTS
 export EDITOR='vim'
@@ -184,7 +192,7 @@ alias weather='ansiweather'
 alias webshare='python -c "import SimpleHTTPServer;SimpleHTTPServer.test()"'
 alias killentr='kill -9 $(ps -o ppid= $(pgrep entr))'
 # Tmux
-alias tm='tmux'
+# alias tm='tmux'
 alias tt='tmuxinator'
 alias tnew='tmux new-session'
 alias ta='tmux attach -t'
@@ -242,9 +250,10 @@ dasht(){
     command dasht "$@"
 }
 
-fzdo(){
-    $@ $(fzf-tmux -m -x)
-}
+alias fzvim='vim $(fzf-tmux -m -x)'
+# fzdo(){
+#     $@ $(fzf-tmux -m -x)
+# }
 
 fzmdfind(){
     mdfind "$@" | fzf-tmux -m -x
@@ -270,11 +279,12 @@ arconai(){
     fi 
     command livestreamer --player $player hls://$(curl $url | grep m3u8 | cut -d '"' -f 2 | sed 's/\\//g') live
 }
-
-peerflix(){
-    rm ~/Downloads/cache.torrent
-    command peerflix $1 --vlc --path ~/Downloads
-}
+player='mpv'
+alias peerflix='peerflix --mpv --path ~/Downloads'
+# peerflix(){
+#     rm ~/Downloads/cache.torrent
+#     command peerflix $1 --$player --path ~/Downloads
+# }
 
 livestreamer(){
         command livestreamer --player-passthrough=hls --player "'$vlc' --file-caching=20000" $1 $2
@@ -333,8 +343,7 @@ tmcompare(){
 }
 qute(){
     workon qute;
-    cdvirtualenv;
-    cd qutebrowser;
-    python -m qutebrowser --basedir ~/.config/qutebrowser
+    cd ~/Downloads/qutebrowser.app/Contents/MacOS
+    ./qutebrowser
 }
 # vim: fdm=marker

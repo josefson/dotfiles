@@ -2,6 +2,7 @@
 weechat/.weechat/irc.conf
 weechat/.weechat/logs/**
 weechat/.weechat/weechat.log
+weechat/.weechat/urls.log
 weechat/.weechat/weechat_crash_**
 weechat/.weechat/script/plugins.xml.gz
 

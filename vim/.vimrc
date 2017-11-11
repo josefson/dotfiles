@@ -12,14 +12,13 @@ source ~/dotfiles/vim/.vimrc_trash
     " Plug 'godlygeek/tabular'                        " :Tab /regex
     Plug 'tommcdo/vim-lion'                         " gl|L[ip|i{] Alight left|right
 " WRITER'S TOOLBOX
-    Plug 'vim-pandoc/vim-pandoc' | Plug 'vim-pandoc/vim-pandoc-syntax'
-    " Plug 'xolox/vim-notes' | Plug 'xolox/vim-misc'
     " Plug 'chrisbra/NrrwRgn'                         " ,nr|:NR Narrow region
 " IDE
     Plug 'tpope/vim-dispatch'                       " Async shit
     Plug 'sjl/gundo.vim'                            " UndoTree
     Plug 'majutsushi/tagbar'                        " Lateral tagbar
     Plug 'w0rp/ale'                                 " Async lint
+    Plug 'rhysd/devdocs.vim'                        " Documentation Plugin
     " Plug 'ludovicchabant/vim-gutentags'             " Auto Tag creation
     " Plug 'scrooloose/syntastic'                     " Linter/checker
 " GIT
@@ -31,9 +30,9 @@ source ~/dotfiles/vim/.vimrc_trash
     Plug 'terryma/vim-multiple-cursors'
     " Plug 'tpope/vim-abolish'                        " :Abolish {despa,sepe}rat{e,es,ed,ing,ely,ion,ions,or}  {despe,sepa}rat{}
 " COMPLETERS
-    " Plug 'ajh17/VimCompletesMe'                                         " TabContextual
+    Plug 'ajh17/VimCompletesMe'                                         " TabContextual
     " Plug 'ervandew/supertab'
-    Plug 'lifepillar/vim-mucomplete'                                    " Chain completion
+    " Plug 'lifepillar/vim-mucomplete'                                    " Chain completion
     " Plug 'maralla/completor.vim', {'for': ['python', 'c'] }             " Async completion
     " Plug 'Valloric/YouCompleteMe', {'do': './install.py --clang'}
     " Plug 'roxma/nvim-completion-manager' | Plug 'roxma/vim-hug-neovim-rpc'
@@ -194,7 +193,7 @@ nmap Q @q
 nnoremap <F2> :GundoToggle<CR>
 nnoremap <F5> :Dispatch 
 " LEADER KEYS
-nnoremap <leader>k :Silent dasht <C-R><C-W> <C-R>=&filetype<CR>
+" nnoremap <leader>pk :Silent dasht <C-R><C-W> <C-R>=&filetype<CR> using docsio for now
 nnoremap <space>s :<C-u>call SkyBison("")<CR>
 nnoremap <space>e :<C-u>call SkyBison('e ')<CR>
 nnoremap <space>b 2:<C-u>call SkyBison('b ')<CR>
@@ -215,7 +214,7 @@ let g:jedi#goto_assignments_command = "<leader>pa"
 let g:jedi#goto_definitions_command = "<leader>pd"
 let g:jedi#usages_command = "<leader>pu"
 let g:jedi#rename_command = "<leader>pr"
-let g:jedi#documentation_command = "<leader>pk"
+let g:jedi#documentation_command = "<leader>k"
 nnoremap <leader>zr :zR<CR>
 nnoremap <leader>sc :SyntasticCheck<CR>
 nnoremap <leader>st :SyntasticToggleMode<CR>
@@ -237,12 +236,11 @@ endif
 " endif
 autocmd FileType python setlocal nofoldenable foldmethod=expr foldlevel=2
 autocmd FileType python setlocal completefunc=jedi#completions
-autocmd FileType python setlocal makeprg=pytest\ %
+" autocmd FileType python setlocal makeprg=python\ %
 autocmd FileType python setlocal tags=tags,./tags,pytags
+autocmd FileType python nmap <buffer>K <Plug>(devdocs-under-cursor)
 autocmd FileType python let b:dispatch = 'python %'
 autocmd FileType python let b:vcm_tab_complete = "user"
-" autocmd FileType python nnoremap K :Silent dasht <C-R><C-W> python<CR>
-" autocmd FileType django nnoremap K :Silent dasht <C-R><C-W> django python<CR>
 " }}}
 " }}}
 " COLORS FOR TABS LINES AND AUTOPOPOUT MENU  ------------------------------ {{{
@@ -433,6 +431,9 @@ let g:virtualenv_directory = '~/virtualenvs/'
 " let g:syntastic_debug = 3
 " " }}}
 " ALE-LINTER -------------------------------------------------------------- {{{
+let g:ale_lint_on_text_changed = 'never'
+let g:ale_lint_on_save = 1
+let g:ale_set_loclist = 1
 let g:ale_sign_error = '✗'
 let g:ale_sign_warning = '⚠'
 let g:ale_echo_msg_error_str = 'E'
@@ -440,7 +441,7 @@ let g:ale_echo_msg_warning_str = 'W'
 let g:ale_echo_msg_format = '[%linter%] %s [%severity%]'
 let g:ale_statusline_format = ['⨉ %d', '⚠ %d', '⬥ ok']
 let g:ale_linters = {
-\   'python': ['pylint'],
+\   'python': ['flake8', 'pylint'],
 \}
 let g:ale_virtualenv_dir_names = ['.env', 'env', 've-py3', 've', 'virtualenv', 'virtualenvs']
 " let g:ale_python_pylint_executable = '/usr/local/bin/pylint'
@@ -527,4 +528,4 @@ let g:slime_python_ipython = 1
 " \sn executes :SplitNoteFromSelectedText
 " \tn executes :TabNoteFromSelectedText
 " }}}
-" vim: fo=tcq fdm=marker tw=0
+" " vim: fo=tcq fdm=marker tw=0
