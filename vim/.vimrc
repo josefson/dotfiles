@@ -144,15 +144,19 @@ set autowrite                   " write buffer to file when chnage focus
 " set confirm                     " Prompt to save unsaved changes when exiting
 " NONAME
 " set clipboard=unnamed           " enabling system clipboard
-if has("clipboard")
-    if $TMUX == ''
+if has('mac')
+    if has("clipboard")
         set clipboard+=unnamed
     endif
-    set clipboard+=unnamed " copy to the system clipboard
-    if has("unnamedplus") " X11 support
+    if has("unnamedplus")
         set clipboard+=unnamedplus
     endif
 endif
+" elseif has("unix")
+"     if $TMUX == ''
+"         set clipboard+=unnamed
+"     endif
+" endif
 set formatoptions=tcq
 set history=9999
 " }}}
@@ -184,6 +188,12 @@ cnoremap <C-p> <Up>
 cnoremap <C-n> <Down>
 " }}}
 " NORMAL {{{
+" clipboard copy paste
+nnoremap y "+y
+nnoremap <space>yy V"+y
+noremap <space>p "+p
+nnoremap <space>P "+P
+nnoremap <space>d "_d
 " Map Y to act like D and C, i.e. to yank until EOL, rather than act as yy
 map Y y$
 " qq to record, Q to replay

@@ -8,6 +8,7 @@ DISABLE_AUTO_UPDATE="true"
 # PLUGINS {{{
 source $HOME/.zsh/antigen/antigen.zsh
 antigen use oh-my-zsh
+antigen bundle gem
 antigen bundle tmuxinator
 antigen bundle soimort/translate-shell
 antigen bundle rbenv
@@ -28,6 +29,9 @@ source $HOME/.zsh/agnoster.zsh-theme
 # }}}
 # PATH
 PATH=$HOME/bin/:/usr/local/bin:/usr/local/sbin:$HOME/bin/dasht/bin:$PATH
+if [[ $OS == 'Linux' ]]; then
+    PATH=$HOME/.gem/ruby/2.4.0/bin:$PATH
+fi
 export MANPATH=location_where_you_cloned_or_downloaded_dasht/man:$MANPATH
 # SOURCES {{{
 fpath=($HOME/.zsh/zsh-completions/src $fpath)
@@ -165,166 +169,7 @@ setopt HIST_IGNORE_SPACE
 setopt HIST_NO_STORE
 setopt ignore_eof
 # }}}
-# ALIASES {{{
-# Caution
-alias rm='rm -v '
-#Lazyness
-alias q='exit'
-alias fuck='eval $(thefuck $(fc -ln -1 | tail -n 1)); fc -R'
-alias ls='ls -ahFt'
-alias lg='ls | grep'
-alias si='cd ~/Documents/SI'
-alias doc='cd ~/Documents'
-# alias hg='history | grep'
-alias zshrc='vim ~/.zshrc'
-alias bashrc='vim ~/.bashrc'
-alias vimrc='vim ~/.vimrc'
-alias so='source'
-alias sz='source ~/.zshrc'
-if [[ $OS == 'Darwin' ]]; then
-    alias top='top -stats pid,command,user,cpu,threads,mem,vsize,pageins,purg,state,time -o cpu -O mem -s 5 -n 20'
-    alias quicksilver='. ~/Documents/QuicksilverIndexFix.sh'
-fi
-alias lyrics='. ~/.config/pianobar/lyrics.sh'
-alias polipo='polipo -c ~/.polipo'
-alias youtube_mp3='youtube-dl -i --extract-audio --audio-format mp3'
-alias weather='ansiweather'
-alias webshare='python -c "import SimpleHTTPServer;SimpleHTTPServer.test()"'
-alias killentr='kill -9 $(ps -o ppid= $(pgrep entr))'
-# Tmux
-# alias tm='tmux'
-alias tt='tmuxinator'
-alias tnew='tmux new-session'
-alias ta='tmux attach -t'
-alias ts='tmux new-session -s'
-alias tl='tmux list-sessions'
-alias tkillsesion='tmux kill-session -t'
-alias tkillall='tmux kill-server'
-# pip
-alias pipi='pip install '
-alias pipiu='pip install --user '
-alias pipu='pip uninstall '
-alias pipg='pip list | grep'
-alias pipf='pip freeze'
-alias pips='pip search '
-# git
-alias gs='git status '
-alias ga='git add '
-alias gb='git branch '
-alias gca='git commit -a'
-alias gcm='git commit -m'
-alias go='git checkout '
-alias gl='git log --oneline --graph --decorate --all'
-alias gr='git rm '
-# brew
-if [[ $OS == 'Darwin' ]]; then
-    alias bcask='brew cask'
-fi
-# Mistakes
-alias gti='git'
-# Vim
-if [[ $OS == 'Darwin' ]]; then
-    alias mvim='/Applications/MacVim.app/Contents/MacOS/MacVim'
-    alias vim='/Applications/MacVim.app/Contents/MacOS/Vim'
-# elif [[ $OS == 'Linux' ]]; then
-#     # Path to Gvim
-fi
-# Arconai
-export vlc='/Applications/VLC.app/Contents/MacOS/VLC'
-alias starwars="telnet towel.blinkenlights.nl" #starwars ascii
-alias sports='arconai https://www.arconaitv.me/sports/'
-alias sunny="arconai http://arconaitv.me/stream.php?id=5"
-alias george='arconai https://www.arconaitv.me/sf/'
-alias scroobs='arconai https://www.arconaitv.me/scroobs/'
-alias 70s='arconai https://www.arconaitv.me/70s/'
-alias office='arconai https://www.arconaitv.me/to/'
-alias morty='arconai https://www.arconaitv.me/rm/'
-alias docwho='arconai https://www.arconaitv.me/thedoctors/'
-# }}}
-# FUNCTIONS --------------------------------------------------------------- {{{
-pytags(){
-    ctags -R --fields=+l --languages=python --python-kinds=-iv -f ./pytags $(python -c "import os, sys; print(' '.join('{}'.format(d) for d in sys.path if os.path.isdir(d)))")
-}
-
-dasht(){
-    command dasht "$@"
-}
-
-alias fzvim='vim $(fzf-tmux -m -x)'
-# fzdo(){
-#     $@ $(fzf-tmux -m -x)
-# }
-
-fzmdfind(){
-    mdfind "$@" | fzf-tmux -m -x
-}
-
-p2k(){
-    #command k2pdfopt $1 -w 600 -h 800 -dpi 167 -idpi -2 -wrap -hy -ws 0.375 -x
-    command k2pdfopt $1 -mode fw -m 0.25 -x
-}
-
-arconai(){
-    if [[ $# -eq 1 ]]; then
-        url=$1
-        player='mpv'
-    elif [[ $# -eq 2 && $2 = 'vlc' ]]; then
-        url=$1
-        player="'$vlc' --file-caching=20000"
-    elif [[ $# -eq 2 && $2 = 'mpv' ]]; then
-        url=$1
-        player='mpv'
-    else
-        echo 'arconai(ulr, player=mpv)'
-    fi 
-    command livestreamer --player $player hls://$(curl $url | grep m3u8 | cut -d '"' -f 2 | sed 's/\\//g') live
-}
-player='mpv'
-alias peerflix='peerflix --mpv --path ~/Downloads'
-# peerflix(){
-#     rm ~/Downloads/cache.torrent
-#     command peerflix $1 --$player --path ~/Downloads
-# }
-
-livestreamer(){
-        command livestreamer --player-passthrough=hls --player "'$vlc' --file-caching=20000" $1 $2
-}
-
-streamlink(){
-    command streamlink --player-passthrough=hls --player "'$vlc' --file-caching=20000" $1 $2
-}
-
-calc(){ awk "BEGIN{print $* }";}
-
-i2p(){
-if [ "$*" != "start" ] && [ "$*" != "stop" ]
-	then
-	echo "Error: Expect start or stop as argument to i2p command, try again!"
-else 
-#	su admin -c "sudo /Applications/i2p/i2prouter $*"
-	/Applications/i2p/i2prouter $*
-fi
-}
-
-# alias spoof='sudo ./Users/josefson/Documents/Hacking/spoof.sh'
-spoof(){
-    echo "Use the following command:"
-    echo "bash -c '~/Documents/Hacking/spoof.sh -i en1 -n name -m 00:11:22:33:44:55'" 
-}
-
-vs(){ # VimServer - Starts vim remote server
-    vim --servername vim
-}
-
-ve(){ # VimEdit - Edit files with current vim server
-    vim --servername vim --remote $*
-}
-
-zsh_fix(){
-    rm ~/.zcompdump*
-    exec zsh
-}
-# }}}
+source $HOME/.aliases
 # pip zsh completion start{{{
 function _pip_completion {
   local words cword
@@ -338,12 +183,4 @@ compctl -K _pip_completion pip
 compctl -K _pip_completion pip2
 compctl -K _pip_completion pip3
 # }}}pip zsh completion end
-tmcompare(){
-    tmutil compare $1 $2 | grep -e "^$3"
-}
-qute(){
-    workon qute;
-    cd ~/Downloads/qutebrowser.app/Contents/MacOS
-    ./qutebrowser
-}
-# vim: fdm=marker
+# vim: fdm=marker 
