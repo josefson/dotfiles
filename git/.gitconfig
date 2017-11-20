@@ -2,7 +2,7 @@
 	name = Josefson Fraga
 	email = josefson@users.noreply.github.com
 [core]
-    editor = "$(whereis vim)"
+    editor = "$(which vim)"
 	excludesfile = /Users/josefson/.gitignore_global
 [merge]
 	tool = vimdiff

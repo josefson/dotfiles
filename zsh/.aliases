@@ -1,0 +1,203 @@
+#EXPORTS {{{
+# find alternative apps if it is installed on your system
+find_alt() { for i;do which "$i" >/dev/null && { echo "$i"; return 0;};done;return 1; }
+# set the default program, 1st detected in array is chosen as default
+export OPENER=$(find_alt xdg-open exo-open gnome-open)
+export BROWSER=$(find_alt qutebrowser chromium chromium-browser firefox google-chrome $OPENER )
+export BROWSERCLI=$(find_alt w3m links2 links lynx elinks $OPENER )
+export COMICER=$(find_alt mcomix comix zathura $OPENER )
+export EBOOKER=$(find_alt ebook-viewer $OPENER )
+export EDITOR=$(find_alt vim nano emac leafpad gedit pluma $OPENER )
+export FILEMANAGER=$(find_alt pcmanfm thunar nautilus dolphin spacefm enlightenment_filemanager $OPENER )
+export PAGER=$(find_alt less more most)
+export PLAYER=$(find_alt mpv vlc mplayer cvlc $OPENER )
+# export MUSICER=$(find_alt mplayer mpg123 mpv cvlc $OPENER )
+# export WORDPROCESSOR=$(find_alt wordgrinder $OPENER )
+# export READER=$(find_alt mupdf zathura evince $OPENER )
+# export ROOTER=$(find_alt gksudo kdesudo )
+# export IMAGEVIEWER=$(find_alt ristretto feh display eog $OPENER )
+# }}}
+# OS-WISE ALIASES {{{
+if [[ $OS == 'Darwin' ]]; then
+    export vlc='/Applications/VLC.app/Contents/MacOS/VLC'
+    alias top='top -stats pid,command,user,cpu,threads,mem,vsize,pageins,purg,state,time -o cpu -O mem -s 5 -n 20'
+    alias quicksilver='. ~/Documents/QuicksilverIndexFix.sh'
+    alias mvim='/Applications/MacVim.app/Contents/MacOS/MacVim'
+    alias vim='/Applications/MacVim.app/Contents/MacOS/Vim'
+# elif [[ $OS == 'Linux' ]]; then
+fi
+# }}}
+# GENERAL ALIASES {{{
+# Caution
+alias rm='rm -v '
+#Lazyness
+alias q='exit'
+alias ls='ls -ahFt'
+alias lg='ls | grep'
+alias si='cd ~/Documents/SI'
+alias doc='cd ~/Documents'
+# alias hg='history | grep'
+alias zshrc='vim ~/.zshrc'
+alias bashrc='vim ~/.bashrc'
+alias vimrc='vim ~/.vimrc'
+alias so='source'
+alias sz='source ~/.zshrc'
+alias lyrics='. ~/.config/pianobar/lyrics.sh'
+alias polipo='polipo -c ~/.polipo'
+alias youtube_mp3='youtube-dl -i --extract-audio --audio-format mp3'
+alias weather='ansiweather'
+alias webshare='python -c "import SimpleHTTPServer;SimpleHTTPServer.test()"'
+alias killentr='kill -9 $(ps -o ppid= $(pgrep entr))'
+# Tmux
+# alias tm='tmux'
+alias tt='tmuxinator'
+alias tnew='tmux new-session'
+alias ta='tmux attach -t'
+alias ts='tmux new-session -s'
+alias tl='tmux list-sessions'
+alias tkillsesion='tmux kill-session -t'
+alias tkillall='tmux kill-server'
+# pip
+alias pipi='pip install '
+alias pipiu='pip install --user '
+alias pipu='pip uninstall '
+alias pipg='pip list | grep'
+alias pipf='pip freeze'
+alias pips='pip search '
+# git
+alias gs='git status '
+alias ga='git add '
+# alias gb='git branch '
+alias gca='git commit -a'
+alias gcm='git commit -m'
+alias go='git checkout '
+alias gl='git log --oneline --graph --decorate --all'
+# alias gr='git rm '
+# brew
+if [[ $OS == 'Darwin' ]]; then
+    alias bcask='brew cask'
+fi
+# Mistakes
+alias gti='git'
+# Arconai
+alias starwars="telnet towel.blinkenlights.nl" #starwars ascii
+alias sports='arconai https://www.arconaitv.me/sports/'
+alias sunny="arconai http://arconaitv.me/stream.php?id=5"
+alias george='arconai https://www.arconaitv.me/sf/'
+alias scroobs='arconai https://www.arconaitv.me/scroobs/'
+alias 70s='arconai https://www.arconaitv.me/70s/'
+alias office='arconai https://www.arconaitv.me/to/'
+alias morty='arconai https://www.arconaitv.me/rm/'
+alias docwho='arconai https://www.arconaitv.me/thedoctors/'
+# Translate Shell
+define(){ trans "$@" | less ;}
+deflang(){ trans -identify "$@" ;}
+defpten(){ trans pt:en "$@" ;}
+defplay(){ trans -p "$@" ;}
+defsay(){ trans -speak -no-translate "$*" ;}
+# }}}
+# GENERAL FUNCTIONS --------------------------------------------------------------- {{{
+pytags(){
+    ctags -R --fields=+l --languages=python --python-kinds=-iv -f ./pytags $(python -c "import os, sys; print(' '.join('{}'.format(d) for d in sys.path if os.path.isdir(d)))")
+}
+
+dasht(){
+    command dasht "$@"
+}
+
+fzdo(){
+    $@ $(fzf-tmux -m -x)
+}
+
+fzmdfind(){
+    mdfind "$@" | fzf-tmux -m -x
+}
+
+p2k(){
+    #command k2pdfopt $1 -w 600 -h 800 -dpi 167 -idpi -2 -wrap -hy -ws 0.375 -x
+    command k2pdfopt $1 -mode fw -m 0.25 -x
+}
+
+arconai(){
+    if [[ $# -eq 1 ]]; then
+        url=$1
+        player='mpv'
+    elif [[ $# -eq 2 && $2 = 'vlc' ]]; then
+        url=$1
+        player="'$vlc' --file-caching=20000"
+    elif [[ $# -eq 2 && $2 = 'mpv' ]]; then
+        url=$1
+        player='mpv'
+    else
+        echo 'arconai(ulr, player=mpv)'
+    fi 
+    command livestreamer --player $player hls://$(curl $url | grep m3u8 | cut -d '"' -f 2 | sed 's/\\//g') live
+}
+peerflix(){
+    command peerflix $@ --mpv --path ~/Downloads
+}
+
+livestreamer(){
+        command livestreamer --player-passthrough=hls --player "'$vlc' --file-caching=20000" $1 $2
+}
+
+streamlink(){
+    command streamlink --player-passthrough=hls --player "'$vlc' --file-caching=20000" $1 $2
+}
+
+i2p(){
+if [ "$*" != "start" ] && [ "$*" != "stop" ]
+	then
+	echo "Error: Expect start or stop as argument to i2p command, try again!"
+else 
+#	su admin -c "sudo /Applications/i2p/i2prouter $*"
+	/Applications/i2p/i2prouter $*
+fi
+}
+
+vs(){ # VimServer - Starts vim remote server
+    vim --servername vim
+}
+
+ve(){ # VimEdit - Edit files with current vim server
+    vim --servername vim --remote $*
+}
+
+zsh_fix(){
+    rm ~/.zcompdump*
+    exec zsh
+}
+# }}}
+# LINUX FUNCTIONS {{{
+if [[ $OS == 'Linux' ]]; then
+    open() { xdg-open "$@" > /dev/null 2>&1 ;}  
+    pbcopy() { xclip -selection clipboard ;}
+    pbselect() { xclip -selection primary -o ;}
+    pbpaste() { xclip -selection clipboard -o ;}
+    find_pckmngr(){
+        for i; do
+            which "$i" > /dev/null && {echo "$i"; return 0;};
+        done;
+        return 1;
+    }
+    export PKMGR=$(find_pckmngr yaourt pacman aptitude apt-get yum zypper emerge)
+    if [[ "$PKMGR" == "pacman" || "$PKMGR" == "yaourt" ]]; then
+        pacinstall(){ sudo pacman -S "$@" ;}
+        pacremove(){ sudo pacman -Rns "$@" ;}
+        pacuninstall(){ sudo pacman -Rn "$@" ;}
+        pacpurge(){ sudo pacman -Rcs "$@" ;}
+        pacremoveorphans() { sudo pacman -Rs $(pacman -Qqtd) ;}
+        pacsearch(){ pacman -Ss "$@" ;}
+        pacupgrade(){ sudo pacman -Syu ;}
+        paccleanold() { pacman -Sc ;}
+        paccleanall() { pacman -Scc ;}
+        pacupdate() { sudo pacman -Syy ;}
+        pacinfo(){ 
+            for arg in "$@"; do
+                pacman -Qi $arg 2> /dev/null || pacman -Si $arg;
+            done;
+        }
+    fi
+fi
+# }}}
+# vim: fdm=marker ft=zsh

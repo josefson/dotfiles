@@ -45,9 +45,6 @@ c.aliases['wo'] = 'window-only'
 c.aliases['b'] = 'buffer'
 c.aliases['mv'] = 'tab-move'
 c.aliases['y'] = 'yank'
-if sys.platform == 'darwin':
-    c.aliases['mpv'] = 'spawn /usr/local/bin/mpv {url}'
-    c.aliases['fire'] = 'spawn open -a firefox {url}'
 #Completions
 c.completion.cmd_history_max_items = 20
 c.completion.web_history_max_items = -1
@@ -208,6 +205,15 @@ config.bind(';i', 'hint images', mode='normal')
 config.bind(';I', 'hint images tab', mode='normal')
 config.bind(';d', 'hint links download', mode='normal')
 config.bind(';h', 'hint all hover', mode='normal')
+if sys.platform == 'darwin':
+    config.bind(';m', 'hint links spawn /usr/local/bin/mpv --ontop --window-scale 0.40 {hint-url}', mode='normal')
+    config.bind(';m', 'hint links spawn mpv --ontop --window-scale 0.40 {hint-url}', mode='normal')
+    config.bind(';p', 'hint links spawn -d -v /usr/local/bin/peerflix --mpv --path ~/Downloads/ "{hint-url}"', mode='normal')
+    c.aliases['fire'] = 'spawn open -a firefox {url}'
+elif sys.platform == 'linux':
+    config.bind(';m', 'hint links spawn mpv --ontop --window-scale 0.40 {hint-url}', mode='normal')
+    config.bind(';p', 'hint links spawn -d -v peerflix --mpv "{hint-url}"', mode='normal')
+    c.aliases['fire'] = 'spawn firefox {url}'
 # }}}
 #TABS{{{
 config.bind('T', 'tab-focus', mode='normal')

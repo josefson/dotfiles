@@ -1,4 +1,4 @@
-source ~/Downloads/fz/fz.plugin.zsh
+# source ~/Downloads/fz/fz.plugin.zsh
 # KEYBINDING-ZSH{{{
 # join-lines() {
 #   local item
