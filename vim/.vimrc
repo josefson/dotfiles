@@ -441,7 +441,7 @@ let g:ale_echo_msg_warning_str = 'W'
 let g:ale_echo_msg_format = '[%linter%] %s [%severity%]'
 let g:ale_statusline_format = ['⨉ %d', '⚠ %d', '⬥ ok']
 let g:ale_linters = {
-\   'python': ['flake8', 'pylint'],
+\   'python': ['pylint'],
 \}
 let g:ale_virtualenv_dir_names = ['.env', 'env', 've-py3', 've', 'virtualenv', 'virtualenvs']
 " let g:ale_python_pylint_executable = '/usr/local/bin/pylint'

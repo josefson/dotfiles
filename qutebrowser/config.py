@@ -29,7 +29,8 @@ c.url.searchengines = {
         '4' : 'https://www.4chan.org/{}',
         'r' : 'https://reddit.com/r/{}',
         'rq' : 'https://www.reddit.com/search?q={}',
-        'aw' : 'https://wiki.archlinux.org/index.php?search={}'
+        'aw' : 'https://wiki.archlinux.org/index.php?search={}',
+        'yts' : 'https://yts.ag/browse-movies/{}',
 }
 # Stylesheets
 # c.content.user_stylesheets = ['~/.config/qutebrowser/solarized-everything-css/css/solarized-all-sites-dark.css']
@@ -62,7 +63,7 @@ c.tabs.title.format = '{private}{index}: {title}'
 c.window.title_format = '{private}{perc}{host}'
 # Contents
 # c.content.developer_extras = True
-c.content.headers.user_agent = 'Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101 Firefox/52.0'
+c.content.headers.user_agent = 'Mozilla/5.0 (X11; Linux x86_64; rv:57.0) Gecko/20100101 Firefox/57.0'
 c.content.headers.custom = {'accept': 'text/html, */*; q=0.01'}
 c.content.headers.accept_language = 'en-US,en;q=0.5'
 c.content.host_blocking.lists = [
@@ -262,6 +263,10 @@ config.bind('\\h', 'set-cmd-text -s :help ', mode='normal')
 config.bind('\\q', 'set-cmd-text :quickmark-', mode='normal')
 config.bind('\\m', 'set-cmd-text :bookmark-', mode='normal')
 config.bind('\\d', 'set-cmd-text :download', mode='normal')
+if sys.platform == 'darwin':
+    config.bind('\\f', 'spawn open -a firefox {url}')
+if sys.platform == 'linux':
+    config.bind('\\f', 'open firefox {url}')
 # }}}
 
 # passthrough:
