@@ -22,8 +22,10 @@ if [[ $OS == 'Darwin' ]]; then
     export vlc='/Applications/VLC.app/Contents/MacOS/VLC'
     alias top='top -stats pid,command,user,cpu,threads,mem,vsize,pageins,purg,state,time -o cpu -O mem -s 5 -n 20'
     alias quicksilver='. ~/Documents/QuicksilverIndexFix.sh'
-    alias mvim='/Applications/MacVim.app/Contents/MacOS/MacVim'
-    alias vim='/Applications/MacVim.app/Contents/MacOS/Vim'
+    alias cellar='cd /usr/local/Cellar/'
+    alias bcask='brew cask'
+    # alias mvim='/Applications/MacVim.app/Contents/MacOS/MacVim'
+    # alias vim='/Applications/MacVim.app/Contents/MacOS/Vim'
 # elif [[ $OS == 'Linux' ]]; then
 fi
 # }}}
@@ -38,8 +40,13 @@ alias si='cd ~/Documents/SI'
 alias doc='cd ~/Documents'
 # alias hg='history | grep'
 alias zshrc='vim ~/.zshrc'
+alias zrc='vim ~/.zshrc'
+alias arc='vim ~/.aliases'
 alias bashrc='vim ~/.bashrc'
+alias brc='vim ~/.bashrc'
 alias vimrc='vim ~/.vimrc'
+alias vrc='vim ~/.vimrc'
+alias xrc='xrdb ~/.Xresources'
 alias so='source'
 alias sz='source ~/.zshrc'
 alias lyrics='. ~/.config/pianobar/lyrics.sh'
@@ -64,6 +71,8 @@ alias pipu='pip uninstall '
 alias pipg='pip list | grep'
 alias pipf='pip freeze'
 alias pips='pip search '
+#fzf
+alias fzv='vim $(fzf-tmux -m -x)'
 # git
 alias gs='git status '
 alias ga='git add '
@@ -72,41 +81,27 @@ alias gca='git commit -a'
 alias gcm='git commit -m'
 alias go='git checkout '
 alias gl='git log --oneline --graph --decorate --all'
-# alias gr='git rm '
 # brew
-if [[ $OS == 'Darwin' ]]; then
-    alias bcask='brew cask'
-fi
-# Mistakes
-alias gti='git'
-# Arconai
 alias starwars="telnet towel.blinkenlights.nl" #starwars ascii
-alias sports='arconai https://www.arconaitv.me/sports/'
-alias sunny="arconai http://arconaitv.me/stream.php?id=5"
-alias george='arconai https://www.arconaitv.me/sf/'
-alias scroobs='arconai https://www.arconaitv.me/scroobs/'
-alias 70s='arconai https://www.arconaitv.me/70s/'
-alias office='arconai https://www.arconaitv.me/to/'
-alias morty='arconai https://www.arconaitv.me/rm/'
-alias docwho='arconai https://www.arconaitv.me/thedoctors/'
 # Translate Shell
 define(){ trans "$@" | less ;}
 deflang(){ trans -identify "$@" ;}
 defpten(){ trans pt:en "$@" ;}
 defplay(){ trans -p "$@" ;}
-defsay(){ trans -speak -no-translate "$*" ;}
+defsay(){ trans -speak "$*" ;}
 # }}}
+# MISSTYPINGS {{{
+alias -g isntall='install'
+alias -g wrokon='workon'
+alias gti='git'
+#}}}
 # GENERAL FUNCTIONS --------------------------------------------------------------- {{{
 pytags(){
     ctags -R --fields=+l --languages=python --python-kinds=-iv -f ./pytags $(python -c "import os, sys; print(' '.join('{}'.format(d) for d in sys.path if os.path.isdir(d)))")
 }
 
-dasht(){
-    command dasht "$@"
-}
-
 fzdo(){
-    $@ $(fzf-tmux -m -x)
+    $1 $(fzf-tmux -m -x)
 }
 
 fzmdfind(){
@@ -119,30 +114,11 @@ p2k(){
 }
 
 arconai(){
-    if [[ $# -eq 1 ]]; then
-        url=$1
-        player='mpv'
-    elif [[ $# -eq 2 && $2 = 'vlc' ]]; then
-        url=$1
-        player="'$vlc' --file-caching=20000"
-    elif [[ $# -eq 2 && $2 = 'mpv' ]]; then
-        url=$1
-        player='mpv'
-    else
-        echo 'arconai(ulr, player=mpv)'
-    fi 
-    command livestreamer --player $player hls://$(curl $url | grep m3u8 | cut -d '"' -f 2 | sed 's/\\//g') live
+    workon streamlink;arconai.py $@
 }
+
 peerflix(){
     command peerflix $@ --mpv --path ~/Downloads
-}
-
-livestreamer(){
-        command livestreamer --player-passthrough=hls --player "'$vlc' --file-caching=20000" $1 $2
-}
-
-streamlink(){
-    command streamlink --player-passthrough=hls --player "'$vlc' --file-caching=20000" $1 $2
 }
 
 i2p(){

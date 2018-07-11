@@ -1,15 +1,20 @@
-import sys
+import sys, os
+if sys.platform == 'darwin':
+    os.environ['PATH'] += os.pathsep + os.path.expanduser('~/.pyenv/shims')
+    os.environ['PATH'] += os.pathsep + '/usr/local/bin'
 # CONFIGURATION {{{
 config.load_autoconfig()
-c.backend = 'webengine'
 # c.backend = 'webkit'
 c.new_instance_open_target = 'window'
 c.new_instance_open_target_window = 'last-focused'
 c.scrolling.bar = True
 c.scrolling.smooth = True
 c.auto_save.session = True
+c.session.lazy_restore = True
 c.downloads.location.suggestion = 'both'
 c.downloads.location.directory = '~/Downloads'
+c.downloads.location.prompt = False
+c.downloads.remove_finished = 5000
 # Search Engines
 c.url.default_page = 'about:blank'
 c.url.searchengines = {
@@ -32,19 +37,6 @@ c.url.searchengines = {
         'aw' : 'https://wiki.archlinux.org/index.php?search={}',
         'yts' : 'https://yts.ag/browse-movies/{}',
 }
-# Stylesheets
-# c.content.user_stylesheets = ['~/.config/qutebrowser/solarized-everything-css/css/solarized-all-sites-dark.css']
-# Aliases
-c.aliases['h'] = 'help'
-c.aliases['o'] = 'open'
-c.aliases['t'] = 'open -t'
-c.aliases['T'] = 'open -b'
-c.aliases['w'] = 'open -w'
-c.aliases['W'] = 'open -p'
-c.aliases['wo'] = 'window-only'
-c.aliases['b'] = 'buffer'
-c.aliases['mv'] = 'tab-move'
-c.aliases['y'] = 'yank'
 #Completions
 c.completion.cmd_history_max_items = 20
 c.completion.web_history_max_items = -1
@@ -59,24 +51,83 @@ c.tabs.last_close = 'close'
 c.tabs.title.format = '{private}{index}: {title}'
 c.window.title_format = '{private}{perc}{host}'
 # Contents
-# c.content.developer_extras = True
 c.content.headers.user_agent = 'Mozilla/5.0 (X11; Linux x86_64; rv:57.0) Gecko/20100101 Firefox/57.0'
 c.content.headers.custom = {'accept': 'text/html, */*; q=0.01'}
 c.content.headers.accept_language = 'en-US,en;q=0.5'
-c.content.host_blocking.lists = [
-        'https://www.malwaredomainlist.com/hostslist/hosts.txt',
-        'http://someonewhocares.org/hosts/hosts',
-        'http://winhelp2002.mvps.org/hosts.zip',
-        'http://malwaredomains.lehigh.edu/files/justdomains.zip',
-        'https://pgl.yoyo.org/adservers/serverlist.php?hostformat=hosts&mimetype=plaintext'
-]
+c.content.geolocation = False
+c.content.headers.do_not_track = True
 c.content.host_blocking.enabled = True
-# c.content.pdfjs = True
+c.content.javascript.enabled = True
 c.content.plugins = True
 # }}}
+# DOMAIN CONFIG {{{
+JS = '''
+http://rarbgmirror.org/*
+https://thepiratebay.org/*
+https://eztv.*
+'''
+for url in JS.strip().splitlines():
+    if url.strip():
+        config.set('content.javascript.enabled', False, pattern=url)
+# }}}
+# ALIASES {{{
+c.aliases['so'] = 'config-source'
+c.aliases['h'] = 'help'
+# }}}
 # BINDINGS
-# suppress all default
-c.bindings.default = {}
+# USERSCRIPTS {{{
+if sys.platform == 'darwin':
+    c.aliases['fire'] = 'spawn open -a firefox {url}'
+    config.bind(',f', 'spawn open -a firefox {url}')
+elif sys.platform == 'linux':
+    c.aliases['fire'] = 'spawn firefox {url}'
+    config.bind(',f', 'open firefox {url}')
+# readability
+config.bind(
+    '<Ctrl-r>',
+    'spawn --userscript ~/.config/qutebrowser/userscripts/readability',
+    mode='normal'
+    )
+# mpv
+mpv_command = 'spawn mpv --ontop --autofit 30% --geometry 100%:100%'
+config.bind(',p', mpv_command + ' {url}', mode='normal')
+config.bind(';p', 'hint links ' + mpv_command + ' {hint-url}', mode='normal')
+# keepass
+keepass_command = 'spawn --userscript ~/.config/qutebrowser/userscripts/qute-keepass -p ~/Sync/keepass.kdbx'
+config.bind(',k', keepass_command, mode='normal')
+config.bind('<Ctrl-k>', keepass_command, mode='insert')
+# streamlink
+streamlink_command = 'spawn streamlink {url} 480p'
+config.bind(';s', 'hint links spawn streamlink {hint-url} 480p', mode='normal')
+config.bind(',s', 'spawn streamlink {url} 480p', mode='normal')
+config.bind(';x', 'hint links spawn -v -d peerflix "{hint-url}" --mpv', mode='normal')
+# }}}
+# LEADER UNITE/DENITE LIKE {{{
+config.bind(',b', 'set-cmd-text -s :buffer ', mode='normal')
+config.bind('b', 'set-cmd-text -s :buffer', mode='normal')
+config.bind(',h', 'set-cmd-text -s :help ', mode='normal')
+config.bind(',q', 'set-cmd-text :quickmark-', mode='normal')
+config.bind(',m', 'set-cmd-text :bookmark-', mode='normal')
+config.bind(',d', 'set-cmd-text :download', mode='normal')
+config.bind(',e', 'set-cmd-text :session-load ', mode='normal')
+config.bind(',j', 'set-cmd-text :set content.javascript.enabled false', mode='normal')
+config.bind(',J', 'set-cmd-text :set content.javascript.enabled true', mode='normal')
+# }}}
+# Hints{{{
+config.bind('f', 'hint', mode='normal')
+config.bind('F', 'hint all tab', mode='normal')
+config.bind(';f', 'hint all tab-fg', mode='normal')
+config.bind(';b', 'hint all tab-bg', mode='normal')
+config.bind(';r', 'hint --rapid links tab-bg')
+config.bind(';R', 'hint --rapid links window')
+config.bind(';w', 'hint all window', mode='normal')
+config.bind(';y', 'hint links yank', mode='normal')
+config.bind(';t', 'hint inputs', mode='normal')
+config.bind(';i', 'hint images', mode='normal')
+config.bind(';I', 'hint images tab', mode='normal')
+config.bind(';d', 'hint links download', mode='normal')
+config.bind(';h', 'hint links hover', mode='normal')
+# }}}
 # Command Mode {{{
 config.bind('<Ctrl-A>', 'rl-beginning-of-line', mode='command')
 config.bind('<Ctrl-E>', 'rl-end-of-line', mode='command')
@@ -191,33 +242,9 @@ config.bind('`', 'enter-mode set_mark', mode='normal')
 config.bind("''", 'enter-mode jump_mark', mode='normal')
 config.bind('<Ctrl-V>', 'enter-mode passthrough', mode='normal')
 # }}}
-# Hints{{{
-config.bind('f', 'hint', mode='normal')
-config.bind('F', 'hint all tab', mode='normal')
-config.bind(';f', 'hint all tab-fg', mode='normal')
-config.bind(';b', 'hint all tab-bg', mode='normal')
-config.bind(';r', 'hint --rapid links tab-bg')
-config.bind(';R', 'hint --rapid links window')
-config.bind(';w', 'hint all window', mode='normal')
-config.bind(';y', 'hint links yank', mode='normal')
-config.bind(';t', 'hint inputs', mode='normal')
-config.bind(';i', 'hint images', mode='normal')
-config.bind(';I', 'hint images tab', mode='normal')
-config.bind(';d', 'hint links download', mode='normal')
-config.bind(';h', 'hint all hover', mode='normal')
-if sys.platform == 'darwin':
-    config.bind(';m', 'hint links spawn /usr/local/bin/mpv --ontop --window-scale 0.40 {hint-url}', mode='normal')
-    config.bind(';m', 'hint links spawn mpv --ontop --window-scale 0.40 {hint-url}', mode='normal')
-    config.bind(';p', 'hint links spawn -d -v /usr/local/bin/peerflix --mpv --path ~/Downloads/ "{hint-url}"', mode='normal')
-    c.aliases['fire'] = 'spawn open -a firefox {url}'
-elif sys.platform == 'linux':
-    config.bind(';m', 'hint links spawn mpv --ontop --window-scale 0.40 {hint-url}', mode='normal')
-    config.bind(';p', 'hint links spawn -d -v peerflix --mpv "{hint-url}"', mode='normal')
-    c.aliases['fire'] = 'spawn firefox {url}'
-# }}}
 #TABS{{{
 config.bind('T', 'tab-focus', mode='normal')
-config.bind('co', 'tab-only', mode='normal')
+config.bind('go', 'tab-only', mode='normal')
 config.bind('J', 'tab-next', mode='normal')
 config.bind('K', 'tab-prev', mode='normal')
 config.bind('th', 'back -t', mode='normal')
@@ -229,8 +256,8 @@ config.bind('g0', 'tab-focus 1', mode='normal')
 config.bind('g^', 'tab-focus 1', mode='normal')
 config.bind('gC', 'tab-clone', mode='normal')
 config.bind('gm', 'tab-move', mode='normal')
-config.bind('gr', 'tab-move +', mode='normal')
-config.bind('gl', 'tab-move -', mode='normal')
+config.bind('gl', 'tab-move +', mode='normal')
+config.bind('gh', 'tab-move -', mode='normal')
 config.bind('gu', 'navigate up', mode='normal')
 config.bind('gU', 'navigate up -t', mode='normal')
 config.bind('go', 'set-cmd-text :open {url:pretty}', mode='normal')
@@ -244,11 +271,10 @@ config.bind('pt', 'open -t -- {clipboard}', mode='normal')
 config.bind('pw', 'open -w -- {clipboard}', mode='normal')
 # }}}
 # Open{{{
-config.bind('o', 'set-cmd-text -s :open -s', mode='normal')
-config.bind('O', 'set-cmd-text -s :open -t -s', mode='normal')
-config.bind('wb', 'set-cmd-text -s :open -b -s', mode='normal')
-config.bind('wo', 'set-cmd-text -s :open -w -s', mode='normal')
-config.bind('wp', 'set-cmd-text -s :open -p -s', mode='normal')
+config.bind('o', 'set-cmd-text -s :open', mode='normal')
+config.bind('O', 'set-cmd-text -s :open -t', mode='normal')
+config.bind('wo', 'set-cmd-text -s :open -w', mode='normal')
+config.bind('wp', 'set-cmd-text -s :open -p', mode='normal')
 config.bind('wh', 'back -w', mode='normal')
 config.bind('wl', 'forward -w', mode='normal')
 # }}}
@@ -262,22 +288,9 @@ config.bind('yP', 'yank pretty-url -s', mode='normal')
 config.bind('yT', 'yank title -s', mode='normal')
 config.bind('yY', 'yank -s', mode='normal')
 # }}}
-# UNITE LIKE {{{
-config.bind('\\b', 'set-cmd-text -s :buffer ', mode='normal')
-config.bind('b', 'set-cmd-text -s :buffer', mode='normal')
-config.bind('\\h', 'set-cmd-text -s :help ', mode='normal')
-config.bind('\\q', 'set-cmd-text :quickmark-', mode='normal')
-config.bind('\\m', 'set-cmd-text :bookmark-', mode='normal')
-config.bind('\\d', 'set-cmd-text :download', mode='normal')
-if sys.platform == 'darwin':
-    config.bind('\\f', 'spawn open -a firefox {url}')
-if sys.platform == 'linux':
-    config.bind('\\f', 'open firefox {url}')
-# }}}
-
 # passthrough:
 config.bind('Ctrl-V', 'leave-mode', mode='normal')
-# prompt:
+# Prompt Bindings {{{:
 config.bind('<Alt-B>', 'rl-backward-word', mode='prompt')
 config.bind('<Alt-Backspace>', 'rl-backward-kill-word', mode='prompt')
 config.bind('<Alt-D>', 'rl-kill-word', mode='prompt')
@@ -299,8 +312,8 @@ config.bind('<Return>', 'prompt-accept', mode='prompt')
 config.bind('<Shift-Tab>', 'prompt-item-focus prev', mode='prompt')
 config.bind('<Tab>', 'prompt-item-focus next', mode='prompt')
 config.bind('<Up>', 'prompt-item-focus prev', mode='prompt')
-config.bind('n', 'prompt-accept no', mode='prompt')
-config.bind('y', 'prompt-accept yes', mode='prompt')
+# }}}
 # register:
 config.bind('<Escape>', 'leave-mode', mode='register')
+
 # vim: fo=tcq fdm=marker tw=0

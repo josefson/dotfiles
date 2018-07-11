@@ -1,0 +1,87 @@
+general {
+    interval = 1
+    colors = true
+    color_good = '#88b090'
+    color_degraded = '#ccdc90'
+    color_bad = '#e89393'
+}
+
+order += "frame whoami"
+#order += "arch_updates"
+order += "sysdata"
+order += "netdata"
+#order += "cmus"
+order += "volume_status"
+order += "wifi"
+order += "battery_level"
+order += "keyboard_layout"
+order += "tztime local"
+
+frame whoami {
+    whoami {
+        format = " {username}"
+    }
+    external_script hostname {
+        script_path = "/usr/bin/hostname"
+        format = " {output}"
+    }
+    uptime {
+    format = " {days} days"
+    }
+    # min_width = 
+    # separator = false
+    # separator_block_width = 600
+}
+netdata {
+    format = '[\?color=down  {down} {up}]'
+    color_good = "#ffffff"
+    color_bad = "#ffffff"
+}
+sysdata {
+    format = "{cpu_temp}  {cpu_usage} :{mem_used}G  {load1}"
+    color_good = "#ffffff"
+    threshold = [(45, "good"), (60, "degraded"), (70, "bad")]
+}
+arch_updates {
+    hide_if_zero = true
+    format = " {pacman}"
+}
+cmus {
+    format = '[\?if=is_started [\?if=is_playing  ][\?if=is_paused  ] [\?if=is_stopped  ][[{title} - {artist} - {album}] |\?show cmus: waiting for user input]]'
+}
+volume_status {
+    color_good = "#ffffff"
+    color_degraded = "#ffffff"
+    button_down = 3
+    button_up = 1
+    button_mute = 2
+    format = ""
+    format_muted = ""
+    max_volume = 120
+}
+wifi {
+    threshold = [(75, "good"), (49, "degraded"), (29, "bad")]
+    color_good = "#ffffff"
+    format = " {ssid}"
+    down_color = "bad"
+}
+battery_level {
+    #blocks = "_▁▂▃▄▅▆▇█"
+    blocks = ""
+    charging_character = ""
+    notification = true
+    notify_low_level = true
+    hide_when_full = true
+    format = "{icon}{percent}%"
+    color_charging = '#ffffff'
+    color_good = '#ffffff'
+    color_degraded = '#ccdc90'
+    color_bad = '#e89393'
+}
+keyboard_layout {
+    format = " {layout}"
+    color_us = "#ffffff"
+}
+tztime local {
+    format = " %a %b %e  %H:%M"
+}

@@ -23,7 +23,7 @@ windows:
         layout: even-horizontal
         panes:
             # - sleep 2 && proxychains4 -q -f ~/.proxychains.conf pianobar
-            - sleep 10 && pianobar 
+            - sleep 5 && workon test && pianobar 
             - ~/.config/pianobar/lyrics.sh
     - Tor:
         layout: even-horizontal

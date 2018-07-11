@@ -13,3 +13,6 @@ tmux/.tmux/resurrect/**
 /* vim plugins */
 vim/.vim/bundle/**
 vim/.ctags
+
+/* ranger */
+ranger/.config/ranger/plugins/*.pyc

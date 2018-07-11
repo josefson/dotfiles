@@ -86,6 +86,10 @@ prompt_context() {
 
 # Git: branch/detached head, dirty status
 prompt_git() {
+  green=40
+  yellow=190
+  black=16
+  red=160
 
   local PL_BRANCH_CHAR
   () {
@@ -99,9 +103,9 @@ prompt_git() {
     dirty=$(parse_git_dirty)
     ref=$(git symbolic-ref HEAD 2> /dev/null) || ref="➦ $(git rev-parse --short HEAD 2> /dev/null)"
     if [[ -n $dirty ]]; then
-      prompt_segment yellow black
+      prompt_segment $yellow $black
     else
-      prompt_segment green black
+      prompt_segment $green $black
     fi
 
     if [[ -e "${repo_path}/BISECT_LOG" ]]; then
@@ -118,8 +122,10 @@ prompt_git() {
     zstyle ':vcs_info:*' enable git
     zstyle ':vcs_info:*' get-revision true
     zstyle ':vcs_info:*' check-for-changes true
-    zstyle ':vcs_info:*' stagedstr '✚'
-    zstyle ':vcs_info:*' unstagedstr '●'
+    # zstyle ':vcs_info:*' unstagedstr '✚'
+    # zstyle ':vcs_info:*' stagedstr '●'
+    zstyle ':vcs_info:*' unstagedstr "%{%F{$red}%}●"
+    zstyle ':vcs_info:*' stagedstr "%{%F{$green}%}●"
     zstyle ':vcs_info:*' formats ' %u%c'
     zstyle ':vcs_info:*' actionformats ' %u%c'
     vcs_info
