@@ -15,4 +15,4 @@ vim/.vim/bundle/**
 vim/.ctags
 
 /* ranger */
-ranger/.config/ranger/plugins/*.pyc
+ranger/.config/ranger/plugins/__pycache__/**
