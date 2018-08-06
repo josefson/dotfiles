@@ -362,8 +362,8 @@ let g:multi_cursor_quit_key='<Esc>'  " cancel
 " }}}
 " SUPERTAB ---------------------------------------------------------------- {{{
 " let g:SuperTabDefaultCompletionType = '<C-X><C-O>' " For Omni
-let g:SuperTabDefaultCompletionType = '<C-X><C-U>' " For User
-" let g:SuperTabDefaultCompletionType = '<C-n>' " For youcompleteme
+" let g:SuperTabDefaultCompletionType = '<C-X><C-U>' " For User
+let g:SuperTabDefaultCompletionType = '<C-n>' " For youcompleteme/completor
 " let g:SuperTabCrMapping = 0
 " }}}
 " Mu-COMPLETE ------------------------------------------------------------- {{{
@@ -381,7 +381,7 @@ let g:mucomplete#chains.vim = []
 " COMPLETOR.VIM ----------------------------------------------------------- {{{
 " Disable default completeopt
 " let g:completor_set_options = 0
-" disable auto trigger
+" " disable auto trigger
 " let g:completor_auto_trigger = 0
 " let g:completor_blacklist = ['tagbar', 'qf', 'netrw', 'unite', 'vimwiki', 'vim']
 " let g:completor_min_chars = 1

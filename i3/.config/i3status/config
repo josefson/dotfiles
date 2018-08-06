@@ -7,8 +7,7 @@ general {
 }
 
 order += "frame whoami"
-#order += "arch_updates"
-order += "sysdata"
+order += "frame sys_data"
 order += "netdata"
 #order += "cmus"
 order += "volume_status"
@@ -17,12 +16,29 @@ order += "battery_level"
 order += "keyboard_layout"
 order += "tztime local"
 
+frame sys_data {
+    sysdata {
+        format = " {cpu_usage}%"
+        separator = false
+        separator_block_width = 5
+    }
+    external_script cpu_temp {
+        script_path = "sensors | grep 'Package' | awk '{print $4}' | sed 's/.*\([0-9]\{2\}\).*/\1/'"
+        format = "{output}C"
+        separator = false
+        separator_block_width = 5
+    }
+    external_script used_memory {
+        script_path = "free -h | head -n 2 | tail -n 1 | awk '{print $3}' | sed 's/.$/B/'"
+        format = "{output}"
+    }
+}
 frame whoami {
     whoami {
         format = " {username}"
     }
     external_script hostname {
-        script_path = "/usr/bin/hostname"
+        script_path = "hostname"
         format = " {output}"
     }
     uptime {
@@ -33,14 +49,9 @@ frame whoami {
     # separator_block_width = 600
 }
 netdata {
-    format = '[\?color=down  {down} {up}]'
+    format = '[\?color=down {down}{up}]'
     color_good = "#ffffff"
     color_bad = "#ffffff"
-}
-sysdata {
-    format = "{cpu_temp}  {cpu_usage} :{mem_used}G  {load1}"
-    color_good = "#ffffff"
-    threshold = [(45, "good"), (60, "degraded"), (70, "bad")]
 }
 arch_updates {
     hide_if_zero = true
@@ -60,6 +71,8 @@ volume_status {
     max_volume = 120
 }
 wifi {
+    on_click 1 = "exec urxvt -e nmtui"
+    on_click 3 = "exec urxvt -e nm-connection-editor"
     threshold = [(75, "good"), (49, "degraded"), (29, "bad")]
     color_good = "#ffffff"
     format = " {ssid}"
@@ -79,6 +92,9 @@ battery_level {
     color_bad = '#e89393'
 }
 keyboard_layout {
+    button_next = 1
+    button_prev = 3
+    layouts = ['us','us -variant intl','br']
     format = " {layout}"
     color_us = "#ffffff"
 }

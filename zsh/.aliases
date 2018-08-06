@@ -26,7 +26,9 @@ if [[ $OS == 'Darwin' ]]; then
     alias bcask='brew cask'
     # alias mvim='/Applications/MacVim.app/Contents/MacOS/MacVim'
     # alias vim='/Applications/MacVim.app/Contents/MacOS/Vim'
-# elif [[ $OS == 'Linux' ]]; then
+elif [[ $OS == 'Linux' ]]; then
+    alias ctl='sudo systemctl'
+    alias sudo='sudo '
 fi
 # }}}
 # GENERAL ALIASES {{{
@@ -90,10 +92,13 @@ defpten(){ trans pt:en "$@" ;}
 defplay(){ trans -p "$@" ;}
 defsay(){ trans -speak "$*" ;}
 # }}}
-# MISSTYPINGS {{{
+# MISSTYPINGS and globals{{{
 alias -g isntall='install'
 alias -g wrokon='workon'
 alias gti='git'
+## pipe aliases
+alias -g pl=' | less'
+alias -g pg=' | grep'
 #}}}
 # GENERAL FUNCTIONS --------------------------------------------------------------- {{{
 pytags(){
@@ -114,7 +119,11 @@ p2k(){
 }
 
 arconai(){
-    workon streamlink;arconai.py $@
+    if [[ $OS == 'Darwin' ]]; then
+        workon streamlink;arconai.py $@
+    elif [[ $OS == 'Linux' ]]; then
+        arconai.py $@
+    fi
 }
 
 peerflix(){
@@ -156,18 +165,16 @@ if [[ $OS == 'Linux' ]]; then
         done;
         return 1;
     }
-    export PKMGR=$(find_pckmngr yaourt pacman aptitude apt-get yum zypper emerge)
-    if [[ "$PKMGR" == "pacman" || "$PKMGR" == "yaourt" ]]; then
-        pacinstall(){ sudo pacman -S "$@" ;}
-        pacremove(){ sudo pacman -Rns "$@" ;}
-        pacuninstall(){ sudo pacman -Rn "$@" ;}
-        pacpurge(){ sudo pacman -Rcs "$@" ;}
-        pacremoveorphans() { sudo pacman -Rs $(pacman -Qqtd) ;}
+    export PKMGR=$(find_pckmngr pacman aptitude apt-get yum zypper emerge)
+    if [[ "$PKMGR" == "pacman" ]]; then
         pacsearch(){ pacman -Ss "$@" ;}
-        pacupgrade(){ sudo pacman -Syu ;}
+        pacinstall(){ sudo pacman -S "$@" ;}
+        pacremove(){ sudo pacman -Rscn "$@" ;}
+        pacremoveorphans() { sudo pacman -Rs $(pacman -Qqtd) ;}
         paccleanold() { pacman -Sc ;}
         paccleanall() { pacman -Scc ;}
         pacupdate() { sudo pacman -Syy ;}
+        pacupgrade(){ sudo pacman -Syu ;}
         pacinfo(){ 
             for arg in "$@"; do
                 pacman -Qi $arg 2> /dev/null || pacman -Si $arg;

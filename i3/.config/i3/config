@@ -6,23 +6,25 @@ bindsym --release button2 kill
 # reload the configuration file
 bindsym $super+Shift+c reload
 # restart i3 inplace
-bindsym $super+Shift+r restart
+bindsym $super+Shift+r restart;
 # exit i3
-bindsym $super+Shift+q exec exit
+bindsym $super+Shift+q exec i3-msg exit
 # lock
+# lightdm
+bindsym $super+Shift+x exec dm-tool lock
 # bindsym $super+Shift+x exec i3lock --color 475263
 # exit i3 (logs you out of your X session)
-bindsym $super+Shift+x exec "i3-nagbar -t warning -m \
-    'You pressed the exit shortcut. Do you really want to exit i3? \
-    This will end your X session.' -b 'Yes, exit i3' 'i3-msg exit'"
+# bindsym $super+Shift+x exec "i3-nagbar -t warning -m \
+#     'You pressed the exit shortcut. Do you really want to exit i3? \
+#     This will end your X session.' -b 'Yes, exit i3' 'i3-msg exit'"
 # }}}
 # APPEARANCE
-font pango:SF Pro, 9 # Font for window titles.
+font pango:SF Pro 13
 hide_edge_borders smart # none|smart|both
 # COLORS                border  backgrd text    indicator
 # set window colors
 client.focused          #4E9C00 #4E9C00 #FFFFFF #FFFFFF
-client.focused_inactive #1B3600 #1B3600 #888888 #FFFFFF
+client.focused_inactive #1B3600 #1B3600 #FFFFFF #FFFFFF
 client.unfocused        #333333 #333333 #888888 #FFFFFF
 client.urgent           #C20000 #C20000 #FFFFFF #FFFFFF
 # GAPS {{{
@@ -34,8 +36,8 @@ for_window [class="^.*"] border pixel 3
 # }}}
 # BARS {{{
     bar {
+        font pango:SF Pro Text 10
         id bar1
-        font pango:SF Pro, bold 11
         status_command py3status -c ~/.config/i3status/config
         mode dock
         position top
@@ -45,7 +47,7 @@ for_window [class="^.*"] border pixel 3
         strip_workspace_numbers yes
         binding_mode_indicator yes
         colors {
-            #                  border  backgrd text
+                             # border  backgrd text
             focused_workspace  #4E9C00 #4E9C00 #FFFFFF
             active_workspace   #333333 #333333 #FFFFFF
             inactive_workspace #333333 #333333 #888888
@@ -54,10 +56,10 @@ for_window [class="^.*"] border pixel 3
     }
     bar {
         id bar2
-        font pango:SF Pro, bold 9
+        font pango:SF Pro Text 10
         mode hide
         hidden_state hide
-        # modifier $alt
+        modifier $alt
         position top
         tray_output primary
         tray_padding 0
@@ -71,7 +73,7 @@ for_window [class="^.*"] border pixel 3
     # If popup when fullscreen
     popup_during_fullscreen smart
     # $super+self go to prev workspace
-    workspace_auto_back_and_forth no
+    workspace_auto_back_and_forth yes
     # delay windows hint focus uppon wkspc change
     force_display_urgency_hint 500 ms
     # Focus if the windows is in the cur wkspc
@@ -90,20 +92,21 @@ for_window [class="^.*"] border pixel 3
     set $terminal urxvt
     set $player   mpv
     # General bindings
-    bindsym $super+n                workspace back_and_forth
-    bindsym $super+shift+n          move container to workspace back_and_forth
+    bindsym $super+Tab                workspace back_and_forth
     bindsym XF86AudioRaiseVolume    $exec pactl set-sink-volume 0 +5%
     bindsym XF86AudioLowerVolume    $exec pactl set-sink-volume 0 -5%
     bindsym XF86AudioMute           $exec pactl set-sink-mute 0 toggle
-    bindsym XF86MonBrightnessUp     $exec light -A 10
-    bindsym XF86MonBrightnessDown   $exec light -U 10
+    bindsym XF86MonBrightnessUp     $exec light -A 5
+    bindsym XF86MonBrightnessDown   $exec light -U 5
     # free keys
-    # bindsym b, m, t, i, o, [, ]
+    # bindsym a, s, m, y, i, p
     # APP SHORTCUTS {{{
-        # bindsym $super+space    $exec dmenu_run
+        bindsym $super+t        $exec $terminal
+        bindsym $super+o        $exec dmenu_run
+        bindsym $super+b        $exec $browser
         bindsym $super+space    $exec ~/.scripts/rofi_app.sh
-        bindsym $super+Tab      $exec ~/.scripts/rofi_switcher.sh
-        bindsym $super+g        $exec ~/.scripts/rofi_file.sh
+        bindsym $super+s      $exec ~/.scripts/rofi_switcher.sh
+        # bindsym $super+g        $exec ~/.scripts/rofi_file.sh
         bindsym Print           $exec ~/.scripts/shoot.sh -wc
         bindsym $super+Print    $exec ~/.scripts/shoot.sh -sc
     # }}}
@@ -111,7 +114,7 @@ for_window [class="^.*"] border pixel 3
         bindsym $super+u        focus parent
         bindsym $super+d        focus child
         bindsym $super+f        fullscreen  toggle
-        bindsym $super+Shift+f  fullscreen  global toggle
+        bindsym $super+Shift+f  fullscreen  toggle global
         # Change container layout (stacked, tabbed, default)
         bindsym $super+w layout tabbed
         bindsym $super+e layout stacking
@@ -125,8 +128,8 @@ for_window [class="^.*"] border pixel 3
         bindsym $super+z        floating toggle
         # change focus between tiling / floating windows
         bindsym $super+x        focus mode_toggle
-        bindsym $super+bracketleft      move scratchpad
-        bindsym $super+bracketright     scratchpad show
+        bindsym $super+bracketright     move scratchpad
+        bindsym $super+bracketleft      scratchpad show
     # }}}
     # WORKSPACES {{{
         set $w1 1:Waystone
@@ -155,6 +158,9 @@ for_window [class="^.*"] border pixel 3
         bindsym $super+Shift+8 move container to workspace 8
         bindsym $super+Shift+9 move container to workspace 9
         bindsym $super+Shift+0 move container to workspace 10
+        # move the whole workspace to the next output
+        bindsym $super+Control+l move workspace to output right
+        bindsym $super+Control+h move workspace to output left
     # }}}
     # MOVEMENT {{{
         # change focus
@@ -167,11 +173,6 @@ for_window [class="^.*"] border pixel 3
         bindsym $alt+j   move  down
         bindsym $alt+k   move  up
         bindsym $alt+l   move  right
-        # Swap focused
-        bindsym $swap+h  mark  A; focus left;  mark B; swap container with mark A; [con_mark="A"] focus; [con_mark="A"] unmark A; [con_mark="B"] unmark B
-        bindsym $swap+j  mark  A; focus down;  mark B; swap container with mark A; [con_mark="A"] focus; [con_mark="A"] unmark A; [con_mark="B"] unmark B
-        bindsym $swap+k  mark  A; focus up;    mark B; swap container with mark A; [con_mark="A"] focus; [con_mark="A"] unmark A; [con_mark="B"] unmark B
-        bindsym $swap+l  mark  A; focus right; mark B; swap container with mark A; [con_mark="A"] focus; [con_mark="A"] unmark A; [con_mark="B"] unmark B
     # }}}
     # MODES {{{
         bindsym $super+semicolon mode "Normal"
@@ -188,6 +189,7 @@ for_window [class="^.*"] border pixel 3
             bindsym q mode "Normal:Quake"
             bindsym p mode "Normal:PrintScreen:  [W]in  [F]ull  [S]el  [I]mgur"
             bindsym m mode "Normal:Music"
+            bindsym k mode "Normal:Keyboard:  [e]n  [i]nt [b]r"
         }
     # QUAKE {{{
         mode "Normal:Quake" {
@@ -249,13 +251,13 @@ for_window [class="^.*"] border pixel 3
                 bindsym Control+c mode "default"
                 # Actions
                 # [focus|full|selection] [clipboard|file]
-                bindsym w $exec ~/.scripts/shoot.sh -wc; mode "default"
-                bindsym f $exec ~/.scripts/shoot.sh -fc; mode "default"
-                bindsym s $exec ~/.scripts/shoot.sh -sc; mode "default"
                 bindsym $super+w $exec ~/.scripts/shoot.sh -w; mode "default"
                 bindsym $super+f $exec ~/.scripts/shoot.sh -f; mode "default"
                 bindsym $super+s $exec ~/.scripts/shoot.sh -s; mode "default"
-                bindsym i $exec imgur-screenshot -o false; mode "default"
+                bindsym w $exec ~/.scripts/shoot.sh -wc; mode "default"
+                bindsym f $exec ~/.scripts/shoot.sh -fc; mode "default"
+                bindsym s $exec ~/.scripts/shoot.sh -sc; mode "default"
+                bindsym i $exec ~/.scripts/shoot.sh -i; mode "default"
             }
         # }}}
         # MUSIC {{{
@@ -269,17 +271,21 @@ for_window [class="^.*"] border pixel 3
                 # Actions
             }
         # }}}
+        # KEYBOARD {{{
+            mode "Normal:Keyboard:  [e]n  [i]nt [b]r" {
+                # Get back from inception
+                bindsym $super+semicolon mode "default"
+                bindsym BackSpace mode "default"
+                bindsym Return mode "default"
+                bindsym Escape mode "default"
+                bindsym Control+c mode "default"
+                # Actions
+                set $kb exec py3-cmd refresh keyboard_layout
+                bindsym i $exec setxkbmap -layout us -variant intl; $kb; mode "default"
+                bindsym e $exec setxkbmap -layout us; $kb; mode "default"
+                bindsym b $exec setxkbmap -layout br; $kb; mode "default"
+            }
     # }}}
-# }}}
-# AUTOSTART APPS {{{
-    #Caps<->Control
-    $always xmodmap ~/.Xmodmap
-    #Wallpaper
-    $exec feh --bg-scale $HOME/Pictures/wallpapers/kingkiller/auri_and_kvothe.jpg
-    #Display Power Manage - Prevent Display from blanking
-    $exec sleep1; xset s off -dpms
-    $exec synergy - c ~/synergy.conf
-    $exec syncthing-gtk -m
 # }}}
 # WINDOWS RULES {{{
     # for_window <criteria> <command>
@@ -298,5 +304,16 @@ for_window [class="^.*"] border pixel 3
     assign [class="Skype"] → $w2
     assign [class="Discord"] → $w2
 # }}}
-bindsym $super+Shift+Return scratchpad show
+# }}}
+# AUTOSTART APPS {{{
+    #Caps->Control Alt_L<->Super_L LR_Shift->Caps
+    $always setxkbmap -option caps:ctrl_modifier -option altwin:swap_lalt_lwin -option shift:both_capslock_cancel
+    #Wallpaper
+    $exec feh --bg-scale $walls/auri_and_kvothe.jpg
+    #Display Power Manage - Prevent Display from blanking
+    $exec sleep 1; xset s off -dpms
+    # $exec synergy - c ~/synergy.conf
+    # $exec syncthing-gtk -m
+    $exec transmission-daemon
+# }}}
 # vim: fdm=marker nowrap

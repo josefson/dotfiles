@@ -61,14 +61,17 @@ c.content.javascript.enabled = True
 c.content.plugins = True
 # }}}
 # DOMAIN CONFIG {{{
-JS = '''
-http://rarbgmirror.org/*
-https://thepiratebay.org/*
-https://eztv.*
-'''
-for url in JS.strip().splitlines():
-    if url.strip():
-        config.set('content.javascript.enabled', False, pattern=url)
+c.content.host_blocking.whitelist = [
+    'thepiratebay.org',
+    ]
+# JS = '''
+# *://rarbgmirror.org/*
+# *://thepiratebay.org/*
+# *://*eztv.*
+# '''
+# for url in JS.strip().splitlines():
+#     if url.strip():
+#         config.set('content.javascript.enabled', False, pattern=url)
 # }}}
 # ALIASES {{{
 c.aliases['so'] = 'config-source'
@@ -88,18 +91,25 @@ config.bind(
     'spawn --userscript ~/.config/qutebrowser/userscripts/readability',
     mode='normal'
     )
-# mpv
-mpv_command = 'spawn mpv --ontop --autofit 30% --geometry 100%:100%'
-config.bind(',p', mpv_command + ' {url}', mode='normal')
-config.bind(';p', 'hint links ' + mpv_command + ' {hint-url}', mode='normal')
 # keepass
-keepass_command = 'spawn --userscript ~/.config/qutebrowser/userscripts/qute-keepass -p ~/Sync/keepass.kdbx'
+if sys.platform == 'darwin':
+    keepass_command = 'spawn --userscript ~/.config/qutebrowser/userscripts/qute-keepass -p ~/Sync/keepass.kdbx'
+elif sys.platform == 'linux':
+    keepass_command = 'spawn --userscript /usr/share/qutebrowser/userscripts/qute-keepass -p ~/Sync/keepass.kdbx'
 config.bind(',k', keepass_command, mode='normal')
 config.bind('<Ctrl-k>', keepass_command, mode='insert')
-# streamlink
+# mpv
+mpv_command = 'spawn mpv --ontop --autofit 30% --geometry 100%:100%'
+config.bind(';p', 'hint links ' + mpv_command + ' {hint-url}', mode='normal')
+config.bind(';P', mpv_command + ' {url}', mode='normal')
+# transmission
+if sys.platform == 'linux':
+    transmission_command = 'hint links spawn transmission-remote -a "{hint-url}"'
+    config.bind(';t', transmission_command, mode='normal')
+# streamlink peerflix
 streamlink_command = 'spawn streamlink {url} 480p'
 config.bind(';s', 'hint links spawn streamlink {hint-url} 480p', mode='normal')
-config.bind(',s', 'spawn streamlink {url} 480p', mode='normal')
+config.bind(';S', 'spawn streamlink {url} 481p', mode='normal')
 config.bind(';x', 'hint links spawn -v -d peerflix "{hint-url}" --mpv', mode='normal')
 # }}}
 # LEADER UNITE/DENITE LIKE {{{
@@ -122,7 +132,7 @@ config.bind(';r', 'hint --rapid links tab-bg')
 config.bind(';R', 'hint --rapid links window')
 config.bind(';w', 'hint all window', mode='normal')
 config.bind(';y', 'hint links yank', mode='normal')
-config.bind(';t', 'hint inputs', mode='normal')
+config.bind(';a', 'hint inputs', mode='normal')
 config.bind(';i', 'hint images', mode='normal')
 config.bind(';I', 'hint images tab', mode='normal')
 config.bind(';d', 'hint links download', mode='normal')

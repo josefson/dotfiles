@@ -5,37 +5,6 @@ DOTFILES=$HOME/dotfiles
 DISABLE_AUTO_TITLE="true"   # Disable autorename tmux windows <c-a>+, ranme window
 DISABLE_AUTO_UPDATE="true"
 
-# SETOPT {{{
-# Completions goodies
-zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'       # Case insensitive tab completion
-zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"         # Colored completion (different colors for dirs/files/etc)
-zstyle ':completion:*' rehash true                              # automatically find new executables in path 
-# Speed up completions
-zstyle ':completion:*' accept-exact '*(N)'
-zstyle ':completion:*' use-cache on
-zstyle ':completion:*' cache-path ~/.zsh/cache
-setopt extendedglob
-setopt nocaseglob
-setopt numericglobsort
-setopt rcexpandparam
-setopt nobeep
-setopt autocd
-setopt prompt_subst
-# HISTORY
-setopt INC_APPEND_HISTORY
-setopt EXTENDED_HISTORY
-setopt NO_HIST_VERIFY
-setopt HIST_IGNORE_ALL_DUPS
-setopt HIST_REDUCE_BLANKS
-setopt HIST_IGNORE_SPACE
-setopt HIST_NO_STORE
-setopt ignore_eof
-export HISTFILE=$HOME/.zsh_history
-export HISTIGNORE="ls:exit:bg:fg:cd:history:clear"
-export HISTSIZE=10000
-export HISTTIMEFORMAT='%Y-%m-%d %T '
-export SAVEHIST=10000
-# }}}
 # EXPORTS {{{
 export EDITOR='vim'
 export LC_ALL=en_US.UTF-8
@@ -70,7 +39,7 @@ source $HOME/.zsh/agnoster.zsh-theme
 # }}}
 # }}}
 # PATH
-PATH=$HOME/bin/:/usr/local/bin:/usr/local/sbin:$PATH
+PATH=$HOME/.scripts/:$HOME/bin/:/usr/local/bin:/usr/local/sbin:$PATH
 #3rd party packages {{{
 if [[ -f $HOME/bin/z/z.sh ]]; then
     source $HOME/bin/z/z.sh # z  - Recent/Frequent cd
@@ -177,4 +146,35 @@ source $HOME/.aliases
 # completion
 autoload -U compinit colors zcalc
 compinit -d
+# SETOPT {{{
+# Completions goodies
+zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'       # Case insensitive tab completion
+zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"         # Colored completion (different colors for dirs/files/etc)
+zstyle ':completion:*' rehash true                              # automatically find new executables in path 
+# Speed up completions
+zstyle ':completion:*' accept-exact '*(N)'
+zstyle ':completion:*' use-cache on
+zstyle ':completion:*' cache-path ~/.zsh/cache
+setopt extendedglob
+setopt nocaseglob
+setopt numericglobsort
+setopt rcexpandparam
+setopt nobeep
+setopt autocd
+setopt prompt_subst
+# HISTORY
+setopt NO_HIST_VERIFY
+setopt INC_APPEND_HISTORY
+setopt EXTENDED_HISTORY
+setopt HIST_IGNORE_ALL_DUPS
+setopt HIST_REDUCE_BLANKS
+setopt HIST_IGNORE_SPACE
+setopt HIST_NO_STORE
+setopt ignore_eof
+export HISTFILE=$HOME/.zsh_history
+export HISTIGNORE="ls:exit:bg:fg:cd:history:clear"
+export HISTSIZE=10000
+export HISTTIMEFORMAT='%Y-%m-%d %T '
+export SAVEHIST=10000
+# }}}
 # vim: fdm=marker 

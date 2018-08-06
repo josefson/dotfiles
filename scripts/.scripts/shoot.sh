@@ -4,6 +4,7 @@ window=0
 fullscreen=0
 selection=0
 clipboard=0
+imgur=0
 
 HELP(){
     echo '
@@ -12,11 +13,12 @@ HELP(){
     -w focused window
     -f fullscreen
     -s selection
+    -i imgur
     -c clipboard, if not set it will save to file and copy to clipboard
     Dependencies: xdotool and maim(scroot replacement)'
 }
 
-while getopts 'wfsch' FLAG; do
+while getopts 'wfscih' FLAG; do
     case $FLAG in
         w)
             window=1
@@ -29,6 +31,9 @@ while getopts 'wfsch' FLAG; do
             ;;
         c)
             clipboard=1
+            ;;
+        i)
+            imgur=1
             ;;
         h)
             HELP
@@ -46,8 +51,13 @@ if [[ $clipboard == 0 ]]; then
         mkdir -p $shots_path
     fi
 fi
+#if fullscreen: clip 1 or 0
+if [[ $imgur == 1 ]]; then
+    #imgur.sh puts link in --primary, so put primary into clipboard
+    maim -s /tmp/screenshot.png; imgur.sh /tmp/screenshot.png
+    xclip -o -selection primary | xclip -in -selection clipboard
 #if focused window: clip 1 or 0
-if [[ $window == 1 ]]; then
+elif [[ $window == 1 ]]; then
     if [[ $clipboard == 1 ]]; then
         maim -i $active_window | xclip -selection clipboard -t image/png
     elif [[ $clipboard == 0 ]]; then
