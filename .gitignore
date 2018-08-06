@@ -1,3 +1,6 @@
+/* general */
+*.pyc
+
 /* weechat */
 weechat/.weechat/irc.conf
 weechat/.weechat/logs/**
@@ -13,6 +16,7 @@ tmux/.tmux/resurrect/**
 /* vim plugins */
 vim/.vim/bundle/**
 vim/.ctags
+vim/.vim/.netrwhist
 
 /* ranger */
 ranger/.config/ranger/plugins/__pycache__/**
