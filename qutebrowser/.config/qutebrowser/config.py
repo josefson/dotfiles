@@ -1,7 +1,9 @@
-import sys, os
+import os, sys
+# PATH {{{
 if sys.platform == 'darwin':
     os.environ['PATH'] += os.pathsep + os.path.expanduser('~/.pyenv/shims')
     os.environ['PATH'] += os.pathsep + '/usr/local/bin'
+# }}}
 # CONFIGURATION {{{
 config.load_autoconfig()
 # c.backend = 'webkit'
@@ -73,11 +75,8 @@ c.content.host_blocking.whitelist = [
 #     if url.strip():
 #         config.set('content.javascript.enabled', False, pattern=url)
 # }}}
-# ALIASES {{{
-c.aliases['so'] = 'config-source'
-c.aliases['h'] = 'help'
-# }}}
 # BINDINGS
+c.bindings.commands['normal'] = {}
 # USERSCRIPTS {{{
 if sys.platform == 'darwin':
     c.aliases['fire'] = 'spawn open -a firefox {url}'
@@ -113,217 +112,217 @@ config.bind(';S', 'spawn streamlink {url} 481p', mode='normal')
 config.bind(';x', 'hint links spawn -v -d peerflix "{hint-url}" --mpv', mode='normal')
 # }}}
 # LEADER UNITE/DENITE LIKE {{{
-config.bind(',b', 'set-cmd-text -s :buffer ', mode='normal')
-config.bind('b', 'set-cmd-text -s :buffer', mode='normal')
-config.bind(',h', 'set-cmd-text -s :help ', mode='normal')
-config.bind(',q', 'set-cmd-text :quickmark-', mode='normal')
-config.bind(',m', 'set-cmd-text :bookmark-', mode='normal')
-config.bind(',d', 'set-cmd-text :download', mode='normal')
-config.bind(',e', 'set-cmd-text :session-load ', mode='normal')
-config.bind(',j', 'set-cmd-text :set content.javascript.enabled false', mode='normal')
-config.bind(',J', 'set-cmd-text :set content.javascript.enabled true', mode='normal')
+c.bindings.commands['normal'][',b'] = 'set-cmd-text -s :buffer '
+c.bindings.commands['normal']['b']  = 'set-cmd-text -s :buffer'
+c.bindings.commands['normal'][',h'] = 'set-cmd-text -s :help '
+c.bindings.commands['normal'][',q'] = 'set-cmd-text :quickmark-'
+c.bindings.commands['normal'][',m'] = 'set-cmd-text :bookmark-'
+c.bindings.commands['normal'][',d'] = 'set-cmd-text :download'
+c.bindings.commands['normal'][',e'] = 'set-cmd-text :session-load '
+c.bindings.commands['normal'][',j'] = 'set-cmd-text :set content.javascript.enabled false'
+c.bindings.commands['normal'][',J'] = 'set-cmd-text :set content.javascript.enabled true'
 # }}}
-# Hints{{{
-config.bind('f', 'hint', mode='normal')
-config.bind('F', 'hint all tab', mode='normal')
-config.bind(';f', 'hint all tab-fg', mode='normal')
-config.bind(';b', 'hint all tab-bg', mode='normal')
-config.bind(';r', 'hint --rapid links tab-bg')
-config.bind(';R', 'hint --rapid links window')
-config.bind(';w', 'hint all window', mode='normal')
-config.bind(';y', 'hint links yank', mode='normal')
-config.bind(';a', 'hint inputs', mode='normal')
-config.bind(';i', 'hint images', mode='normal')
-config.bind(';I', 'hint images tab', mode='normal')
-config.bind(';d', 'hint links download', mode='normal')
-config.bind(';h', 'hint links hover', mode='normal')
+# HINTS{{{
+c.bindings.commands['normal']['f']  = 'hint'
+c.bindings.commands['normal']['F']  = 'hint all tab-bg'
+c.bindings.commands['normal'][';f'] = 'hint all tab-fg'
+c.bindings.commands['normal'][';b'] = 'hint all tab-bg'
+c.bindings.commands['normal'][';r'] = 'hint --rapid links tab-bg'
+c.bindings.commands['normal'][';R'] = 'hint --rapid links window'
+c.bindings.commands['normal'][';w'] = 'hint all window'
+c.bindings.commands['normal'][';y'] = 'hint links yank'
+c.bindings.commands['normal'][';a'] = 'hint inputs'
+c.bindings.commands['normal'][';i'] = 'hint images'
+c.bindings.commands['normal'][';I'] = 'hint images tab'
+c.bindings.commands['normal'][';d'] = 'hint links download'
+c.bindings.commands['normal'][';h'] = 'hint links hover'
 # }}}
-# Command Mode {{{
-config.bind('<Ctrl-A>', 'rl-beginning-of-line', mode='command')
-config.bind('<Ctrl-E>', 'rl-end-of-line', mode='command')
-config.bind('<Ctrl-K>', 'rl-unix-line-discard', mode='command')
-config.bind('<Ctrl-J>', 'rl-kill-line', mode='command')
+# COMMAND MODE {{{
+c.bindings.commands['command'] = {
+    '<Ctrl-A>'    : 'rl-beginning-of-line',
+    '<Ctrl-E>'    : 'rl-end-of-line',
+    '<Ctrl-K>'    : 'rl-unix-line-discard',
+    '<Ctrl-J>'    : 'rl-kill-line',
 
-config.bind('<Ctrl-B>', 'rl-backward-word', mode='command')
-config.bind('<Ctrl-F>', 'rl-forward-word', mode='command')
-config.bind('<Ctrl-W>', 'rl-backward-kill-word', mode='command')
-# config.bind('<Ctrl->', 'rl-kill-word', mode='command')
+    '<Ctrl-B>'    : 'rl-backward-word',
+    '<Ctrl-F>'    : 'rl-forward-word',
+    '<Ctrl-W>'    : 'rl-backward-kill-word',
+    # '<Ctrl->'   : 'rl-kill-word',
 
-config.bind('<Ctrl-D>', 'completion-item-del', mode='command')
-config.bind('<Ctrl-H>', 'rl-unix-filename-rubout', mode='command')
-config.bind('<Ctrl-Y>', 'rl-yank', mode='command')
+    '<Ctrl-D>'    : 'completion-item-del',
+    '<Ctrl-H>'    : 'rl-unix-filename-rubout',
+    '<Ctrl-Y>'    : 'rl-yank',
 
-config.bind('<Tab>', 'completion-item-focus next', mode='command')
-config.bind('<Shift-Tab>', 'completion-item-focus prev', mode='command')
+    '<Tab>'       : 'completion-item-focus next',
+    '<Shift-Tab>' : 'completion-item-focus prev',
 
-config.bind('<Ctrl-P>', 'command-history-prev', mode='command')
-config.bind('<Ctrl-N>', 'command-history-next', mode='command')
-config.bind('<Escape>', 'leave-mode', mode='command')
-config.bind('<Return>', 'command-accept', mode='command')
+    '<Ctrl-P>'    : 'command-history-prev',
+    '<Ctrl-N>'    : 'command-history-next',
+    '<Escape>'    : 'leave-mode',
+    '<Return>'    : 'command-accept',
+    }
 # }}}
-# Caret Mode {{{
-config.bind('<Escape>', 'leave-mode', mode='caret')
-config.bind('c', 'enter-mode normal', mode='caret')
-config.bind('v', 'toggle-selection', mode='caret')
-config.bind('<Space>', 'toggle-selection', mode='caret')
-config.bind('<Ctrl-Space>', 'drop-selection', mode='caret')
+# CARET MODE {{{
+c.bindings.commands['caret'] = {
+    '<Escape>'     : 'leave-mode',
+    'c'            : 'enter-mode normal',
+    'v'            : 'toggle-selection',
+    '<Space>'      : 'toggle-selection',
+    '<Ctrl-Space>' : 'drop-selection',
 
-config.bind('y', 'yank selection', mode='caret')
-config.bind('Y', 'yank selection -s', mode='caret')
-config.bind('<Return>', 'yank selection', mode='caret')
+    'y'            : 'yank selection',
+    'Y'            : 'yank selection -s',
+    '<Return>'     : 'yank selection',
 
-config.bind('G', 'move-to-end-of-document', mode='caret')
-config.bind('gg', 'move-to-start-of-document', mode='caret')
-config.bind('[', 'move-to-start-of-prev-block', mode='caret')
-config.bind(']', 'move-to-start-of-next-block', mode='caret')
-config.bind('{', 'move-to-end-of-prev-block', mode='caret')
-config.bind('}', 'move-to-end-of-next-block', mode='caret')
-config.bind('$', 'move-to-end-of-line', mode='caret')
-config.bind('0', 'move-to-start-of-line', mode='caret')
-config.bind('h', 'move-to-prev-char', mode='caret')
-config.bind('j', 'move-to-next-line', mode='caret')
-config.bind('k', 'move-to-prev-line', mode='caret')
-config.bind('l', 'move-to-next-char', mode='caret')
-config.bind('w', 'move-to-next-word', mode='caret')
-config.bind('b', 'move-to-prev-word', mode='caret')
-config.bind('e', 'move-to-end-of-word', mode='caret')
-config.bind('H', 'scroll left', mode='caret')
-config.bind('J', 'scroll down', mode='caret')
-config.bind('K', 'scroll up', mode='caret')
-config.bind('L', 'scroll right', mode='caret')
+    'G'            : 'move-to-end-of-document',
+    'gg'           : 'move-to-start-of-document',
+    '['            : 'move-to-start-of-prev-block',
+    ']'            : 'move-to-start-of-next-block',
+    '{'            : 'move-to-end-of-prev-block',
+    '}'            : 'move-to-end-of-next-block',
+    '$'            : 'move-to-end-of-line',
+    '0'            : 'move-to-start-of-line',
+    'h'            : 'move-to-prev-char',
+    'j'            : 'move-to-next-line',
+    'k'            : 'move-to-prev-line',
+    'l'            : 'move-to-next-char',
+    'w'            : 'move-to-next-word',
+    'b'            : 'move-to-prev-word',
+    'e'            : 'move-to-end-of-word',
+    'H'            : 'scroll left',
+    'J'            : 'scroll down',
+    'K'            : 'scroll up',
+    'L'            : 'scroll right',
+    }
 # }}}
-# Hint Mode {{{
-config.bind('<Ctrl-B>', 'hint all tab-bg', mode='hint')
-config.bind('<Ctrl-F>', 'hint links', mode='hint')
-config.bind('<Ctrl-R>', 'hint --rapid links tab-bg', mode='hint')
-config.bind('<Escape>', 'leave-mode', mode='hint')
-config.bind('<Return>', 'follow-hint', mode='hint')
-# }}}
-# Insert: {{{
+# INSERT: {{{
 config.bind('<Ctrl-E>', 'open-editor', mode='insert')
 config.bind('<Escape>', 'leave-mode', mode='insert')
 config.bind('<Shift-Ins>', 'insert-text {primary}', mode='insert')
 # }}}
 # NORMAL MODE {{{
-config.bind(':', 'set-cmd-text :', mode='normal')
+c.bindings.commands['normal'][':'] = 'set-cmd-text :'
 #Navigation {{{
-config.bind('<Ctrl-A>', 'navigate increment', mode='normal')
-config.bind('<Ctrl-X>', 'navigate decrement', mode='normal')
-config.bind('h', 'scroll left', mode='normal')
-config.bind('j', 'scroll down', mode='normal')
-config.bind('k', 'scroll up', mode='normal')
-config.bind('l', 'scroll right', mode='normal')
-config.bind('<Ctrl-B>', 'scroll-page 0 -1', mode='normal')
-config.bind('<Ctrl-F>', 'scroll-page 0 1', mode='normal')
-config.bind('<Ctrl-D>', 'scroll-page 0 0.5', mode='normal')
-config.bind('<Ctrl-U>', 'scroll-page 0 -0.5', mode='normal')
-config.bind('G', 'scroll-to-perc 100', mode='normal')
-config.bind('gg', 'scroll-to-perc 0', mode='normal')
-config.bind('H', 'back', mode='normal')
-config.bind('L', 'forward', mode='normal')
-config.bind('[[', 'navigate prev', mode='normal')
-config.bind(']]', 'navigate next', mode='normal')
-config.bind('{{', 'navigate prev -t', mode='normal')
-config.bind('}}', 'navigate next -t', mode='normal')
-config.bind('r', 'reload', mode='normal')
-config.bind('R', 'reload -f', mode='normal')
-config.bind('ZQ', 'quit', mode='normal')
-config.bind('ZZ', 'quit --save', mode='normal')
-config.bind('<Escape>', 'clear-keychain ;; search ;; fullscreen --leave', mode='normal')
-config.bind('<Return>', 'follow-selected', mode='normal')
+c.bindings.commands['normal']['<Ctrl-A>'] = 'navigate increment'
+c.bindings.commands['normal']['<Ctrl-X>'] = 'navigate decrement'
+c.bindings.commands['normal']['h']        = 'scroll left'
+c.bindings.commands['normal']['j']        = 'scroll down'
+c.bindings.commands['normal']['k']        = 'scroll up'
+c.bindings.commands['normal']['l']        = 'scroll right'
+c.bindings.commands['normal']['<Ctrl-B>'] = 'scroll-page 0 -1'
+c.bindings.commands['normal']['<Ctrl-F>'] = 'scroll-page 0 1'
+c.bindings.commands['normal']['<Ctrl-D>'] = 'scroll-page 0 0.5'
+c.bindings.commands['normal']['<Ctrl-U>'] = 'scroll-page 0 -0.5'
+c.bindings.commands['normal']['G']        = 'scroll-to-perc 100'
+c.bindings.commands['normal']['gg']       = 'scroll-to-perc 0'
+c.bindings.commands['normal']['H']        = 'back'
+c.bindings.commands['normal']['L']        = 'forward'
+c.bindings.commands['normal']['[[']       = 'navigate prev'
+c.bindings.commands['normal'][']]']       = 'navigate next'
+c.bindings.commands['normal']['{{']       = 'navigate prev -t'
+c.bindings.commands['normal']['}}']       = 'navigate next -t'
+c.bindings.commands['normal']['r']        = 'reload'
+c.bindings.commands['normal']['R']        = 'reload -f'
+c.bindings.commands['normal']['ZQ']       = 'quit'
+c.bindings.commands['normal']['ZZ']       = 'quit --save'
+c.bindings.commands['normal']['<Escape>'] = 'clear-keychain ;; search ;; fullscreen --leave'
+c.bindings.commands['normal']['<Return>'] = 'follow-selected'
 # }}}
 # Search {{{
-config.bind('/', 'set-cmd-text /', mode='normal')
-config.bind('?','set-cmd-text ?', mode='normal')
-config.bind('N', 'search-prev', mode='normal')
-config.bind('n', 'search-next', mode='normal')
+c.bindings.commands['normal']['/'] = 'set-cmd-text /'
+c.bindings.commands['normal']['?'] = 'set-cmd-text ?'
+c.bindings.commands['normal']['N'] = 'search-prev'
+c.bindings.commands['normal']['n'] = 'search-next'
 # }}}
 # Utils {{{
-config.bind('q', 'record-macro', mode='normal')
-config.bind('@', 'run-macro', mode='normal')
-config.bind('=', 'zoom', mode='normal')
-config.bind('+', 'zoom-in', mode='normal')
-config.bind('-', 'zoom-out', mode='normal')
+c.bindings.commands['normal']['q'] = 'record-macro'
+c.bindings.commands['normal']['@'] = 'run-macro'
+c.bindings.commands['normal']['='] = 'zoom'
+c.bindings.commands['normal']['+'] = 'zoom-in'
+c.bindings.commands['normal']['-'] = 'zoom-out'
 # }}}
-# Modes {{{
+# Modes ENTER/EXIT {{{
+# ENTER
 config.bind('i', 'enter-mode insert', mode='normal')
 config.bind('v', 'enter-mode caret', mode='normal')
 config.bind('`', 'enter-mode set_mark', mode='normal')
 config.bind("''", 'enter-mode jump_mark', mode='normal')
 config.bind('<Ctrl-V>', 'enter-mode passthrough', mode='normal')
+# EXIT
+config.bind('<Escape>', 'leave-mode', mode='hint')
+config.bind('Ctrl-V', 'leave-mode', mode='normal')
+config.bind('<Escape>', 'leave-mode', mode='register')
 # }}}
 #TABS{{{
-config.bind('T', 'tab-focus', mode='normal')
-config.bind('go', 'tab-only', mode='normal')
-config.bind('J', 'tab-next', mode='normal')
-config.bind('K', 'tab-prev', mode='normal')
-config.bind('th', 'back -t', mode='normal')
-config.bind('tl', 'forward -t', mode='normal')
-config.bind('D', 'tab-close -o', mode='normal')
-config.bind('d', 'tab-close', mode='normal')
-config.bind('g$', 'tab-focus -1', mode='normal')
-config.bind('g0', 'tab-focus 1', mode='normal')
-config.bind('g^', 'tab-focus 1', mode='normal')
-config.bind('gC', 'tab-clone', mode='normal')
-config.bind('gm', 'tab-move', mode='normal')
-config.bind('gl', 'tab-move +', mode='normal')
-config.bind('gh', 'tab-move -', mode='normal')
-config.bind('gu', 'navigate up', mode='normal')
-config.bind('gU', 'navigate up -t', mode='normal')
-config.bind('go', 'set-cmd-text :open {url:pretty}', mode='normal')
-config.bind('gO', 'set-cmd-text :open -t -r {url:pretty}', mode='normal')
-config.bind('u', 'undo', mode='normal')
+c.bindings.commands['normal']['T']  = 'tab-focus'
+c.bindings.commands['normal']['go'] = 'tab-only'
+c.bindings.commands['normal']['J']  = 'tab-next'
+c.bindings.commands['normal']['K']  = 'tab-prev'
+c.bindings.commands['normal']['th'] = 'back -t'
+c.bindings.commands['normal']['tl'] = 'forward -t'
+c.bindings.commands['normal']['D']  = 'tab-close -o'
+c.bindings.commands['normal']['d']  = 'tab-close'
+c.bindings.commands['normal']['g$'] = 'tab-focus -1'
+c.bindings.commands['normal']['g0'] = 'tab-focus 1'
+c.bindings.commands['normal']['g^'] = 'tab-focus 1'
+c.bindings.commands['normal']['gC'] = 'tab-clone'
+c.bindings.commands['normal']['gm'] = 'tab-move'
+c.bindings.commands['normal']['gl'] = 'tab-move +'
+c.bindings.commands['normal']['gh'] = 'tab-move -'
+c.bindings.commands['normal']['gu'] = 'navigate up'
+c.bindings.commands['normal']['gU'] = 'navigate up -t'
+c.bindings.commands['normal']['go'] = 'set-cmd-text :open {url:pretty}'
+c.bindings.commands['normal']['gO'] = 'set-cmd-text :open -t -r {url:pretty}'
+c.bindings.commands['normal']['u']  = 'undo'
 # }}}
 # Paste to{{{
-config.bind('po', 'open -- {clipboard}', mode='normal')
-config.bind('pb', 'open -b -- {clipboard}', mode='normal')
-config.bind('pt', 'open -t -- {clipboard}', mode='normal')
-config.bind('pw', 'open -w -- {clipboard}', mode='normal')
+c.bindings.commands['normal']['po'] = 'open -- {clipboard}'
+c.bindings.commands['normal']['pb'] = 'open -b -- {clipboard}'
+c.bindings.commands['normal']['pt'] = 'open -t -- {clipboard}'
+c.bindings.commands['normal']['pw'] = 'open -w -- {clipboard}'
 # }}}
 # Open{{{
-config.bind('o', 'set-cmd-text -s :open', mode='normal')
-config.bind('O', 'set-cmd-text -s :open -t', mode='normal')
-config.bind('wo', 'set-cmd-text -s :open -w', mode='normal')
-config.bind('wp', 'set-cmd-text -s :open -p', mode='normal')
-config.bind('wh', 'back -w', mode='normal')
-config.bind('wl', 'forward -w', mode='normal')
+c.bindings.commands['normal']['o']  = 'set-cmd-text -s :open'
+c.bindings.commands['normal']['O']  = 'set-cmd-text -s :open -t'
+c.bindings.commands['normal']['wo'] = 'set-cmd-text -s :open -w'
+c.bindings.commands['normal']['wp'] = 'set-cmd-text -s :open -p'
+c.bindings.commands['normal']['wh'] = 'back -w'
+c.bindings.commands['normal']['wl'] = 'forward -w'
 # }}}
 # Yanks{{{
-config.bind('yd', 'yank domain', mode='normal')
-config.bind('yp', 'yank pretty-url', mode='normal')
-config.bind('yt', 'yank title', mode='normal')
-config.bind('yy', 'yank', mode='normal')
-config.bind('yD', 'yank domain -s', mode='normal')
-config.bind('yP', 'yank pretty-url -s', mode='normal')
-config.bind('yT', 'yank title -s', mode='normal')
-config.bind('yY', 'yank -s', mode='normal')
+c.bindings.commands['normal']['yd'] = 'yank domain'
+c.bindings.commands['normal']['yp'] = 'yank pretty-url'
+c.bindings.commands['normal']['yt'] = 'yank title'
+c.bindings.commands['normal']['yy'] = 'yank'
+c.bindings.commands['normal']['yD'] = 'yank domain -s'
+c.bindings.commands['normal']['yP'] = 'yank pretty-url -s'
+c.bindings.commands['normal']['yT'] = 'yank title -s'
+c.bindings.commands['normal']['yY'] = 'yank -s'
 # }}}
-# passthrough:
-config.bind('Ctrl-V', 'leave-mode', mode='normal')
 # Prompt Bindings {{{:
-config.bind('<Alt-B>', 'rl-backward-word', mode='prompt')
-config.bind('<Alt-Backspace>', 'rl-backward-kill-word', mode='prompt')
-config.bind('<Alt-D>', 'rl-kill-word', mode='prompt')
-config.bind('<Alt-F>', 'rl-forward-word', mode='prompt')
-config.bind('<Ctrl-?>', 'rl-delete-char', mode='prompt')
-config.bind('<Ctrl-A>', 'rl-beginning-of-line', mode='prompt')
-config.bind('<Ctrl-B>', 'rl-backward-char', mode='prompt')
-config.bind('<Ctrl-E>', 'rl-end-of-line', mode='prompt')
-config.bind('<Ctrl-F>', 'rl-forward-char', mode='prompt')
-config.bind('<Ctrl-H>', 'rl-backward-delete-char', mode='prompt')
-config.bind('<Ctrl-K>', 'rl-kill-line', mode='prompt')
-config.bind('<Ctrl-U>', 'rl-unix-line-discard', mode='prompt')
-config.bind('<Ctrl-W>', 'rl-unix-word-rubout', mode='prompt')
-config.bind('<Ctrl-X>', 'prompt-open-download', mode='prompt')
-config.bind('<Ctrl-Y>', 'rl-yank', mode='prompt')
-config.bind('<Down>', 'prompt-item-focus next', mode='prompt')
-config.bind('<Escape>', 'leave-mode', mode='prompt')
-config.bind('<Return>', 'prompt-accept', mode='prompt')
-config.bind('<Shift-Tab>', 'prompt-item-focus prev', mode='prompt')
-config.bind('<Tab>', 'prompt-item-focus next', mode='prompt')
-config.bind('<Up>', 'prompt-item-focus prev', mode='prompt')
+c.bindings.commands['prompt'] = {
+    '<Alt-B>'         : 'rl-backward-word',
+    '<Alt-Backspace>' : 'rl-backward-kill-word',
+    '<Alt-D>'         : 'rl-kill-word',
+    '<Alt-F>'         : 'rl-forward-word',
+    '<Ctrl-?>'        : 'rl-delete-char',
+    '<Ctrl-A>'        : 'rl-beginning-of-line',
+    '<Ctrl-B>'        : 'rl-backward-char',
+    '<Ctrl-E>'        : 'rl-end-of-line',
+    '<Ctrl-F>'        : 'rl-forward-char',
+    '<Ctrl-H>'        : 'rl-backward-delete-char',
+    '<Ctrl-K>'        : 'rl-kill-line',
+    '<Ctrl-U>'        : 'rl-unix-line-discard',
+    '<Ctrl-W>'        : 'rl-unix-word-rubout',
+    '<Ctrl-X>'        : 'prompt-open-download',
+    '<Ctrl-Y>'        : 'rl-yank',
+    '<Down>'          : 'prompt-item-focus next',
+    '<Escape>'        : 'leave-mode',
+    '<Return>'        : 'prompt-accept',
+    '<Shift-Tab>'     : 'prompt-item-focus prev',
+    '<Tab>'           : 'prompt-item-focus next',
+    '<Up>'            : 'prompt-item-focus prev',
+    }
 # }}}
-# register:
-config.bind('<Escape>', 'leave-mode', mode='register')
-
+# }}}
 # vim: fo=tcq fdm=marker tw=0

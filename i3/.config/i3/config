@@ -92,23 +92,24 @@ for_window [class="^.*"] border pixel 3
     set $terminal urxvt
     set $player   mpv
     # General bindings
-    bindsym $super+Tab                workspace back_and_forth
+    bindsym $super+Tab              workspace back_and_forth
     bindsym XF86AudioRaiseVolume    $exec pactl set-sink-volume 0 +5%
     bindsym XF86AudioLowerVolume    $exec pactl set-sink-volume 0 -5%
     bindsym XF86AudioMute           $exec pactl set-sink-mute 0 toggle
     bindsym XF86MonBrightnessUp     $exec light -A 5
     bindsym XF86MonBrightnessDown   $exec light -U 5
     # free keys
-    # bindsym a, s, m, y, i, p
+    # bindsym a, m, y, i, p
     # APP SHORTCUTS {{{
         bindsym $super+t        $exec $terminal
-        bindsym $super+o        $exec dmenu_run
         bindsym $super+b        $exec $browser
-        bindsym $super+space    $exec ~/.scripts/rofi_app.sh
-        bindsym $super+s      $exec ~/.scripts/rofi_switcher.sh
-        # bindsym $super+g        $exec ~/.scripts/rofi_file.sh
-        bindsym Print           $exec ~/.scripts/shoot.sh -wc
-        bindsym $super+Print    $exec ~/.scripts/shoot.sh -sc
+        bindsym $super+s        $exec $HOME/bin/say.sh $(xclip -selection primary -o)
+        bindsym $super+space    $exec rofi -show drun
+        bindsym $super+o        $exec rofi -show run
+        bindsym $super+grave    $exec rofi -show window
+        bindsym $super+g        $exec xdg-open "$(locate $HOME | rofi -matching regex -threads 4 -dmenu -i -p 'locate:')"
+        bindsym Print           $exec $HOME/bin/shoot.sh -wc
+        bindsym $super+Print    $exec $HOME/bin/shoot.sh -sc
     # }}}
     # TREE {{{
         bindsym $super+u        focus parent
@@ -251,13 +252,13 @@ for_window [class="^.*"] border pixel 3
                 bindsym Control+c mode "default"
                 # Actions
                 # [focus|full|selection] [clipboard|file]
-                bindsym $super+w $exec ~/.scripts/shoot.sh -w; mode "default"
-                bindsym $super+f $exec ~/.scripts/shoot.sh -f; mode "default"
-                bindsym $super+s $exec ~/.scripts/shoot.sh -s; mode "default"
-                bindsym w $exec ~/.scripts/shoot.sh -wc; mode "default"
-                bindsym f $exec ~/.scripts/shoot.sh -fc; mode "default"
-                bindsym s $exec ~/.scripts/shoot.sh -sc; mode "default"
-                bindsym i $exec ~/.scripts/shoot.sh -i; mode "default"
+                bindsym $super+w $exec $HOME/bin/shoot.sh -w; mode "default"
+                bindsym $super+f $exec $HOME/bin/shoot.sh -f; mode "default"
+                bindsym $super+s $exec $HOME/bin/shoot.sh -s; mode "default"
+                bindsym w $exec $HOME/bin/shoot.sh -wc; mode "default"
+                bindsym f $exec $HOME/bin/shoot.sh -fc; mode "default"
+                bindsym s $exec $HOME/bin/shoot.sh -sc; mode "default"
+                bindsym i $exec $HOME/bin/shoot.sh -i; mode "default"
             }
         # }}}
         # MUSIC {{{
@@ -312,8 +313,8 @@ for_window [class="^.*"] border pixel 3
     $exec feh --bg-scale $walls/auri_and_kvothe.jpg
     #Display Power Manage - Prevent Display from blanking
     $exec sleep 1; xset s off -dpms
+    $exec transmission-daemon
     # $exec synergy - c ~/synergy.conf
     # $exec syncthing-gtk -m
-    $exec transmission-daemon
 # }}}
 # vim: fdm=marker nowrap

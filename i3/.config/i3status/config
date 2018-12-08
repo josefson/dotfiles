@@ -82,7 +82,7 @@ battery_level {
     #blocks = "_▁▂▃▄▅▆▇█"
     blocks = ""
     charging_character = ""
-    notification = true
+    notification = false
     notify_low_level = true
     hide_when_full = true
     format = "{icon}{percent}%"

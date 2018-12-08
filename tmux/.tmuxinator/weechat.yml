@@ -20,4 +20,3 @@ root: ~/
 
 windows:
     - weechat: weechat
-    - tor: tor

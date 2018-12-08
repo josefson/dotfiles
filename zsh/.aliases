@@ -93,6 +93,7 @@ defplay(){ trans -p "$@" ;}
 defsay(){ trans -speak "$*" ;}
 # }}}
 # MISSTYPINGS and globals{{{
+alias -g ehco='echo'
 alias -g isntall='install'
 alias -g wrokon='workon'
 alias gti='git'
@@ -179,6 +180,15 @@ if [[ $OS == 'Linux' ]]; then
             for arg in "$@"; do
                 pacman -Qi $arg 2> /dev/null || pacman -Si $arg;
             done;
+        }
+        pacdiff(){
+            info=$(aurman -Si "$@" | grep 'Depends' | sed 's/.*: //')
+            echo $info
+            echo $info | xargs aurman -Qi | grep 'was not found'
+        }
+        pacrank(){
+            su -c "curl https://www.archlinux.org/mirrorlist/all/https/ | sed -E 's/^#Server/Server/' > /etc/pacman.d/mirrorlist.bkp"
+            su -c "rankmirrors -n 7 /etc/pacman.d/mirrorlist.bkp > /etc/pacman.d/mirrorlist"
         }
     fi
 fi
