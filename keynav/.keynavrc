@@ -1,0 +1,71 @@
+Escape end
+ctrl+c end
+a history-back
+space warp,click 1,end
+Return warp,click 1,end
+semicolon warp,end
+1 click 1
+2 click 2
+3 click 3
+q record ~/.config/keynav_macros
+m record ~/.config/keynav_macros
+shift+at playback
+apostrophe playback
+
+ctrl+semicolon start, grid 26x26, grid-nav on
+semicolon grid-nav off, grid 2x2
+Tab grid-nav off, grid 2x2
+w warp
+# GRIDS
+s grid 2x2
+d grid 3x3
+# MOVING
+h move-left  0.5
+j move-down  0.5
+k move-up    0.5
+l move-right 0.5
+y move-left  0.5, move-up   0.5
+u move-right 0.5, move-up   0.5
+b move-left  0.5, move-down 0.5
+n move-right 0.5, move-down 0.5
+# CUTS
+Super_L+h cut-left
+Super_L+j cut-down
+Super_L+k cut-up
+Super_L+l cut-right
+Super_L+y cut-left,cut-up
+Super_L+u cut-right,cut-up
+Super_L+b cut-left,cut-down
+Super_L+n cut-right,cut-down
+
+### Drag examples
+# Start drag holding the left mouse button
+#q drag 1
+# Start drag holding middle mouse + control and shift
+#w drag 2 ctrl+shift
+# Dragging with modifiers
+#q drag 1
+#ctrl+q drag 1 ctrl
+#shift+q drag 1 shift
+#shift+ctrl+q drag 1 shift+ctrl
+
+### Example of cut and move without the default values
+#h cut-left .75
+#j cut-down .75
+#k cut-up .75
+#l cut-right .75
+#shift+h move-left .50
+#shift+j move-down .50
+#shift+k move-up .50
+#shift+l move-right .50
+
+### Example using a 3x3 grid with nethack-vi keys
+# ctrl+semicolon start, grid 3x3
+# h cell-select 1x2      # left
+# j cell-select 2x3      # down
+# k cell-select 2x1      # up
+# l cell-select 3x2      # right
+# y cell-select 1x1      # up-left
+# u cell-select 3x1      # up-right
+# b cell-select 1x3      # down-left
+# n cell-select 3x3      # down-right
