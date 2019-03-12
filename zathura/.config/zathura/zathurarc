@@ -2,12 +2,12 @@ set window-title-basename "true"
 set selection-clipboard "primary"
 
 # RECOLOR
-set recolor
-# map <C-l> feedkeys ":set recolor-lightcolor \#002b36<Return>:set recolor-darkcolor \#839496<Return>"
-map @ feedkeys  ":set recolor-lightcolor \#0a0a12<Return>:set recolor-darkcolor \#ff9900<Return>" # amber on dark slate
-map ! feedkeys  ":set recolor-lightcolor \#ffffff<Return>:set recolor-darkcolor \#000000<Return>" # original (black on white) 
-map \# feedkeys ":set recolor-lightcolor \#000000<Return>:set recolor-darkcolor \#00B800<Return>" # green on black
-map $ feedkeys  ":set recolor-lightcolor \#002b36<Return>:set recolor-darkcolor \#839496<Return>" # bluish (midnight mode)
+map <C-i> recolor
+map <C-l> feedkeys ":set recolor-lightcolor \#002b36<Return>:set recolor-darkcolor \#839496<Return>:<Esc>"
+map @ feedkeys  ":set recolor-lightcolor \#0a0a12<Return>:set recolor-darkcolor \#ff9900<Return>:<Esc>" # amber on dark slate
+map ! feedkeys  ":set recolor-lightcolor \#ffffff<Return>:set recolor-darkcolor \#000000<Return>:<Esc>" # original (black on white) 
+map \# feedkeys ":set recolor-lightcolor \#000000<Return>:set recolor-darkcolor \#00B800<Return>:<Esc>" # green on black
+map $ feedkeys  ":set recolor-lightcolor \#002b36<Return>:set recolor-darkcolor \#839496<Return>:<Esc>" # bluish (midnight mode)
 
 # MAPPINGS
 map [index]        q toggle_index
