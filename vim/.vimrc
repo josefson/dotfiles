@@ -21,7 +21,7 @@ source ~/dotfiles/vim/.vimrc_trash
     Plug 'rhysd/devdocs.vim'                        " Documentation Plugin
     " Plug 'ludovicchabant/vim-gutentags'             " Auto Tag creation
 " GIT
-    Plug 'tpope/vim-fugitive' | Plug 'gregsexton/gitv'   " Gitk alternative for vim
+    Plug 'tpope/vim-fugitive' | Plug 'rbong/vim-flog'   " Gitk alternative for vim
     Plug 'airblade/vim-gitgutter'                        " Only for git
     
 " MOVEMENT/SEARCH&REPLACE
@@ -29,16 +29,11 @@ source ~/dotfiles/vim/.vimrc_trash
     Plug 'terryma/vim-multiple-cursors'
     " Plug 'tpope/vim-abolish'                        " :Abolish {despa,sepe}rat{e,es,ed,ing,ely,ion,ions,or}  {despe,sepa}rat{}
 " COMPLETERS
-    " Plug 'ajh17/VimCompletesMe'                                         " TabContextual
+    Plug 'ajh17/VimCompletesMe'                                         " TabContextual
     " Plug 'lifepillar/vim-mucomplete'                                    " Chain completion
-    if has('nvim')
-        Plug 'roxma/nvim-completion-manager'
-        Plug 'ervandew/supertab'
-    endif
-    if !has('nvim')
-        Plug 'maralla/completor.vim', {'for': ['python', 'c'] }             " Async completion
-        Plug 'ervandew/supertab'
-    endif
+    " Plug 'maralla/completor.vim', {'for': ['python', 'c'] }             " Async completion
+    " Plug 'maralla/completor.vim'
+    " Plug 'ervandew/supertab'
     Plug 'SirVer/ultisnips' | Plug 'honza/vim-snippets'                 " Snippets
     Plug 'tpope/vim-commentary'                                         " Comment
     Plug 'tpope/vim-surround'                                           " Parenthesis, quotes, tags, etc... as text objects
@@ -48,6 +43,7 @@ source ~/dotfiles/vim/.vimrc_trash
     " Plug 'alfredodeza/pytest.vim', { 'for': 'python' }
     Plug 'tmhedberg/SimpylFold'                                         " Better python folding
 " HTML
+    Plug 'vim-scripts/matchit.zip'
     " Plug 'Valloric/MatchTagAlways', { 'for': 'xhtml' }                  "Highlight html/xml tags when between text
     " Plug 'rstacruz/sparkup'                                             " Html magic expansion/snippets
 " TMUX
@@ -65,11 +61,10 @@ set termencoding=utf-8
 set encoding=utf-8
 " UI - USER INTERFACE
 try
-    colorscheme Monokai
+    colorscheme monokai
 catch
     set background=dark
 endtry
-set title
 set mouse=a                 " enable mouse features
 set relativenumber          " relative number to the cursor line
 set number                  " show linenumbers, puts number after relative(exclude 0)
@@ -144,86 +139,67 @@ set hidden                      " Edit multiple unsaved files at the same time
 set autowrite                   " write buffer to file when chnage focus
 " set confirm                     " Prompt to save unsaved changes when exiting
 " NONAME
-" set clipboard=unnamed           " enabling system clipboard
-if has('mac')
-    if has("clipboard")
-        set clipboard+=unnamed
-    endif
-    if has("unnamedplus")
-        set clipboard+=unnamedplus
-    endif
-endif
+" set clipboard=unnamedplus           " enabling system clipboard
+" if has('mac')
+"     if has("clipboard")
+"         set clipboard=unnamed
+"     endif
+"     if has("unnamedplus")
+"         set clipboard=unnamedplus
+"     endif
 " elseif has("unix")
 "     if $TMUX == ''
-"         set clipboard+=unnamed
+"         set clipboard=unnamedplus
+"     else
+"         set clipboard=unnamedplus
 "     endif
 " endif
 set formatoptions=tcq
 set history=9999
-" }}}
-" AUTOCMD/FT -------------------------------------------------------------- {{{
-" " PYTHON {{{
-if has('python')
-    autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
-    autocmd FileType python setlocal makeprg=python\ %
-    let g:UltiSnipsUsePythonVersion=2
-endif
-if has('python3')
-    autocmd FileType python setlocal omnifunc=python3complete#Complete
-    autocmd FileType python setlocal makeprg=python3\ %
-    let g:UltiSnipsUsePythonVersion=3
-endif
-autocmd FileType python setlocal nofoldenable foldmethod=expr foldlevel=2
-autocmd FileType python setlocal completefunc=jedi#completions
-" autocmd FileType python setlocal makeprg=python\ %
-autocmd FileType python setlocal tags=tags,./tags,pytags
-autocmd FileType python nmap <buffer>K <Plug>(devdocs-under-cursor-all)
-autocmd FileType python let b:dispatch = 'python %'
-autocmd FileType python let b:vcm_tab_complete = "user"
-" }}}
+set diffopt+=context:4,vertical
 " }}}
 " MAPPINGS ---------------------------------------------------------------- {{{
-":Silent command that doesnt require to press enter after :!external
+" -------------- FUNCTION KEYS
+nnoremap <F2> :GundoToggle<CR>
+nnoremap <F5> :Dispatch 
+" -------------- GENERAL SHIT
+" :Silent command that doesnt require to press enter after :!external
 command! -nargs=1 Silent execute 'silent !' . <q-args> | execute 'redraw!'
-" GENERAL {{{
-"press space to turn off highlighting and clear any message already displayed.
-nnoremap <silent> <space> :nohlsearch<bar>:echo<cr>
+" column scroll-binding on <leader>sb
+noremap <silent> <leader>sb :<c-u>let @z=&so<cr>:set so=0 noscb<cr>:bo vs<cr>ljzt:setl scb<cr><c-w>p:setl scb<cr>:let &so=@z<cr>
 
-" Toggle search highlighting
+" Highlighting
+nnoremap <silent> <space> :nohlsearch<bar>:echo<cr>
 nnoremap <C-Bslash>       :set hls!<bar>:set hls?<CR>
 inoremap <C-Bslash>       <Esc>:set hls!<bar>:set hls?<CR>a
 
-" column scroll-binding on <leader>sb
-noremap <silent> <leader>sb :<c-u>let @z=&so<cr>:set so=0 noscb<cr>:bo vs<cr>ljzt:setl scb<cr><c-w>p:setl scb<cr>:let &so=@z<cr>
-" }}}
-" INSERT ------------------------------------------------------------------ {{{
+" -------------- SHORTCUTS
+nmap Q @q
+" window
+nnoremap <space>w <c-w>
+nnoremap <space>wH 5<c-w><
+nnoremap <space>wL 5<c-w>>
+
 " Short completion for: Tags,File/Path,dict,line
 inoremap <C-]> <C-x><C-]>
 inoremap <C-f> <C-x><C-f>
-" inoremap <C-d> <C-x><C-d> C-d/C-t indent in insert mode
 inoremap <C-l> <C-x><C-l>
-" }}}
-" COMMAND {{{
 " Up make recursive search, C-P just do previous
 cnoremap <C-p> <Up>
 cnoremap <C-n> <Down>
-" }}}
-" NORMAL {{{
-" Map Y to act like D and C, i.e. to yank until EOL, rather than act as yy
+" ------------------------- YANK PAST
 map Y y$
-" qq to record, Q to replay
-nmap Q @q
-nnoremap <space>w <c-w>
-" }}}
-" FUNCTION KEYS
-nnoremap <F2> :GundoToggle<CR>
-nnoremap <F5> :Dispatch 
-" inoremap <C-?> <C-o>:<C-U>call UltiSnips#ListSnippets()<CR> 
-" }}}
-" LEADER KEYS --------------------------------------------------------------{{{
-" nnoremap <leader>pk :Silent dasht <C-R><C-W> <C-R>=&filetype<CR> using docsio for now
-" let mapleader = " "      " remaping leader to comma
-" DENITE MAPPINGS
+nnoremap <space>y "+y
+vnoremap <space>y "+y
+nnoremap <space>p "+p
+" Select last pasted text
+nnoremap gp '[V']'<Esc>
+" unimpaired move last pasted text to up down
+vmap <C-y> [e'[V']
+vmap <C-e> ]e'[V']
+" LEADER KEYS --------------------------------------------------------------
+" let mapleader = \" "
+" DENITE/UNITE MAPPINGS {{{
 if &rtp =~ 'denite'
     nnoremap <leader>b :<C-u>Denite buffer -direction=dynamictop<CR>
     nnoremap <leader>e :<C-u>Denite file_rec -direction=dynamictop<CR>
@@ -232,7 +208,7 @@ if &rtp =~ 'denite'
     nnoremap <leader>c :<C-u>Denite command_history -direction=dynamictop<CR>
     nnoremap <leader>j :<C-u>Denite jump -direction=dynamictop<CR>
     nnoremap <leader>t :<C-u>Denite tag -direction=dynamictop<CR>
-    " nnoremap <leader>cg :<C-u>Denite change -direction=dynamictop<CR>
+    nnoremap <leader>g :<C-u>Denite change -direction=dynamictop<CR>
     " nnoremap <leader>cc :<C-u>Denite command -direction=dynamictop<CR>
 endif
 if &rtp =~ 'skybison'
@@ -249,21 +225,35 @@ if &rtp =~ 'unite'
     nnoremap <leader>b :<C-u>Unite -start-insert -buffer-name=Buffers buffer<CR>
     nnoremap <leader>p :<C-u>Unite -start-insert -buffer-name=MRU_Files file_mru<CR>
     nnoremap <leader>u :<C-u>Unite -start-insert -buffer-name=UltiSnips ultisnips<CR>
-    inoremap <C-m> <C-o>:<C-u>Unite -start-insert -buffer-name=UltiSnips ultisnips<CR>
+    inoremap <C-m>     <C-o>:<C-u>Unite -start-insert -buffer-name=UltiSnips ultisnips<CR>
     nnoremap <leader>y :<C-u>Unite -start-insert -buffer-name=Registers register<CR>
     nnoremap <leader>? :<C-u>Unite -start-insert -buffer-name=Unite_Sources source<CR>
     nnoremap <leader>j :<C-u>Unite -start-insert -buffer-name=Jumplist jump<CR>
     nnoremap <leader>s :<C-u>Unite -start-insert  -buffer-name=Search  history/search<CR>
     nnoremap <leader>c :<C-u>Unite -start-insert  -buffer-name=Commands_List history/command<CR>
 endif
+" }}}
+" PLUGINS ----------------------------------------------------------------- {{{
+" Ultisnips
+" nnoremap <Space>uf :UltiSnipsAddFiletypes 
+" nnoremap <Space>u :<C-U>call UltiSnips#ListSnippets()<CR>
+inoremap ,u <C-o>:<C-U>call UltiSnips#ListSnippets()<CR> 
+" Jedi
 let g:jedi#completions_command = "<C-Space>"
-let g:jedi#goto_assignments_command = "<leader>pa"
-let g:jedi#goto_definitions_command = "<leader>pd"
-let g:jedi#usages_command = "<leader>pu"
-let g:jedi#rename_command = "<leader>pr"
-let g:jedi#documentation_command = "<leader>k"
-nnoremap <leader>zr :zR<CR>
-nnoremap <leader>uf :UltiSnipsAddFiletypes 
+let g:jedi#goto_assignments_command = "<Space>pa"
+let g:jedi#goto_definitions_command = "<Space>pd"
+let g:jedi#usages_command = "<Space>pu"
+let g:jedi#rename_command = "<Space>pr"
+let g:jedi#documentation_command = "<Space>k"
+" }}}
+" }}}
+" COMMANDS ---------------------------------------------------------------- {{{
+" sharing is caring, if osx pipe to pbcopy, elif linux requires(curl, xclip)
+" command! -range=% SP <line1>,<line2>w !curl -F 'sprunge=<-' http://sprunge.us | tr -d '\n' | xclip -i -selection clipboard " command! -range=% CL <line1>,<line2>w !curl -F 'clbin=<-' https://clbin.com | tr -d '\n' | xclip -i -selection clipboard
+" command! -range=% VP <line1>,<line2>w !curl -F 'text=<-' http://vpaste.net | tr -d '\n' | xclip -i -selection clipboard
+" command! -range=% IX <line1>,<line2>w !curl -F 'f:1=<-' ix.io | tr -d '\n' | xclip -i -selection clipboard
+" command! -range=% PB <line1>,<line2>w !curl -F 'c=@-' https://ptpb.pw/?u=1 | tr -d '\n' | xclip -i -selection clipboard
+command! -range=% TB <line1>,<line2>w !nc termbin.com 9999 | tr -d '\n' | xclip -i -selection clipboard
 " }}}
 " DENITE ------------------------------------------------------------------ {{{
 " Change default prompt
@@ -361,9 +351,9 @@ let g:multi_cursor_skip_key='<C-x>'  " jump/unmark
 let g:multi_cursor_quit_key='<Esc>'  " cancel
 " }}}
 " SUPERTAB ---------------------------------------------------------------- {{{
-" let g:SuperTabDefaultCompletionType = '<C-X><C-O>' " For Omni
-" let g:SuperTabDefaultCompletionType = '<C-X><C-U>' " For User
-let g:SuperTabDefaultCompletionType = '<C-n>' " For youcompleteme/completor
+" let g:SuperTabDefaultCompletionType = '<C-X><C-O>' " For Omni - if jedi only
+let g:SuperTabDefaultCompletionType = '<C-X><C-U>' " For User - Completor-maralla
+" let g:SuperTabDefaultCompletionType = '<C-n>' " For youcompleteme/completor
 " let g:SuperTabCrMapping = 0
 " }}}
 " Mu-COMPLETE ------------------------------------------------------------- {{{
@@ -380,20 +370,24 @@ let g:mucomplete#chains.vim = []
 " }}}
 " COMPLETOR.VIM ----------------------------------------------------------- {{{
 " Disable default completeopt
-" let g:completor_set_options = 0
-" " disable auto trigger
-" let g:completor_auto_trigger = 0
-" let g:completor_blacklist = ['tagbar', 'qf', 'netrw', 'unite', 'vimwiki', 'vim']
-" let g:completor_min_chars = 1
+let g:completor_set_options = 0
+let g:completor_auto_trigger = 1
+let g:completor_blacklist = ['tagbar', 'qf', 'netrw', 'unite', 'vimwiki', 'vim']
+let g:completor_min_chars = 1
 " }}}
 " ULTISNIPS --------------------------------------------------------------- {{{
 let g:UltiSnipsEditSplit = "vertical"
 let g:UltiSnipsSnippetDirectories = ["UltiSnips"]
 " let g:UltiSnipsSnippetDirectories = ["bundle/vim-snippets/UltiSnips"]
-let g:UltiSnipsExpandTrigger = "<C-b>"
 let g:UltiSnipsJumpForwardTrigger = "<C-j>"
 let g:UltiSnipsJumpBackwardTrigger = "<C-k>"
-let g:UltiSnipsListSnippets = "<C-/>"
+let g:UltiSnipsExpandTrigger = "<C-b>"
+let g:UltiSnipsListSnippets = "<C-u>"
+if has('python3')
+    let g:UltiSnipsUsePythonVersion=3
+elseif has('python')
+    let g:UltiSnipsUsePythonVersion=2
+endif
 " }}}
 " JEDI-VIM ---------------------------------------------------------------- {{{
 " let g:jedi#force_py_version = 3       " Let jedi decide based on $(python) 
@@ -423,12 +417,16 @@ let g:ale_sign_warning = '⚠'
 let g:ale_echo_msg_error_str = 'E'
 let g:ale_echo_msg_warning_str = 'W'
 let g:ale_echo_msg_format = '[%linter%] %s [%severity%]'
-let g:ale_statusline_format = ['⨉ %d', '⚠ %d', '⬥ ok']
+
+" Flake8 is pep8 plus a sane and simplistic styleguide/checker
 let g:ale_linters = {
 \   'python': ['flake8'],
 \}
-let g:ale_virtualenv_dir_names = ['.env', 'env', 've-py3', 've', 'virtualenv', 'virtualenvs']
-" let g:ale_python_pylint_executable = '/usr/local/bin/pylint'
+" yapf or black for fixers
+let g:ale_fixers = {
+\   '*': ['remove_trailing_lines', 'trim_whitespace'],
+\   'python' : ['autopep8', 'isort', 'black'],
+\}
 " " }}}
 " GIST-VIM ---------------------------------------------------------------- {{{
 " :[range]Gist
@@ -451,5 +449,8 @@ if &rtp =~ 'delimitmate'
     imap <C-j> <Plug>delimitMateS-Tab
     imap <C-k> <Plug>delimitMateJumpMany
 endif
+" }}}
+" DISPATCH --------------------------------------------------------------- {{{
+let g:dispatch_no_maps = 1
 " }}}
 " vim: fo=tcq fdm=marker tw=0
