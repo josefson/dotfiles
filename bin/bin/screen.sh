@@ -1,8 +1,14 @@
 #!/bin/bash
 
-lvds_string=$(xrandr | grep -E "^LVDS\S+1") 
-vga_string=$(xrandr | grep -E "^VGA\S+1") 
-hdmi_string=$(xrandr | grep -E "^HDMI\S+1") 
+# nvidia drivers
+# lvds_string=$(xrandr | grep -E "^LVDS\S+1") 
+# vga_string=$(xrandr | grep -E "^VGA\S+1") 
+# hdmi_string=$(xrandr | grep -E "^HDMI\S+1") 
+
+# nouveau drivers
+lvds_string=$(xrandr | grep -E "^LVDS\S") 
+vga_string=$(xrandr | grep -E "^VGA\S") 
+hdmi_string=$(xrandr | grep -E "^HDMI\S") 
 
 DEFAULT=$(echo $lvds_string | cut -d ' ' -f 1)
 DEFAULT_STATUS=$(echo $lvds_string | cut -d ' ' -f 2)
@@ -13,7 +19,7 @@ HDMI_STATUS=$(echo $hdmi_string | cut -d ' ' -f 2)
 VGA=$(echo $vga_string | cut -d ' ' -f 1)
 VGA_STATUS=$(echo $vga_string | cut -d ' ' -f 2)
 
-picture=~/Pictures/Wallpapers/auri_and_kvothe.jpg
+picture=~/.wallpaper
 
 update_wallpaper(){
     feh --bg-scale $picture

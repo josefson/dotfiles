@@ -1,17 +1,30 @@
-# Path to My dotfiles folder
-export OS=$(uname -s)
-DOTFILES=$HOME/dotfiles
-
-DISABLE_AUTO_TITLE="true"   # Disable autorename tmux windows <c-a>+, ranme window
+# Disable autorename tmux windows <c-a>+, ranme window
+DISABLE_AUTO_TITLE="true"
 DISABLE_AUTO_UPDATE="true"
 
 # EXPORTS {{{
+export OS=$(uname -s)
 export EDITOR='vim'
 export LC_ALL=en_US.UTF-8
 export LANG=en_US.UTF-8
 export LC_CTYPE=en_US.UTF-8
 if [[ $OS == 'Darwin' ]]; then
     export HOMEBREW_NO_GITHUB_API="true"
+fi
+# }}}
+# PATH {{{
+# PATH=$HOME/bin/:/usr/local/bin:/usr/local/sbin:$PATH
+if [ -d "$HOME/bin" ] ; then
+    PATH=$HOME/bin:$PATH
+fi
+if [ -d "$HOME/.local/bin" ] ; then
+    PATH=$HOME/.local/bin/:$PATH
+fi
+if [ -d "$HOME/bin/pentaho-server" ] ; then
+    PATH=$HOME/bin/pentaho-server/:$PATH
+    if [ -d "$HOME/bin/pentaho-data-integration" ] ; then
+        PATH=$HOME/bin/pentaho-data-integration:$PATH
+    fi
 fi
 # }}}
 # PLUGINS {{{
@@ -31,16 +44,20 @@ antigen bundle zsh-users/zsh-autosuggestions
 antigen bundle zsh-users/zsh-history-substring-search
 antigen bundle zsh-users/zsh-syntax-highlighting
 antigen apply
+
+ZSH_HIGHLIGHT_HIGHLIGHTERS=(main line brackets cursor)
+typeset -A ZSH_HIGHLIGH_STYLES
+ZSH_HIGHLIGHT_STYLES[line]='bold'
+ZSH_HIGHLIGHT_STYLES[default]='fg=red'
+ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE=7
 # THEME {{{
 # antigen theme #clean #nanotech #edvardm #robbyrussell
 # antigen theme agnoster
-source $HOME/.zsh/agnoster.zsh-theme
-# source $HOME/.zsh/padawan_agnoster.zsh-theme
+# source $HOME/.zsh/agnoster.zsh-theme
+source $HOME/.zsh/padawan_agnoster.zsh-theme
 # }}}
 # }}}
-# PATH
-PATH=$HOME/.scripts/:$HOME/bin/:/usr/local/bin:/usr/local/sbin:$PATH
-#3rd party packages {{{
+# 3RD PARTY {{{
 if [[ -f $HOME/bin/z/z.sh ]]; then
     source $HOME/bin/z/z.sh # z  - Recent/Frequent cd
 fi
@@ -48,53 +65,52 @@ if [[ -f $HOME/bin/zaw/zaw.zsh ]]; then
     source $HOME/bin/zaw/zaw.zsh
     bindkey '^@' zaw
 fi
+# PYWAL
+if [[ -f $HOME/.cache/wal/colors.sh ]]; then
+    source $HOME/.cache/wal/colors.sh
+fi
 # DIRENV
 eval "$(direnv hook zsh)"
 # PIP
 eval "`pip completion --zsh`"
 compctl -K _pip_completion pip3
 # }}}
-ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE=6
-# BINDS {{{
+# VIM-MODE {{{
 # ZLE - Zsh Line Editor - http://www.cs.elte.hu/zsh-manual/zsh_14.html
+# status/mode on right side of command
+function zle-line-init zle-keymap-select {
+    RPS1="${${KEYMAP/vicmd/-- NORMAL --}/(main|viins)/-- INSERT --}"
+    RPS2=$RPS1
+    zle reset-prompt
+}
+zle -N zle-line-init
+zle -N zle-keymap-select
 # VIM-MODE
 export KEYTIMEOUT=1
 set -o vi
 bindkey -v
-if [[ -f $HOME/bin/fzf/bin/fzf ]]; then
-    [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh      # Must be after set -o vi
-    export FZF_COMPLETION_TRIGGER='**'
-    export FZF_TMUX=1
-    export FZF_DEFAULT_OPTS="--multi --no-height"
-    export FZF_CTRL_T_OPTS="--no-height --select-1 --exit-0 --preview '(highlight -O ansi -l {} 2> /dev/null || cat {} || tree -C {}) 2> /dev/null | head -200'"
-    source $HOME/.zsh/fzf_snippets.sh
-    # export FZF_CTRL_R_OPTS=''
-    bindkey -r '^j'
-    bindkey -r '^s'
-    bindkey '^j' fz_pane        #tmux_pane
-    bindkey '^s' fz_session     #tmux_session
-fi
+# BINDS
 # COMMAND MODE
 bindkey -M vicmd 'k' history-substring-search-up                    # fish up
 bindkey -M vicmd 'j' history-substring-search-down                  # fish down
 bindkey -M vicmd "?" history-incremental-pattern-search-backward    # increm up
 bindkey -M vicmd "/" history-incremental-pattern-search-forward     # increm down
-bindkey -M vicmd '^v' edit-command-line                              # open line in vi
 bindkey -M vicmd 'u' undo                                           # undo
-bindkey -M vicmd '^r' redo                                          # redo
+bindkey -M viins '^v' edit-command-line                              # open line in vi
+# bindkey -M vicmd '^r' redo                                          # redo
 bindkey -M vicmd '~' vi-swap-case                                   # swap case
 # INSERT MODE
 bindkey -M viins '^[[A' history-search-backward                  # crap searchUp
 bindkey -M viins '^[[B' history-search-forward                   # poor searchDown
 # bindkey -M viins '^r' history-incremental-search-backward        # increm up
 # bindkey -M viins '^s' history-incremental-search-forward         # increm down
-bindkey -M viins '^[[Z' reverse-menu-complete
+bindkey -M viins '^[[Z' reverse-menu-complete                    # shift tab
 bindkey -M viins '^a' vi-beginning-of-line
 bindkey -M viins '^e' vi-end-of-line
-bindkey -M viins '^f' vi-forward-blank-word
-bindkey -M viins '^b' vi-backward-blank-word
+bindkey -M viins '^w' vi-forward-blank-word
+bindkey -M viins '^b' vi-backward-kill-word
+bindkey -M viins '^h' vi-backward-blank-word
 bindkey -M viins '^l' clear-screen                               # Clear
-bindkey -M viins '^w' vi-backward-kill-word
 bindkey -M viins '^k' kill-whole-line                            # fish like C-c
 bindkey -M viins '^u' vi-kill-line                               # kill from cursor to begin
 bindkey -M viins '^d' vi-kill-eol                                # kill from cursor to EOL
@@ -103,31 +119,53 @@ bindkey -M viins '^y' vi-yank-whole-line
 bindkey '^p' history-substring-search-up                # best search ever fishUp
 bindkey '^n' history-substring-search-down              # love  fisheDown
 bindkey '^f' autosuggest-accept                         # fish-like autosuggestion
-# Avaliable keys -> ^o;^c;^i;^j;^m;^s;^q;^v;^y;^z
+# Avaliable keys -> ^o;^i;^m;^s;^v;^y;^z
+# FZF 
+if [[ -f $HOME/bin/fzf/bin/fzf ]]; then
+    [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh      # Must be after set -o vi
+    export FZF_COMPLETION_TRIGGER='**'
+    export FZF_TMUX=1
+    export FZF_DEFAULT_OPTS="--multi --no-height"
+    export FZF_CTRL_T_OPTS="--no-height --select-1 --exit-0 --preview '(highlight -O ansi -l {} 2> /dev/null || cat {} || tree -C {}) 2> /dev/null | head -200'"
+    source $HOME/.zsh/fzf_snippets.sh
+    export FZF_CTRL_R_OPTS=''
+    bindkey -r '^j'
+    bindkey -r '^s'
+    bindkey -r '^q'
+    # bindkey -r '^f'
+    bindkey '^j' fz_pane        #tmux_pane
+    bindkey '^s' fz_session     #tmux_session
+    bindkey '^q' fzf_kill       #tmux_pane
+    # bindkey '^f' fzf-history-widget #replacing autosugges for this
+fi
 # }}}
 # PYTHON {{{
+# pip install --user location
 export PYTHONUSERBASE="$HOME/.local"
 export WORKON_HOME="$HOME/.virtualenvs"
 # PIPENV
 # eval "$(pipenv --completion)"
 # eval "$(_PIPENV_COMPLETE=source-zsh pipenv)" # Completions
 # PYENV
-export VIRTUAL_ENV_DISABLE_PROMPT="true" # let my theme manage the prompt
-export PROJECT_HOME="$HOME/Workspace/Python"
-export PYENV_ROOT="$HOME/.pyenv"
-export PATH="$PYENV_ROOT/bin:$PATH"
-eval "$(pyenv init -)"
+# export VIRTUAL_ENV_DISABLE_PROMPT="true" # let my theme manage the prompt
+# export PROJECT_HOME="$HOME/Workspace/Python"
+# export PYENV_ROOT="$HOME/.pyenv"
+# export PATH="$PYENV_ROOT/bin:$PATH"
+# eval "$(pyenv init -)"
 # eval "$(pyenv virtualenv-init -)"
-alias py='pyenv'
-alias pya='pyenv activate'
-alias pyd='pyenv deactivate'
-alias pyg='pyenv global'
-alias pys='pyenv shell'
-alias pyi='pyenv install'
-alias pyu='pyenv uninstall'
-alias pyv='pyenv virtualenvwrapper'
+# alias py='pyenv'
+# alias pya='pyenv activate'
+# alias pyd='pyenv deactivate'
+# alias pyg='pyenv global'
+# alias pys='pyenv shell'
+# alias pyi='pyenv install'
+# alias pyu='pyenv uninstall'
+# alias pyv='pyenv virtualenvwrapper'
 # pyenv virtualenvwrapper # load virtualenvwrapper for cdv/workon/etc
-# source $HOME/.local/bin/virtualenvwrapper.sh
+# VENVWRAPPER
+if [[ -f $HOME/.local/bin/virtualenvwrapper.sh ]]; then
+    source $HOME/.local/bin/virtualenvwrapper.sh
+fi
 # If wanna use pyenv instead of virtualev
 #     export PYENV_VIRTUALENVWRAPPER_PREFER_PYVENV="true"
 #     alias workon='pyenv activate'
@@ -155,24 +193,29 @@ zstyle ':completion:*' rehash true                              # automatically 
 zstyle ':completion:*' accept-exact '*(N)'
 zstyle ':completion:*' use-cache on
 zstyle ':completion:*' cache-path ~/.zsh/cache
-setopt extendedglob
-setopt nocaseglob
-setopt numericglobsort
-setopt rcexpandparam
-setopt nobeep
-setopt autocd
-setopt prompt_subst
+setopt EXTENDEDGLOB
+setopt NOCASEGLOB
+setopt NUMERICGLOBSORT
+setopt RCEXPANDPARAM
+setopt NOBEEP
+setopt AUTOCD
+setopt PROMPT_SUBST
+setopt COMPLETE_IN_WORD
 # HISTORY
 setopt NO_HIST_VERIFY
+setopt SHARE_HISTORY
 setopt INC_APPEND_HISTORY
 setopt EXTENDED_HISTORY
 setopt HIST_IGNORE_ALL_DUPS
+setopt HIST_FIND_NO_DUPS
 setopt HIST_REDUCE_BLANKS
 setopt HIST_IGNORE_SPACE
 setopt HIST_NO_STORE
-setopt ignore_eof
+setopt IGNORE_EOF
+# do not set this option, otherwise others(dups) will not work
+# setopt INTERACTIVE_COMMENTS  # pound sign in prompt
 export HISTFILE=$HOME/.zsh_history
-export HISTIGNORE="ls:exit:bg:fg:cd:history:clear"
+export HISTIGNORE="ls:exit:bg:fg:cd:history:clear:echo:print:which"
 export HISTSIZE=10000
 export HISTTIMEFORMAT='%Y-%m-%d %T '
 export SAVEHIST=10000

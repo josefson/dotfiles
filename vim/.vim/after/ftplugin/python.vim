@@ -5,7 +5,7 @@ setlocal softtabstop=4
 setlocal makeprg=python\ %
 setlocal completefunc=jedi#completions
 setlocal tags=tags,./tags,pytags
-setlocal nofoldenable foldmethod=expr foldlevel=2
+setlocal nofoldenable
 
 " Mappings
 autocmd FileType python nmap <buffer>K <Plug>(devdocs-under-cursor-all)

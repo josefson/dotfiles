@@ -2,17 +2,15 @@
 call plug#begin('~/.vim/bundle')
 source ~/dotfiles/vim/.vimrc_trash
 " UTILS
-    " Plug 'Shougo/unite.vim' | Plug 'Shougo/neomru.vim' | Plug 'osyo-manga/unite-quickfix' | Plug 'thinca/vim-unite-history' | Plug 'paradigm/SkyBison'                        " 'Better/diff' vim cmd line
-    Plug 'Shougo/denite.nvim' | Plug 'neoclide/denite-extra'
+    Plug 'Shougo/denite.nvim' | Plug 'neoclide/denite-extra' | Plug 'roxma/nvim-yarp' | Plug 'roxma/vim-hug-neovim-rpc'
+    " Plug 'junegunn/fzf.vim'
     Plug 'tpope/vim-unimpaired'                     " Default pair keymappings
     Plug 'tpope/vim-repeat'                         " Support repeat command(.) for plugin actions
     Plug 'tpope/vim-obsession'                      " Persistent session manager
-    Plug 'tpope/vim-eunuch'                         " :sudo[edits|writes],Locate,Find,Move,Chmod,Remove,Rename,Mkdir,Unlink
+    " Plug 'tpope/vim-eunuch'                         " :sudo[edits|writes],Locate,Find,Move,Chmod,Remove,Rename,Mkdir,Unlink
     Plug 'mattn/webapi-vim' | Plug 'mattn/gist-vim' " Gist and dependency
-    " Plug 'godlygeek/tabular'                        " :Tab /regex
     Plug 'tommcdo/vim-lion'                         " gl|L[ip|i{] Alight left|right
-" WRITER'S TOOLBOX
-    " Plug 'chrisbra/NrrwRgn'                         " ,nr|:NR Narrow region
+    Plug 'romainl/vim-cool'                         " enable disable search hl
 " IDE
     Plug 'tpope/vim-dispatch'                       " Async shit
     Plug 'sjl/gundo.vim'                            " UndoTree
@@ -20,19 +18,19 @@ source ~/dotfiles/vim/.vimrc_trash
     Plug 'w0rp/ale'                                 " Async lint
     Plug 'rhysd/devdocs.vim'                        " Documentation Plugin
     " Plug 'ludovicchabant/vim-gutentags'             " Auto Tag creation
+    Plug 'junegunn/vim-peekaboo'                    " live show registers
+    " Plug 'kkoomen/vim-doge'                         " generate documentation
 " GIT
     Plug 'tpope/vim-fugitive' | Plug 'rbong/vim-flog'   " Gitk alternative for vim
     Plug 'airblade/vim-gitgutter'                        " Only for git
-    
 " MOVEMENT/SEARCH&REPLACE
-    Plug 'justinmk/vim-sneak'                       " s[xx] vert/horiz moving
-    Plug 'terryma/vim-multiple-cursors'
     " Plug 'tpope/vim-abolish'                        " :Abolish {despa,sepe}rat{e,es,ed,ing,ely,ion,ions,or}  {despe,sepa}rat{}
+    Plug 'rhysd/clever-f.vim'                       " repeatable f/t/F/T instead of ;/,
+    Plug 'kshenoy/vim-signature/'                   " Display marks on gutter
 " COMPLETERS
     Plug 'ajh17/VimCompletesMe'                                         " TabContextual
     " Plug 'lifepillar/vim-mucomplete'                                    " Chain completion
     " Plug 'maralla/completor.vim', {'for': ['python', 'c'] }             " Async completion
-    " Plug 'maralla/completor.vim'
     " Plug 'ervandew/supertab'
     Plug 'SirVer/ultisnips' | Plug 'honza/vim-snippets'                 " Snippets
     Plug 'tpope/vim-commentary'                                         " Comment
@@ -40,14 +38,16 @@ source ~/dotfiles/vim/.vimrc_trash
     Plug 'Raimondi/delimitMate'                                         " Auto close quotes, brackets, parenthesis, etc
     Plug 'davidhalter/jedi-vim', { 'for': 'python' }                    " GoTo def,assignments,etc
 " PYTHON
-    " Plug 'alfredodeza/pytest.vim', { 'for': 'python' }
-    Plug 'tmhedberg/SimpylFold'                                         " Better python folding
+    Plug 'alfredodeza/pytest.vim', { 'for': 'python' }
+    Plug 'kalekundert/vim-coiled-snake', { 'for': 'python' }            " python folding
+    Plug 'mitsuhiko/vim-jinja'                                          " jinja syntax
 " HTML
-    Plug 'vim-scripts/matchit.zip'
-    " Plug 'Valloric/MatchTagAlways', { 'for': 'xhtml' }                  "Highlight html/xml tags when between text
-    " Plug 'rstacruz/sparkup'                                             " Html magic expansion/snippets
+    Plug 'mattn/emmet-vim', { 'for': 'html' }                           " html snippets
+    Plug 'Valloric/MatchTagAlways', { 'for': 'html' }                   " Highlight html/xml tags when between text
 " TMUX
-    Plug 'jpalardy/vim-slime'
+    Plug 'jalvesaq/vimcmdline', { 'for': 'python' }
+" Testing
+    Plug 'mhinz/vim-grepper', { 'on': ['Grepper', '<plug>(GrepperOperator)'] }
 call plug#end()
 " }}}
 " VIM OPTIONS ------------------------------------------------------------- {{{
@@ -66,8 +66,8 @@ catch
     set background=dark
 endtry
 set mouse=a                 " enable mouse features
-set relativenumber          " relative number to the cursor line
-set number                  " show linenumbers, puts number after relative(exclude 0)
+" set relativenumber          " relative number to the cursor line
+" set number                  " show linenumbers, puts number after relative(exclude 0)
 set cursorline              " highlight current line
 set showtabline=1           " Show tabline only when more than one tab exists
 set showmatch               " show matching for symbols like () and etc.
@@ -113,7 +113,11 @@ set copyindent
 set nostartofline                   " Emulate typical editor navigation behaviour
 set nopaste                         " Start in normal (non-paste) mode
 set pastetoggle=<F10>               " Use <F10> to toggle paste modes
-set completeopt=menuone,noinsert,noselect    " Show even only 1 complete option
+if has('patch-8.1.1880')
+    set completeopt=menuone,noinsert,noselect,popup    " Show even only 1 complete option
+else
+    set completeopt=menuone,noinsert,noselect    " Show even only 1 complete option
+endif
 " INDENTING
 set tabstop=4                       " number of visual spaces per TAB
 set softtabstop=4                   " number of spaces in tab when editing
@@ -161,6 +165,7 @@ set diffopt+=context:4,vertical
 " MAPPINGS ---------------------------------------------------------------- {{{
 " -------------- FUNCTION KEYS
 nnoremap <F2> :GundoToggle<CR>
+nnoremap <F3> :TagbarToggle<CR>
 nnoremap <F5> :Dispatch 
 " -------------- GENERAL SHIT
 " :Silent command that doesnt require to press enter after :!external
@@ -177,8 +182,10 @@ inoremap <C-Bslash>       <Esc>:set hls!<bar>:set hls?<CR>a
 nmap Q @q
 " window
 nnoremap <space>w <c-w>
-nnoremap <space>wH 5<c-w><
-nnoremap <space>wL 5<c-w>>
+nnoremap <space>w< 5<c-w><
+nnoremap <space>w> 5<c-w>>
+nnoremap <space>w] 5<c-w>+
+nnoremap <space>w[ 5<c-w>-
 
 " Short completion for: Tags,File/Path,dict,line
 inoremap <C-]> <C-x><C-]>
@@ -199,45 +206,55 @@ vmap <C-y> [e'[V']
 vmap <C-e> ]e'[V']
 " LEADER KEYS --------------------------------------------------------------
 " let mapleader = \" "
-" DENITE/UNITE MAPPINGS {{{
-if &rtp =~ 'denite'
-    nnoremap <leader>b :<C-u>Denite buffer -direction=dynamictop<CR>
-    nnoremap <leader>e :<C-u>Denite file_rec -direction=dynamictop<CR>
-    nnoremap <leader>y :<C-u>Denite register -direction=dynamictop<CR>
-    nnoremap <leader>h :<C-u>Denite help -direction=dynamictop<CR>
-    nnoremap <leader>c :<C-u>Denite command_history -direction=dynamictop<CR>
-    nnoremap <leader>j :<C-u>Denite jump -direction=dynamictop<CR>
-    nnoremap <leader>t :<C-u>Denite tag -direction=dynamictop<CR>
-    nnoremap <leader>g :<C-u>Denite change -direction=dynamictop<CR>
-    " nnoremap <leader>cc :<C-u>Denite command -direction=dynamictop<CR>
-endif
-if &rtp =~ 'skybison'
-    nnoremap <space>s :<C-u>call SkyBison("")<CR>
-    nnoremap <space>e :<C-u>call SkyBison('e ')<CR>
-    nnoremap <space>b 2:<C-u>call SkyBison('b ')<CR>
-    nnoremap <leader>h 2:<C-u>call SkyBison('h ')<CR>
-    nnoremap <leader>t 2:<C-u>call SkyBison('tag ')<CR>
-    nnoremap <leader>tj 2:<C-u>call SkyBison('tj ')<CR>
-    let g:skybison_fuzz = 1
-endif
-if &rtp =~ 'unite'
-    nnoremap <leader>e :<C-u>Unite -start-insert -buffer-name=Recursive_Files file_rec<CR>
-    nnoremap <leader>b :<C-u>Unite -start-insert -buffer-name=Buffers buffer<CR>
-    nnoremap <leader>p :<C-u>Unite -start-insert -buffer-name=MRU_Files file_mru<CR>
-    nnoremap <leader>u :<C-u>Unite -start-insert -buffer-name=UltiSnips ultisnips<CR>
-    inoremap <C-m>     <C-o>:<C-u>Unite -start-insert -buffer-name=UltiSnips ultisnips<CR>
-    nnoremap <leader>y :<C-u>Unite -start-insert -buffer-name=Registers register<CR>
-    nnoremap <leader>? :<C-u>Unite -start-insert -buffer-name=Unite_Sources source<CR>
-    nnoremap <leader>j :<C-u>Unite -start-insert -buffer-name=Jumplist jump<CR>
-    nnoremap <leader>s :<C-u>Unite -start-insert  -buffer-name=Search  history/search<CR>
-    nnoremap <leader>c :<C-u>Unite -start-insert  -buffer-name=Commands_List history/command<CR>
-endif
+" unite/denite/fzf {{{
+" if &rtp =~ 'fzf'
+"     nnoremap <leader>f :fzf
+"     nnoremap <leader>e :FzfFiles<CR>
+"     nnoremap <leader>b :FzfBuffers<CR>
+"     nnoremap <leader>l :FzfLines<CR>
+"     nnoremap <leader>L :FzfBLines<CR>
+"     nnoremap <leader>g :<C-u>call fzf#run({'source': reverse(split(execute('changes'), "\n"))})<CR>
+"     nnoremap <leader>j :<C-u>call fzf#run({'source': reverse(split(execute('jumps'), "\n"))})<CR>
+"     nnoremap <leader>y :<C-u>call fzf#run({'source': reverse(split(execute('registers'), "\n"))})<CR>
+"     nnoremap <leader>m :FzfMarks<CR>
+"     nnoremap <leader>t :FzfTags<CR>
+"     nnoremap <leader>T :FzfBTags<CR>
+"     nnoremap <leader>: :FzfHistory:<CR>
+"     nnoremap <leader>/ :FzfHistory/<CR>
+"     nnoremap <leader>u :FzfSnippets<CR>
+"     inoremap <c-u> :FzfSnippets<CR>
+"     nnoremap <leader>h :FzfHelptags<CR>
+
+"     " Mapping selecting mappings
+"     nmap <leader><tab> <plug>(fzf-maps-n)
+"     xmap <leader><tab> <plug>(fzf-maps-x)
+"     omap <leader><tab> <plug>(fzf-maps-o)
+
+"     " Insert mode completion
+"     imap <c-f> <plug>(fzf-complete-path)
+"     imap <c-f> <plug>(fzf-complete-path)
+"     imap <c-l> <plug>(fzf-complete-line)
+" elseif &rtp =~ 'denite'
+"     nnoremap <leader>b :<C-u>Denite buffer -direction=dynamictop<CR>
+"     nnoremap <leader>e :<C-u>Denite file/rec -direction=dynamictop<CR>
+"     nnoremap <leader>y :<C-u>Denite register -direction=dynamictop<CR>
+"     nnoremap <leader>h :<C-u>Denite help -direction=dynamictop<CR>
+"     nnoremap <leader>c :<C-u>Denite command_history -direction=dynamictop<CR>
+"     nnoremap <leader>j :<C-u>Denite jump -direction=dynamictop<CR>
+"     nnoremap <leader>t :<C-u>Denite tag -direction=dynamictop<CR>
+"     nnoremap <leader>g :<C-u>Denite change -direction=dynamictop<CR>
+" elseif &rtp =~ 'picker-vim'
+"     nmap <unique> <leader>e <Plug>(PickerEdit)
+"     nmap <unique> <leader>b <Plug>(PickerBuffer)
+"     nmap <unique> <leader>h <Plug>(PickerHelp)
+
+"     nmap <unique> <leader>dv <Plug>(PickerVsplit)
+"     nmap <unique> <leader>ds <Plug>(PickerSplit)
+"     nmap <unique> <leader>dt <Plug>(PickerTabedit)
+" endif
+
 " }}}
 " PLUGINS ----------------------------------------------------------------- {{{
-" Ultisnips
-" nnoremap <Space>uf :UltiSnipsAddFiletypes 
-" nnoremap <Space>u :<C-U>call UltiSnips#ListSnippets()<CR>
-inoremap ,u <C-o>:<C-U>call UltiSnips#ListSnippets()<CR> 
 " Jedi
 let g:jedi#completions_command = "<C-Space>"
 let g:jedi#goto_assignments_command = "<Space>pa"
@@ -256,51 +273,140 @@ let g:jedi#documentation_command = "<Space>k"
 command! -range=% TB <line1>,<line2>w !nc termbin.com 9999 | tr -d '\n' | xclip -i -selection clipboard
 " }}}
 " DENITE ------------------------------------------------------------------ {{{
-" Change default prompt
 if &rtp =~ 'denite'
-    call denite#custom#option('default', 'prompt', '>')
-    " Change mappings.
-    call denite#custom#map('insert', '<C-j>', '<denite:move_to_next_line>', 'noremap')
-    call denite#custom#map('insert', '<C-k>', '<denite:move_to_previous_line>', 'noremap')
-    " Change Commands
-    call denite#custom#var('file/rec', 'command',
-        \ ['ag', '--follow', '--nocolor', '--nogroup', '-g', ''])
-    " Change ignore_globs
-    call denite#custom#filter( 'matcher/ignore_globs', 'ignore_globs',
-        \ [ '.git/', '.ropeproject/', '__pycache__/',
-        \   'venv/', 'images/', '*.min.*', 'img/', 'fonts/'])
-endif
-" }}}
-" UNITE ------------------------------------------------------------------- {{{
-" Set mappings for unitewindow
-if &rtp =~ 'unite'
-    call unite#custom#profile('default', 'context', {
-    \   'no_empty': '1',
-    \   'start_insert': 1
-    \ })
-    call unite#filters#matcher_default#use(['matcher_fuzzy'])
+    " CONFIG {{{
+    if executable('rg')
+        call denite#custom#var('file/rec', 'command', ['rg', '--files', '--glob', '!.git'])
+    endif
 
-    " Custom mappings for the unite buffer
-    autocmd FileType unite call s:unite_settings()
-    function! s:unite_settings()
-        " Play nice with supertab
-        let b:SuperTabDisabled=1
-        " Enable navigation with control-j and control-k in insert mode
-        imap <buffer> <C-j>   <Plug>(unite_select_next_line)
-        imap <buffer> <C-k>   <Plug>(unite_select_previous_line)
-        " Normal mappings
-        nmap <silent><buffer><expr> Enter unite#do_action('switch')
-        nmap <silent><buffer><expr> <C-t> unite#do_action('tabswitch')
-        nmap <silent><buffer><expr> <C-h> unite#do_action('splitswitch')
-        nmap <silent><buffer><expr> <C-v> unite#do_action('vsplitswitch')
-        " Insert mappings
-        imap <silent><buffer><expr> Enter unite#do_action('switch')
-        imap <silent><buffer><expr> <C-t> unite#do_action('tabswitch')
-        imap <silent><buffer><expr> <C-h> unite#do_action('splitswitch')
-        imap <silent><buffer><expr> <C-v> unite#do_action('vsplitswitch')
-    endfunction
+    " Change ignore_globs
+    call denite#custom#filter('matcher/ignore_globs', 'ignore_globs',
+                \ [ '.git/', '.ropeproject/', '__pycache__/',
+                \   'venv/', 'images/', '*.min.*', 'img/', 'fonts/',
+                \   '*~', '*.o', '*.exe', '*.bak',
+                \   '.DS_Store', '*.pyc', '*.sw[po]', '*.class',
+                \   '.hg/', '.git/', '.bzr/', '.svn/',
+                \   'tags', 'tags-*'])
+
+    " Change matchers.
+    call denite#custom#source(
+    \ 'file/rec', 'matchers', ['matcher/fuzzy', 'matcher/ignore_globs'])
+
+    " Change default action.
+    call denite#custom#kind('command', 'default_action', 'edit')
+
+    " Ripgrep command on grep source
+    call denite#custom#var('grep', 'command', ['rg'])
+    call denite#custom#var('grep', 'default_opts',
+                \ ['-i', '--vimgrep', '--no-heading'])
+    call denite#custom#var('grep', 'recursive_opts', [])
+    call denite#custom#var('grep', 'pattern_opt', ['--regexp'])
+    call denite#custom#var('grep', 'separator', ['--'])
+    call denite#custom#var('grep', 'final_opts', [])
+
+    " Add custom menus
+    let s:menus = {}
+    let s:menus.zsh = {
+                \ 'description': 'Edit your import zsh configuration'
+                \ }
+    let s:menus.zsh.file_candidates = [
+                \ ['zshrc', '~/.config/zsh/.zshrc'],
+                \ ['zshenv', '~/.zshenv'],
+                \ ]
+    let s:menus.my_commands = {
+                \ 'description': 'Example commands'
+                \ }
+    let s:menus.my_commands.command_candidates = [
+                \ ['Split the window', 'vnew'],
+                \ ['Open zsh menu', 'Denite menu:zsh'],
+                \ ['Format code', 'FormatCode', 'go,python'],
+                \ ]
+    call denite#custom#var('menu', 'menus', s:menus)
 endif
-" " }}}
+    " }}}
+    " BINDINGS {{{
+    nnoremap <leader>b :<C-u>Denite buffer -start-filter=true -prompt=>> -direction=dynamictop<CR>
+    nnoremap <leader>e :<C-u>Denite file/rec -start-filter=true -prompt=>> -direction=dynamictop<CR>
+    nnoremap <leader>y :<C-u>Denite register -start-filter=true -prompt=>> -direction=dynamictop<CR>
+
+    nnoremap <leader>l :<C-u>Denite line -start-filter=true -prompt=>> -direction=dynamictop<CR>
+    nnoremap <leader>m :<C-u>Denite mark -start-filter=true -prompt=>> -direction=dynamictop<CR>
+    nnoremap <leader>j :<C-u>Denite jump -start-filter=true -prompt=>> -direction=dynamictop<CR>
+    nnoremap <leader>t :<C-u>Denite tag -start-filter=true -prompt=>> -direction=dynamictop<CR>
+    nnoremap <leader>g :<C-u>Denite change -start-filter=true -prompt=>> -direction=dynamictop<CR>
+    nnoremap <leader>r :<C-u>Denite registers -start-filter=true -prompt=>> -direction=dynamictop<CR>
+
+    nnoremap <leader>h :<C-u>Denite help -start-filter=true -prompt=>> -direction=dynamictop<CR>
+    nnoremap <leader>c :<C-u>Denite command_history -start-filter=true -prompt=>> -direction=dynamictop<CR>
+    nnoremap <leader>c :<C-u>Denite command -start-filter=true -prompt=>> -direction=dynamictop<CR>
+    nnoremap <leader>s :<C-u>Denite source -start-filter=true -prompt=>> -direction=dynamictop<CR>
+
+    " Define mappings
+    autocmd FileType denite 
+                \call s:denite_my_settings()
+    function! s:denite_my_settings() abort
+        nnoremap <silent><buffer><expr> <CR>
+                    \ denite#do_map('do_action')
+        nnoremap <silent><buffer><expr> p
+                    \ denite#do_map('do_action', 'preview')
+        nnoremap <silent><buffer><expr> q
+                    \ denite#do_map('quit')
+        nnoremap <silent><buffer><expr> i
+                    \ denite#do_map('open_filter_buffer')
+        nnoremap <silent><buffer><expr> <Space>
+                    \ denite#do_map('toggle_select').'j'
+
+        nnoremap <silent><buffer><expr> <C-v>
+                    \ denite#do_map('do_action', 'vsplit')
+        nnoremap <silent><buffer><expr> <C-h> 
+                    \ denite#do_map('do_action', 'split')
+        nnoremap <silent><buffer><expr> <C-t> 
+                    \ denite#do_map('do_action', 'tabopen')
+        nnoremap <silent><buffer><expr> <Tab>
+                    \ denite#do_map('choose_action')
+    endfunction
+
+    autocmd FileType denite-filter 
+                \call s:denite_filter_my_settings()
+    function! s:denite_filter_my_settings() abort
+        imap <silent><buffer> <C-o> <Plug>(denite_filter_quit)
+        imap <silent><buffer> q <Plug>(denite_filter_quit)
+
+        inoremap <silent><buffer><expr> <CR>
+                    \ denite#do_map('do_action', 'switch')
+        inoremap <silent><buffer><expr> <C-h>
+                    \ denite#do_map('do_action', 'splitswitch')
+        inoremap <silent><buffer><expr> <C-v>
+                    \ denite#do_map('do_action', 'vsplitswitch')
+        inoremap <silent><buffer><expr> <C-t>
+                    \ denite#do_map('do_action', 'tabswitch')
+        inoremap <silent><buffer><expr> <C-v>
+                    \ denite#do_map('do_action', 'split')
+
+        inoremap <silent><buffer> <C-j>
+                    \ <Esc><C-w>p:call cursor(line('.')+1,0)<CR><C-w>pA
+        inoremap <silent><buffer> <C-k>
+                    \ <Esc><C-w>p:call cursor(line('.')-1,0)<CR><C-w>pA
+    endfunction
+    " }}}
+" }}}
+" FZF --------------------------------------------------------------------- {{{
+" This is the default extra key bindings
+let g:fzf_command_prefix = 'Fzf'
+let g:fzf_action = {
+  \ 'ctrl-t': 'tab split',
+  \ 'ctrl-x': 'split',
+  \ 'ctrl-v': 'vsplit' }
+
+" Default fzf layout
+" - down / up / left / right
+let g:fzf_layout = { 'down': '~40%' }
+ 
+command! -bang -nargs=? -complete=dir Files
+  \ call fzf#vim#files(<q-args>, fzf#vim#with_preview(), <bang>0)
+command! -bang Colors
+  \ call fzf#vim#colors({'left': '15%', 'options': '--reverse --margin 30%,0'}, <bang>0)
+" }}}
 " GUTENTAGS --------------------------------------------------------------- {{{
 let g:gutentags_enabled = 1
 let g:gutentags_ctags_executable = 'ctags'
@@ -321,34 +427,6 @@ call add(g:gutentags_project_info, {'type': 'python', 'file': 'manage.py'})
 let g:sneak#label = 1
 let g:sneak#s_next = 1
 let g:sneak#label_esc = "<Space>"
-" Use f instead of s
-" nmap f <Plug>Sneak_s
-" nmap F <Plug>Sneak_S
-" xmap f <Plug>Sneak_s
-" xmap F <Plug>Sneak_S
-" omap f <Plug>Sneak_s
-" omap F <Plug>Sneak_S
-
-" Allow f/t/F/T with one character
-" nmap f <Plug>Sneak_f
-" nmap F <Plug>Sneak_F
-" xmap f <Plug>Sneak_f
-" xmap F <Plug>Sneak_F
-" omap f <Plug>Sneak_f
-" omap F <Plug>Sneak_F
-
-" nmap t <Plug>Sneak_t
-" nmap T <Plug>Sneak_T
-" xmap t <Plug>Sneak_t
-" xmap T <Plug>Sneak_T
-" omap t <Plug>Sneak_t
-" omap T <Plug>Sneak_T
-" }}}
-" MULTIPLE CURSORS -------------------------------------------------------- {{{
-let g:multi_cursor_next_key='<C-n>'  " next
-let g:multi_cursor_prev_key='<C-p>'  " prev
-let g:multi_cursor_skip_key='<C-x>'  " jump/unmark
-let g:multi_cursor_quit_key='<Esc>'  " cancel
 " }}}
 " SUPERTAB ---------------------------------------------------------------- {{{
 " let g:SuperTabDefaultCompletionType = '<C-X><C-O>' " For Omni - if jedi only
@@ -365,14 +443,13 @@ let g:mucomplete#chains.default = ['path', 'user', 'ulti', 'omni', 'c-p']
 let g:mucomplete#chains.python = ['path', 'ulti', 'user', 'c-p']
 let g:mucomplete#chains.xhtml = ['path', 'ulti']
 let g:mucomplete#chains.c = ['path', 'ulti', 'user', 'tags']
-let g:mucomplete#chains.unite = []
 let g:mucomplete#chains.vim = []
 " }}}
 " COMPLETOR.VIM ----------------------------------------------------------- {{{
 " Disable default completeopt
 let g:completor_set_options = 0
 let g:completor_auto_trigger = 1
-let g:completor_blacklist = ['tagbar', 'qf', 'netrw', 'unite', 'vimwiki', 'vim']
+let g:completor_blacklist = ['tagbar', 'qf', 'netrw', 'vimwiki', 'vim']
 let g:completor_min_chars = 1
 " }}}
 " ULTISNIPS --------------------------------------------------------------- {{{
@@ -382,12 +459,31 @@ let g:UltiSnipsSnippetDirectories = ["UltiSnips"]
 let g:UltiSnipsJumpForwardTrigger = "<C-j>"
 let g:UltiSnipsJumpBackwardTrigger = "<C-k>"
 let g:UltiSnipsExpandTrigger = "<C-b>"
-let g:UltiSnipsListSnippets = "<C-u>"
+" let g:UltiSnipsListSnippets = "<C-u>" replaced by fzf one
 if has('python3')
     let g:UltiSnipsUsePythonVersion=3
 elseif has('python')
     let g:UltiSnipsUsePythonVersion=2
 endif
+
+inoremap <c-u> <C-o>:Snippets<CR> 
+inoremap <silent> <C-j> <C-r>=LoadUltiSnipsAndExpand()<CR>
+
+function! LoadUltiSnipsAndExpand()
+    let l:curpos = getcurpos()
+    execute plug#load('ultisnips')
+    call cursor(l:curpos[1], l:curpos[2])
+    call UltiSnips#ExpandSnippet()
+    return ""
+endfunction
+" }}}
+" EMMET-VIM --------------------------------------------------------------- {{{
+let g:user_emmet_mode='n'    "only enable normal mode functions.
+let g:user_emmet_mode='inv'  "enable all functions, which is equal to
+let g:user_emmet_mode='a'    "enable all function in all mode.
+let g:user_emmet_install_global = 0
+autocmd FileType html,css EmmetInstall
+let g:user_emmet_leader_key='<C-Z>'
 " }}}
 " JEDI-VIM ---------------------------------------------------------------- {{{
 " let g:jedi#force_py_version = 3       " Let jedi decide based on $(python) 
@@ -404,14 +500,11 @@ let g:jedi#use_tabs_not_buffers = 0  " goto in tabs = 0 for buffers
 let g:jedi#use_splits_not_buffers = ""  "goto in splits: top,left,right,bottom
 let g:jedi#force_py_version = 3
 " }}}
-" VIRTUALENV -------------------------------------------------------------- {{{
-let g:virtualenv_auto_activate = 1
-let g:virtualenv_directory = '~/.virtualenvs/'
-" }}}
 " ALE-LINTER -------------------------------------------------------------- {{{
 let g:ale_lint_on_text_changed = 'never'
 let g:ale_lint_on_save = 1
 let g:ale_set_loclist = 1
+let g:ale_set_quickfix = 0
 let g:ale_sign_error = '✗'
 let g:ale_sign_warning = '⚠'
 let g:ale_echo_msg_error_str = 'E'
@@ -440,10 +533,6 @@ endif
 let g:gist_detect_filetype = 1
 let g:gist_open_browser_after_post = 1
 "}}}
-" VIM-SLIME --------------------------------------------------------------- {{{
-let g:slime_target = "tmux"
-let g:slime_python_ipython = 1
-" }}}
 " DELIMITMATE --------------------------------------------------------------- {{{
 if &rtp =~ 'delimitmate'
     imap <C-j> <Plug>delimitMateS-Tab
@@ -452,5 +541,91 @@ endif
 " }}}
 " DISPATCH --------------------------------------------------------------- {{{
 let g:dispatch_no_maps = 1
+" }}}
+" VIMCMDLINE ------------------------------------------------------------- {{{
+" vimcmdline mappings
+let cmdline_map_start          = '<LocalLeader>s'
+let cmdline_map_send           = '<Space>'
+let cmdline_map_send_and_stay  = '<LocalLeader><Space>'
+let cmdline_map_source_fun     = '<LocalLeader>sf'
+let cmdline_map_send_paragraph = '<LocalLeader>sp'
+let cmdline_map_send_block     = '<LocalLeader>sb'
+let cmdline_map_quit           = '<LocalLeader>sq'
+
+" vimcmdline options
+" let cmdline_vsplit      = 1      " Split the window vertically
+
+" Repl
+let cmdline_app           = {}
+let cmdline_app['python'] = 'ipython'
+" }}}
+" FUNCTIONS --------------------------------------------------------------- {{{
+" romainl
+" Background here: https://gist.github.com/romainl/047aca21e338df7ccf771f96858edb86
+
+function! CCR()
+    let cmdline = getcmdline()
+    command! -bar Z silent set more|delcommand Z
+    if cmdline =~ '\v\C^(ls|files|buffers)'
+        " like :ls but prompts for a buffer command
+        return "\<CR>:b"
+    elseif cmdline =~ '\v\C/(#|nu|num|numb|numbe|number)$'
+        " like :g//# but prompts for a command
+        return "\<CR>:"
+    elseif cmdline =~ '\v\C^(dli|il)'
+        " like :dlist or :ilist but prompts for a count for :djump or :ijump
+        return "\<CR>:" . cmdline[0] . "j  " . split(cmdline, " ")[1] . "\<S-Left>\<Left>"
+    elseif cmdline =~ '\v\C^(cli|lli)'
+        " like :clist or :llist but prompts for an error/location number
+        return "\<CR>:sil " . repeat(cmdline[0], 2) . "\<Space>"
+    elseif cmdline =~ '\C^old'
+        " like :oldfiles but prompts for an old file to edit
+        set nomore
+        return "\<CR>:Z|e #<"
+    elseif cmdline =~ '\C^changes'
+        " like :changes but prompts for a change to jump to
+        set nomore
+        return "\<CR>:Z|norm! g;\<S-Left>"
+    elseif cmdline =~ '\C^ju'
+        " like :jumps but prompts for a position to jump to
+        set nomore
+        return "\<CR>:Z|norm! \<C-o>\<S-Left>"
+    elseif cmdline =~ '\C^marks'
+        " like :marks but prompts for a mark to jump to
+        return "\<CR>:norm! `"
+    elseif cmdline =~ '\C^undol'
+        " like :undolist but prompts for a change to undo
+        return "\<CR>:u "
+    else
+        return "\<CR>"
+    endif
+endfunction
+
+cnoremap <expr> <CR> CCR()
+
+function! Redir(cmd)
+	for win in range(1, winnr('$'))
+		if getwinvar(win, 'scratch')
+			execute win . 'windo close'
+		endif
+	endfor
+	if a:cmd =~ '^!'
+		let output = system(matchstr(a:cmd, '^!\zs.*'))
+	else
+		redir => output
+		execute a:cmd
+		redir END
+	endif
+	vnew
+	let w:scratch = 1
+	setlocal buftype=nofile bufhidden=wipe nobuflisted noswapfile
+	call setline(1, split(output, "\n"))
+endfunction
+
+command! -nargs=1 -complete=command Redir silent call Redir(<q-args>)
+
+" Usage:
+" 	:Redir hi ............. show the full output of command ':hi' in a scratch window
+" 	:Redir !ls -al ........ show the full output of command ':!ls -al' in a scratch window
 " }}}
 " vim: fo=tcq fdm=marker tw=0

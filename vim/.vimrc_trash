@@ -17,6 +17,12 @@ let g:gundo_prefer_python3 = 1
 let g:airline_theme = 'minimalist'
 let g:airline#extensions#tabline#enabled = 0
 let g:airline#extensions#whitespace#enabled = 0
+let g:airline#extensions#virtualenv#enabled = 0
+let g:airline#extensions#ale#enabled = 0
+
+let g:airline#extensions#hunks#enabled = 1
+let g:airline#extensions#branch#enabled = 1
+let g:airline#extensions#branch#format = 1
 let g:airline_powerline_fonts = 1
 
 if !exists('g:airline_symbols')

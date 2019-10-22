@@ -1,4 +1,11 @@
-import os, sys
+from qutebrowser.config.configfiles import ConfigAPI  # noqa: F401
+from qutebrowser.config.config import ConfigContainer  # noqa: F401
+import sys
+import os
+
+config = config  # type: ConfigAPI # noqa: F821
+c = c  # type: ConfigAPI # noqa: F821
+
 # PATH {{{
 if sys.platform == 'darwin':
     os.environ['PATH'] += os.pathsep + os.path.expanduser('~/.pyenv/shims')
@@ -9,7 +16,7 @@ config.load_autoconfig()
 # c.backend = 'webkit'
 c.new_instance_open_target = 'window'
 c.new_instance_open_target_window = 'last-focused'
-c.scrolling.bar = True
+c.scrolling.bar = 'always'
 c.scrolling.smooth = True
 c.auto_save.session = True
 c.session.lazy_restore = True
@@ -20,10 +27,14 @@ c.downloads.remove_finished = 5000
 # Search Engines
 c.url.default_page = 'about:blank'
 c.url.searchengines = {
-        'DEFAULT' : 'https://duckduckgo.com/?q={}',
+        # 'DEFAULT' : 'https://duckduckgo.com/?q={}',
+        'DEFAULT' : 'https://www.google.com/search?q={}',
+        's' : 'https://searx.org/?q={}',
         'wk' : 'https://en.wikipedia.org/wiki/{}',
         'yt' : 'https://www.youtube.com/results?search_query={}',
         'g' : 'https://www.google.com/search?q={}',
+        'br' : 'https://www.google.com/search?q={}&lr=lang_pt',
+        'def' : 'https://www.google.com/search?q=define {}',
         'gmaps' : 'https://www.google.com/maps/place/{}',
         'imdb' : 'https://www.imdb.com/find?q={}',
         'img' : 'https://imgur.com/search?q={}',
@@ -31,50 +42,71 @@ c.url.searchengines = {
         'img' : 'https://imgur.com/search?q={}',
         'am' : 'https://www.amazon.com/s/field-keywords={}',
         'ml' : 'https://lista.mercadolivre.com.br/{}',
+        'olx' : 'https://mt.olx.com.br/?q={}',
         'ebay' : 'https://www.ebay.com/sch/{}',
         'ud' : 'http://www.urbandictionary.com/define.php?term={}',
         '4' : 'https://www.4chan.org/{}',
         'r' : 'https://reddit.com/r/{}',
         'rq' : 'https://www.reddit.com/search?q={}',
         'aw' : 'https://wiki.archlinux.org/index.php?search={}',
+        'aur' : 'https://aur.archlinux.org/packages/?O=0&K={}',
         'yts' : 'https://yts.ag/browse-movies/{}',
 }
-#Completions
+# Completions
 c.completion.cmd_history_max_items = 20
-c.completion.web_history_max_items = -1
+c.completion.web_history.max_items = -1
 c.completion.height = '100%'
 c.completion.shrink = True
 # Hints
 c.hints.mode = 'letter'
-c.hints.chars = 'asdfghjklqwertyuiopzxcvbnm'
+# c.hints.chars = 'asdfghjklqwertyuiopzxcvbnm'
+c.hints.chars = 'asdfghjklqweruiop'
 # Tabs
 c.tabs.background = True
 c.tabs.last_close = 'close'
-c.tabs.title.format = '{private}{index}: {title}'
+c.tabs.title.format = '{audio}{private}{index}: {current_title}'
 c.window.title_format = '{private}{perc}{host}'
 # Contents
-c.content.headers.user_agent = 'Mozilla/5.0 (X11; Linux x86_64; rv:57.0) Gecko/20100101 Firefox/57.0'
-c.content.headers.custom = {'accept': 'text/html, */*; q=0.01'}
-c.content.headers.accept_language = 'en-US,en;q=0.5'
+c.content.headers.user_agent = ''
+# c.content.headers.custom = {'accept': 'text/html, */*; q=0.01'}
+# c.content.headers.accept_language = 'en-US,en;q=0.5'
 c.content.geolocation = False
 c.content.headers.do_not_track = True
 c.content.host_blocking.enabled = True
 c.content.javascript.enabled = True
+c.content.pdfjs = True
+# c.content.webgl = False
 c.content.plugins = True
 # }}}
 # DOMAIN CONFIG {{{
 c.content.host_blocking.whitelist = [
     'thepiratebay.org',
     ]
-# JS = '''
-# *://rarbgmirror.org/*
-# *://thepiratebay.org/*
-# *://*eztv.*
-# '''
-# for url in JS.strip().splitlines():
-#     if url.strip():
-#         config.set('content.javascript.enabled', False, pattern=url)
-# }}}
+ALLOWED = '''
+web.whatsapp.com
+www.netflix.com
+gitlab.com
+*.youtube.com
+imgur.com
+'''
+for url in ALLOWED.strip().splitlines():
+    if url.strip():
+        config.set('content.javascript.enabled', True, url)
+BLOQUED = '''
+rarbgmirror.org
+thepiratebay.org
+mercadolivre.com
+eztv.it
+yts.am
+'''
+for url in BLOQUED.strip().splitlines():
+    if url.strip():
+        config.set('content.javascript.enabled', False, url)
+
+config.set('content.headers.user_agent',
+           'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.80 Safari/537.36',
+           'web.whatsapp.com')
+#}}}
 # BINDINGS
 c.bindings.commands['normal'] = {}
 # USERSCRIPTS {{{
@@ -87,7 +119,7 @@ elif sys.platform == 'linux':
 # readability
 config.bind(
     '<Ctrl-r>',
-    'spawn --userscript ~/.config/qutebrowser/userscripts/readability',
+    'spawn --userscript /usr/share/qutebrowser/userscripts/readability',
     mode='normal'
     )
 # keepass
@@ -98,29 +130,33 @@ elif sys.platform == 'linux':
 config.bind(',k', keepass_command, mode='normal')
 config.bind('<Ctrl-k>', keepass_command, mode='insert')
 # mpv
-mpv_command = 'spawn mpv --ontop --autofit 30% --geometry 100%:100%'
-config.bind(';p', 'hint links ' + mpv_command + ' {hint-url}', mode='normal')
-config.bind(';P', mpv_command + ' {url}', mode='normal')
+config.bind(';p', 'hint links spawn --userscript view_in_mpv {hint-url}' , mode='normal')
+config.bind(';P', 'spawn --userscript view_in_mpv', mode='normal')
+#OLD way
+# mpv_command = 'spawn mpv --ontop --autofit 30% --geometry 100%:100%'
+# config.bind(';p', 'hint links ' + mpv_command + ' {hint-url}', mode='normal')
+# config.bind(';P', mpv_command + ' {url}', mode='normal')
 # transmission
 if sys.platform == 'linux':
     transmission_command = 'hint links spawn transmission-remote -a "{hint-url}"'
     config.bind(';t', transmission_command, mode='normal')
 # streamlink peerflix
-streamlink_command = 'spawn streamlink {url} 480p'
-config.bind(';s', 'hint links spawn streamlink {hint-url} 480p', mode='normal')
-config.bind(';S', 'spawn streamlink {url} 481p', mode='normal')
-config.bind(';x', 'hint links spawn -v -d peerflix "{hint-url}" --mpv', mode='normal')
+streamlink_command = 'spawn -v -d  streamlink -p mpv'
+config.bind(';s', f'hint links {streamlink_command} ' + '{hint-url} 480p', mode='normal')
+config.bind(';S', f'{streamlink_command} ' + '{url} 480p', mode='normal')
+# config.bind(';x', 'hint links spawn -v -d peerflix "{hint-url}" --mpv', mode='normal')
+config.bind(';x', '''hint links spawn -v -d /usr/bin/urxvt -title peerflix -e /usr/bin/zsh -c "source $HOME/.zshrc && peerflix -l '{hint-url}'"''', mode='normal')
 # }}}
 # LEADER UNITE/DENITE LIKE {{{
+c.bindings.commands['normal']['b'] = 'set-cmd-text -s :buffer'
 c.bindings.commands['normal'][',b'] = 'set-cmd-text -s :buffer '
-c.bindings.commands['normal']['b']  = 'set-cmd-text -s :buffer'
 c.bindings.commands['normal'][',h'] = 'set-cmd-text -s :help '
 c.bindings.commands['normal'][',q'] = 'set-cmd-text :quickmark-'
 c.bindings.commands['normal'][',m'] = 'set-cmd-text :bookmark-'
 c.bindings.commands['normal'][',d'] = 'set-cmd-text :download'
 c.bindings.commands['normal'][',e'] = 'set-cmd-text :session-load '
-c.bindings.commands['normal'][',j'] = 'set-cmd-text :set content.javascript.enabled false'
-c.bindings.commands['normal'][',J'] = 'set-cmd-text :set content.javascript.enabled true'
+c.bindings.commands['normal'][',j'] = 'set content.javascript.enabled false'
+c.bindings.commands['normal'][',J'] = 'set content.javascript.enabled true'
 # }}}
 # HINTS{{{
 c.bindings.commands['normal']['f']  = 'hint'
@@ -250,12 +286,11 @@ config.bind("''", 'enter-mode jump_mark', mode='normal')
 config.bind('<Ctrl-V>', 'enter-mode passthrough', mode='normal')
 # EXIT
 config.bind('<Escape>', 'leave-mode', mode='hint')
-config.bind('Ctrl-V', 'leave-mode', mode='normal')
-config.bind('<Escape>', 'leave-mode', mode='register')
+config.bind('<Ctrl-V>', 'leave-mode', mode='register')
+config.bind('<Ctrl-V>', 'enter-mode passthrough', mode='normal')
 # }}}
 #TABS{{{
 c.bindings.commands['normal']['T']  = 'tab-focus'
-c.bindings.commands['normal']['go'] = 'tab-only'
 c.bindings.commands['normal']['J']  = 'tab-next'
 c.bindings.commands['normal']['K']  = 'tab-prev'
 c.bindings.commands['normal']['th'] = 'back -t'
@@ -298,6 +333,7 @@ c.bindings.commands['normal']['yD'] = 'yank domain -s'
 c.bindings.commands['normal']['yP'] = 'yank pretty-url -s'
 c.bindings.commands['normal']['yT'] = 'yank title -s'
 c.bindings.commands['normal']['yY'] = 'yank -s'
+c.bindings.commands['normal']['yi'] = 'hint images run open {hint-url}'
 # }}}
 # Prompt Bindings {{{:
 c.bindings.commands['prompt'] = {

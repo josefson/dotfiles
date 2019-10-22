@@ -67,7 +67,7 @@ prompt_end() {
 # Context: user@hostname (who am I and where am I)
 prompt_context() {
   if [[ "$USER" != "$DEFAULT_USER" || -n "$SSH_CLIENT" ]]; then
-    prompt_segment 16 09 "%(!.%{%F{yellow}%}.)$USER@%m"
+    prompt_segment 16 70 "%(!.%{%F{yellow}%}.)$USER@%m"
   fi
 }
 
@@ -145,14 +145,14 @@ prompt_hg() {
 
 # Dir: current working directory
 prompt_dir() {
-  prompt_segment 09 16 '%~'
+  prompt_segment 70 16 '%~'
 }
 
 # Virtualenv: current working virtualenv
 prompt_virtualenv() {
   local virtualenv_path="$VIRTUAL_ENV"
   if [[ -n $virtualenv_path ]]; then
-    prompt_segment 09 16 "(`basename $virtualenv_path`)"
+    prompt_segment 70 16 "(`basename $virtualenv_path`)"
   fi
 }
 
@@ -174,7 +174,8 @@ prompt_status() {
 build_prompt() {
   RETVAL=$?
   prompt_status
-  prompt_virtualenv
+  # venvwrapper already add to PROMPT
+  # prompt_virtualenv
   prompt_context
   prompt_dir
   prompt_git

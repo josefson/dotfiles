@@ -75,6 +75,8 @@ elif [[ $fullscreen == 1 ]]; then
 elif [[ $selection == 1 ]]; then
     if [[ $clipboard == 1 ]]; then
         maim -s | xclip -selection clipboard -t image/png
+        sleep 20
+        echo '' | xclip -selection clipboard
     elif [[ $clipboard == 0 ]]; then
         maim -s $filename && xclip -selection clipboard -t image/png -i $filename
     fi
