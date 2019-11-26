@@ -51,6 +51,7 @@ so-xresources() { xrdb -load ~/.Xresources ;}
 # GENERAL ALIASES {{{
 alias sudo='sudo '          # passing aliases archwiki
 # SHORTCUTS
+alias vim='nvim'
 alias q='exit'
 alias zrc='vim ~/.zshrc'
 alias arc='vim ~/.aliases'
@@ -263,6 +264,7 @@ if [[ $OS == 'Linux' ]]; then
         paccleanall() { sudo pacman -Scc ;}
         pacupdate() { sudo pacman -Syy ;}
         pacupgrade(){ sudo pacman -Syu ;}
+        pacmirrors() { reflector --verbose --threads 4 --sort rate --save /etc/pacman.d/mirrorlist }
         pacinfo(){ 
             for arg in "$@"; do
                 pacman -Qi $arg 2> /dev/null || pacman -Si $arg 2> /dev/null || yay -Si $arg;

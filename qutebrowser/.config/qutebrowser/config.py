@@ -28,29 +28,29 @@ c.downloads.remove_finished = 5000
 c.url.default_page = 'about:blank'
 c.url.searchengines = {
         # 'DEFAULT' : 'https://duckduckgo.com/?q={}',
-        'DEFAULT' : 'https://www.google.com/search?q={}',
-        's' : 'https://searx.org/?q={}',
-        'wk' : 'https://en.wikipedia.org/wiki/{}',
-        'yt' : 'https://www.youtube.com/results?search_query={}',
-        'g' : 'https://www.google.com/search?q={}',
-        'br' : 'https://www.google.com/search?q={}&lr=lang_pt',
-        'def' : 'https://www.google.com/search?q=define {}',
-        'gmaps' : 'https://www.google.com/maps/place/{}',
-        'imdb' : 'https://www.imdb.com/find?q={}',
-        'img' : 'https://imgur.com/search?q={}',
-        'tpb' : 'https://thepiratebay.org/s/?q={}&=on&page=0&orderby=99',
-        'img' : 'https://imgur.com/search?q={}',
-        'am' : 'https://www.amazon.com/s/field-keywords={}',
-        'ml' : 'https://lista.mercadolivre.com.br/{}',
-        'olx' : 'https://mt.olx.com.br/?q={}',
-        'ebay' : 'https://www.ebay.com/sch/{}',
-        'ud' : 'http://www.urbandictionary.com/define.php?term={}',
-        '4' : 'https://www.4chan.org/{}',
-        'r' : 'https://reddit.com/r/{}',
-        'rq' : 'https://www.reddit.com/search?q={}',
-        'aw' : 'https://wiki.archlinux.org/index.php?search={}',
-        'aur' : 'https://aur.archlinux.org/packages/?O=0&K={}',
-        'yts' : 'https://yts.ag/browse-movies/{}',
+        'DEFAULT'   : 'https://www.google.com/search?q={}',
+        's'         : 'https://searx.org/?q={}',
+        'wk'        : 'https://en.wikipedia.org/wiki/{}',
+        'yt'        : 'https://www.youtube.com/results?search_query={}',
+        'g'         : 'https://www.google.com/search?q={}',
+        'br'        : 'https://www.google.com/search?q={}&lr=lang_pt',
+        'def'       : 'https://www.google.com/search?q=define {}',
+        'gmaps'     : 'https://www.google.com/maps/place/{}',
+        'imdb'      : 'https://www.imdb.com/find?q={}',
+        'img'       : 'https://imgur.com/search?q={}',
+        'tpb'       : 'https://thepiratebay.org/s/?q={}&=on&page=0&orderby=99',
+        'img'       : 'https://imgur.com/search?q={}',
+        'am'        : 'https://www.amazon.com/s/field-keywords={}',
+        'ml'        : 'https://lista.mercadolivre.com.br/{}',
+        'olx'       : 'https://mt.olx.com.br/?q={}',
+        'ebay'      : 'https://www.ebay.com/sch/{}',
+        'ud'        : 'http://www.urbandictionary.com/define.php?term={}',
+        '4'         : 'https://www.4chan.org/{}',
+        'r'         : 'https://reddit.com/r/{}',
+        'rq'        : 'https://www.reddit.com/search?q={}',
+        'aw'        : 'https://wiki.archlinux.org/index.php?search={}',
+        'aur'       : 'https://aur.archlinux.org/packages/?O=0&K={}',
+        'yts'       : 'https://yts.ag/browse-movies/{}',
 }
 # Completions
 c.completion.cmd_history_max_items = 20
@@ -67,13 +67,15 @@ c.tabs.last_close = 'close'
 c.tabs.title.format = '{audio}{private}{index}: {current_title}'
 c.window.title_format = '{private}{perc}{host}'
 # Contents
-c.content.headers.user_agent = ''
+c.content.headers.user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.97 Safari/537.36'
 # c.content.headers.custom = {'accept': 'text/html, */*; q=0.01'}
 # c.content.headers.accept_language = 'en-US,en;q=0.5'
 c.content.geolocation = False
 c.content.headers.do_not_track = True
 c.content.host_blocking.enabled = True
+c.content.notifications = False
 c.content.javascript.enabled = True
+c.content.ssl_strict = False
 c.content.pdfjs = True
 # c.content.webgl = False
 c.content.plugins = True
@@ -81,7 +83,7 @@ c.content.plugins = True
 # DOMAIN CONFIG {{{
 c.content.host_blocking.whitelist = [
     'thepiratebay.org',
-    ]
+]
 ALLOWED = '''
 web.whatsapp.com
 www.netflix.com
@@ -106,7 +108,7 @@ for url in BLOQUED.strip().splitlines():
 config.set('content.headers.user_agent',
            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.80 Safari/537.36',
            'web.whatsapp.com')
-#}}}
+# }}}
 # BINDINGS
 c.bindings.commands['normal'] = {}
 # USERSCRIPTS {{{
@@ -121,7 +123,7 @@ config.bind(
     '<Ctrl-r>',
     'spawn --userscript /usr/share/qutebrowser/userscripts/readability',
     mode='normal'
-    )
+)
 # keepass
 if sys.platform == 'darwin':
     keepass_command = 'spawn --userscript ~/.config/qutebrowser/userscripts/qute-keepass -p ~/Sync/keepass.kdbx'
@@ -229,7 +231,7 @@ c.bindings.commands['caret'] = {
     'J'            : 'scroll down',
     'K'            : 'scroll up',
     'L'            : 'scroll right',
-    }
+}
 # }}}
 # INSERT: {{{
 config.bind('<Ctrl-E>', 'open-editor', mode='insert')
@@ -238,7 +240,7 @@ config.bind('<Shift-Ins>', 'insert-text {primary}', mode='insert')
 # }}}
 # NORMAL MODE {{{
 c.bindings.commands['normal'][':'] = 'set-cmd-text :'
-#Navigation {{{
+# Navigation {{{
 c.bindings.commands['normal']['<Ctrl-A>'] = 'navigate increment'
 c.bindings.commands['normal']['<Ctrl-X>'] = 'navigate decrement'
 c.bindings.commands['normal']['h']        = 'scroll left'
@@ -289,7 +291,7 @@ config.bind('<Escape>', 'leave-mode', mode='hint')
 config.bind('<Ctrl-V>', 'leave-mode', mode='register')
 config.bind('<Ctrl-V>', 'enter-mode passthrough', mode='normal')
 # }}}
-#TABS{{{
+# TABS{{{
 c.bindings.commands['normal']['T']  = 'tab-focus'
 c.bindings.commands['normal']['J']  = 'tab-next'
 c.bindings.commands['normal']['K']  = 'tab-prev'
@@ -358,7 +360,7 @@ c.bindings.commands['prompt'] = {
     '<Shift-Tab>'     : 'prompt-item-focus prev',
     '<Tab>'           : 'prompt-item-focus next',
     '<Up>'            : 'prompt-item-focus prev',
-    }
+}
 # }}}
 # }}}
 # vim: fo=tcq fdm=marker tw=0

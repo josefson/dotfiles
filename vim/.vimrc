@@ -3,7 +3,7 @@ call plug#begin('~/.vim/bundle')
 source ~/dotfiles/vim/.vimrc_trash
 " UTILS
     Plug 'Shougo/denite.nvim' | Plug 'neoclide/denite-extra' | Plug 'roxma/nvim-yarp' | Plug 'roxma/vim-hug-neovim-rpc'
-    " Plug 'junegunn/fzf.vim'
+    Plug 'junegunn/fzf.vim'
     Plug 'tpope/vim-unimpaired'                     " Default pair keymappings
     Plug 'tpope/vim-repeat'                         " Support repeat command(.) for plugin actions
     Plug 'tpope/vim-obsession'                      " Persistent session manager
@@ -26,7 +26,7 @@ source ~/dotfiles/vim/.vimrc_trash
 " MOVEMENT/SEARCH&REPLACE
     " Plug 'tpope/vim-abolish'                        " :Abolish {despa,sepe}rat{e,es,ed,ing,ely,ion,ions,or}  {despe,sepa}rat{}
     Plug 'rhysd/clever-f.vim'                       " repeatable f/t/F/T instead of ;/,
-    Plug 'kshenoy/vim-signature/'                   " Display marks on gutter
+    Plug 'kshenoy/vim-signature'                   " Display marks on gutter
 " COMPLETERS
     Plug 'ajh17/VimCompletesMe'                                         " TabContextual
     " Plug 'lifepillar/vim-mucomplete'                                    " Chain completion
@@ -80,6 +80,7 @@ set lazyredraw              " redraw only when we need to.
 set wildmenu                        " Better commandline completion
 set wildmode=longest:full,full      " Expand match on first Tab complete
 set showcmd                         " Show (partial) command in status line.
+set showmode                        " show --MODE--
 set laststatus=2                    " Always show a status line
 set cmdheight=2                     " Prevent "Press Enter" messages
 "stuff to ignore when tab completing
@@ -129,8 +130,9 @@ set colorcolumn=79
 set wrap  	        " enable wrap mode to see long code lines
 set linebreak       " when wrapping, wrap at word boundaries (vs last char)
 set breakindent     " preserves the indent level of wrapped lines
-set showbreak=↪     " illustrate wrapped lines
-set wrap            " wrapping with breakindent is tolerable
+set showbreak=>\ 
+set list
+set listchars=tab:»\ ,extends:›,precedes:‹,nbsp:·,trail:·
 set textwidth=0
 set backspace=indent,eol,start  " allow backspace on everything in insert mode
 " BUFFERS
@@ -206,54 +208,6 @@ vmap <C-y> [e'[V']
 vmap <C-e> ]e'[V']
 " LEADER KEYS --------------------------------------------------------------
 " let mapleader = \" "
-" unite/denite/fzf {{{
-" if &rtp =~ 'fzf'
-"     nnoremap <leader>f :fzf
-"     nnoremap <leader>e :FzfFiles<CR>
-"     nnoremap <leader>b :FzfBuffers<CR>
-"     nnoremap <leader>l :FzfLines<CR>
-"     nnoremap <leader>L :FzfBLines<CR>
-"     nnoremap <leader>g :<C-u>call fzf#run({'source': reverse(split(execute('changes'), "\n"))})<CR>
-"     nnoremap <leader>j :<C-u>call fzf#run({'source': reverse(split(execute('jumps'), "\n"))})<CR>
-"     nnoremap <leader>y :<C-u>call fzf#run({'source': reverse(split(execute('registers'), "\n"))})<CR>
-"     nnoremap <leader>m :FzfMarks<CR>
-"     nnoremap <leader>t :FzfTags<CR>
-"     nnoremap <leader>T :FzfBTags<CR>
-"     nnoremap <leader>: :FzfHistory:<CR>
-"     nnoremap <leader>/ :FzfHistory/<CR>
-"     nnoremap <leader>u :FzfSnippets<CR>
-"     inoremap <c-u> :FzfSnippets<CR>
-"     nnoremap <leader>h :FzfHelptags<CR>
-
-"     " Mapping selecting mappings
-"     nmap <leader><tab> <plug>(fzf-maps-n)
-"     xmap <leader><tab> <plug>(fzf-maps-x)
-"     omap <leader><tab> <plug>(fzf-maps-o)
-
-"     " Insert mode completion
-"     imap <c-f> <plug>(fzf-complete-path)
-"     imap <c-f> <plug>(fzf-complete-path)
-"     imap <c-l> <plug>(fzf-complete-line)
-" elseif &rtp =~ 'denite'
-"     nnoremap <leader>b :<C-u>Denite buffer -direction=dynamictop<CR>
-"     nnoremap <leader>e :<C-u>Denite file/rec -direction=dynamictop<CR>
-"     nnoremap <leader>y :<C-u>Denite register -direction=dynamictop<CR>
-"     nnoremap <leader>h :<C-u>Denite help -direction=dynamictop<CR>
-"     nnoremap <leader>c :<C-u>Denite command_history -direction=dynamictop<CR>
-"     nnoremap <leader>j :<C-u>Denite jump -direction=dynamictop<CR>
-"     nnoremap <leader>t :<C-u>Denite tag -direction=dynamictop<CR>
-"     nnoremap <leader>g :<C-u>Denite change -direction=dynamictop<CR>
-" elseif &rtp =~ 'picker-vim'
-"     nmap <unique> <leader>e <Plug>(PickerEdit)
-"     nmap <unique> <leader>b <Plug>(PickerBuffer)
-"     nmap <unique> <leader>h <Plug>(PickerHelp)
-
-"     nmap <unique> <leader>dv <Plug>(PickerVsplit)
-"     nmap <unique> <leader>ds <Plug>(PickerSplit)
-"     nmap <unique> <leader>dt <Plug>(PickerTabedit)
-" endif
-
-" }}}
 " PLUGINS ----------------------------------------------------------------- {{{
 " Jedi
 let g:jedi#completions_command = "<C-Space>"
@@ -294,7 +248,6 @@ if &rtp =~ 'denite'
 
     " Change default action.
     call denite#custom#kind('command', 'default_action', 'edit')
-
     " Ripgrep command on grep source
     call denite#custom#var('grep', 'command', ['rg'])
     call denite#custom#var('grep', 'default_opts',
@@ -325,25 +278,76 @@ if &rtp =~ 'denite'
 endif
     " }}}
     " BINDINGS {{{
-    nnoremap <leader>b :<C-u>Denite buffer -start-filter=true -prompt=>> -direction=dynamictop<CR>
-    nnoremap <leader>e :<C-u>Denite file/rec -start-filter=true -prompt=>> -direction=dynamictop<CR>
-    nnoremap <leader>y :<C-u>Denite register -start-filter=true -prompt=>> -direction=dynamictop<CR>
+" fzf {{{
+if &rtp =~ 'fzf'
+    " nnoremap <leader>f :fzf
+    " nnoremap <leader>e :FzfFiles<CR>
+    " nnoremap <leader>b :FzfBuffers<CR>
+    " nnoremap <leader>l :FzfLines<CR>
+    " nnoremap <leader>L :FzfBLines<CR>
+    " nnoremap <leader>g :<C-u>call fzf#run({'source': reverse(split(execute('changes'), "\n"))})<CR>
+    " nnoremap <leader>j :<C-u>call fzf#run({'source': reverse(split(execute('jumps'), "\n"))})<CR>
+    " nnoremap <leader>y :<C-u>call fzf#run({'source': reverse(split(execute('registers'), "\n"))})<CR>
+    " nnoremap <leader>m :FzfMarks<CR>
+    " nnoremap <leader>t :FzfTags<CR>
+    " nnoremap <leader>T :FzfBTags<CR>
+    " nnoremap <leader>: :FzfHistory:<CR>
+    nnoremap <leader>/ :FzfHistory/<CR>
+    nnoremap <leader>u :FzfSnippets<CR>
+    inoremap <C-u> <Esc>:FzfSnippets<CR>
+    imap <C-u> <plug>(fzf-complete-snippets)
+    " nnoremap <leader>h :FzfHelptags<CR>
 
-    nnoremap <leader>l :<C-u>Denite line -start-filter=true -prompt=>> -direction=dynamictop<CR>
-    nnoremap <leader>m :<C-u>Denite mark -start-filter=true -prompt=>> -direction=dynamictop<CR>
-    nnoremap <leader>j :<C-u>Denite jump -start-filter=true -prompt=>> -direction=dynamictop<CR>
-    nnoremap <leader>t :<C-u>Denite tag -start-filter=true -prompt=>> -direction=dynamictop<CR>
-    nnoremap <leader>g :<C-u>Denite change -start-filter=true -prompt=>> -direction=dynamictop<CR>
-    nnoremap <leader>r :<C-u>Denite registers -start-filter=true -prompt=>> -direction=dynamictop<CR>
+    " Mapping selecting mappings
+    nmap <leader><tab> <plug>(fzf-maps-n)
+    xmap <leader><tab> <plug>(fzf-maps-x)
+    omap <leader><tab> <plug>(fzf-maps-o)
 
-    nnoremap <leader>h :<C-u>Denite help -start-filter=true -prompt=>> -direction=dynamictop<CR>
-    nnoremap <leader>c :<C-u>Denite command_history -start-filter=true -prompt=>> -direction=dynamictop<CR>
-    nnoremap <leader>c :<C-u>Denite command -start-filter=true -prompt=>> -direction=dynamictop<CR>
-    nnoremap <leader>s :<C-u>Denite source -start-filter=true -prompt=>> -direction=dynamictop<CR>
+    " Insert mode completion
+    imap <c-f> <plug>(fzf-complete-path)
+    imap <c-l> <plug>(fzf-complete-line)
+endif
+" }}}
+if &rtp =~ 'denite'
+    if has ('nvim')
+        nnoremap <leader>b :<C-u>Denite buffer -split=floating -start-filter=true -prompt=>> -direction=dynamictop<CR>
+        nnoremap <leader>e :<C-u>Denite file/rec -split=floating -start-filter=true -prompt=>> -direction=dynamictop<CR>
+        nnoremap <leader>y :<C-u>Denite register -split=floating -start-filter=true -prompt=>> -direction=dynamictop<CR>
+
+        nnoremap <leader>l :<C-u>Denite line -split=floating -start-filter=true -prompt=>> -direction=dynamictop<CR>
+        nnoremap <leader>m :<C-u>Denite mark -split=floating -start-filter=true -prompt=>> -direction=dynamictop<CR>
+        nnoremap <leader>j :<C-u>Denite jump -split=floating -start-filter=true -prompt=>> -direction=dynamictop<CR>
+        nnoremap <leader>t :<C-u>Denite tag -split=floating -start-filter=true -prompt=>> -direction=dynamictop<CR>
+        nnoremap <leader>g :<C-u>Denite change -split=floating -start-filter=true -prompt=>> -direction=dynamictop<CR>
+        nnoremap <leader>r :<C-u>Denite registers -split=floating -start-filter=true -prompt=>> -direction=dynamictop<CR>
+
+        nnoremap <leader>h :<C-u>Denite help -split=floating -start-filter=true -prompt=>> -direction=dynamictop<CR>
+        nnoremap <leader>c :<C-u>Denite command_history -split=floating -start-filter=true -prompt=>> -direction=dynamictop<CR>
+        nnoremap <leader>c :<C-u>Denite command -split=floating -start-filter=true -prompt=>> -direction=dynamictop<CR>
+        nnoremap <leader>s :<C-u>Denite source -split=floating -start-filter=true -prompt=>> -direction=dynamictop<CR>
+    else
+        nnoremap <leader>b :<C-u>Denite buffer -start-filter=true -prompt=>> -direction=dynamictop<CR>
+        nnoremap <leader>e :<C-u>Denite file/rec -start-filter=true -prompt=>> -direction=dynamictop<CR>
+        nnoremap <leader>y :<C-u>Denite register -start-filter=true -prompt=>> -direction=dynamictop<CR>
+
+        nnoremap <leader>l :<C-u>Denite line -start-filter=true -prompt=>> -direction=dynamictop<CR>
+        nnoremap <leader>m :<C-u>Denite mark -start-filter=true -prompt=>> -direction=dynamictop<CR>
+        nnoremap <leader>j :<C-u>Denite jump -start-filter=true -prompt=>> -direction=dynamictop<CR>
+        nnoremap <leader>t :<C-u>Denite tag -start-filter=true -prompt=>> -direction=dynamictop<CR>
+        nnoremap <leader>g :<C-u>Denite change -start-filter=true -prompt=>> -direction=dynamictop<CR>
+        nnoremap <leader>r :<C-u>Denite registers -start-filter=true -prompt=>> -direction=dynamictop<CR>
+
+        nnoremap <leader>h :<C-u>Denite help -start-filter=true -prompt=>> -direction=dynamictop<CR>
+        nnoremap <leader>c :<C-u>Denite command_history -start-filter=true -prompt=>> -direction=dynamictop<CR>
+        nnoremap <leader>c :<C-u>Denite command -start-filter=true -prompt=>> -direction=dynamictop<CR>
+        nnoremap <leader>s :<C-u>Denite source -start-filter=true -prompt=>> -direction=dynamictop<CR>
+    endif
+endif
 
     " Define mappings
     autocmd FileType denite 
                 \call s:denite_my_settings()
+    autocmd FileType denite set wildcharm=<C-z>
     function! s:denite_my_settings() abort
         nnoremap <silent><buffer><expr> <CR>
                     \ denite#do_map('do_action')
@@ -369,11 +373,12 @@ endif
     autocmd FileType denite-filter 
                 \call s:denite_filter_my_settings()
     function! s:denite_filter_my_settings() abort
+        " Map to quit
         imap <silent><buffer> <C-o> <Plug>(denite_filter_quit)
         imap <silent><buffer> q <Plug>(denite_filter_quit)
-
+        " General mappings
         inoremap <silent><buffer><expr> <CR>
-                    \ denite#do_map('do_action', 'switch')
+                    \ denite#do_map('do_action', 'default')
         inoremap <silent><buffer><expr> <C-h>
                     \ denite#do_map('do_action', 'splitswitch')
         inoremap <silent><buffer><expr> <C-v>
@@ -382,7 +387,9 @@ endif
                     \ denite#do_map('do_action', 'tabswitch')
         inoremap <silent><buffer><expr> <C-v>
                     \ denite#do_map('do_action', 'split')
-
+        " Map to denite main window
+        imap <silent><buffer> <Tab>
+                    \ <Esc><C-w>p<Tab><C-z>
         inoremap <silent><buffer> <C-j>
                     \ <Esc><C-w>p:call cursor(line('.')+1,0)<CR><C-w>pA
         inoremap <silent><buffer> <C-k>
@@ -466,7 +473,6 @@ elseif has('python')
     let g:UltiSnipsUsePythonVersion=2
 endif
 
-inoremap <c-u> <C-o>:Snippets<CR> 
 inoremap <silent> <C-j> <C-r>=LoadUltiSnipsAndExpand()<CR>
 
 function! LoadUltiSnipsAndExpand()
@@ -486,15 +492,15 @@ autocmd FileType html,css EmmetInstall
 let g:user_emmet_leader_key='<C-Z>'
 " }}}
 " JEDI-VIM ---------------------------------------------------------------- {{{
-" let g:jedi#force_py_version = 3       " Let jedi decide based on $(python) 
 let g:jedi#auto_initialization = 1
 let g:jedi#auto_vim_configuration = 0
 " Let Something else complete
 let g:jedi#completions_enabled = 1
 let g:jedi#popup_on_dot = 0
 let g:jedi#popup_select_first = 0
-let g:jedi#show_call_signatures = 1
+let g:jedi#show_call_signatures = 2
 let g:jedi#show_call_signatures_delay = 0
+let g:jedi#smart_auto_mappings = 1 " auto type form module.name<space> import
 let g:jedi#auto_close_doc = 1
 let g:jedi#use_tabs_not_buffers = 0  " goto in tabs = 0 for buffers
 let g:jedi#use_splits_not_buffers = ""  "goto in splits: top,left,right,bottom
@@ -505,8 +511,6 @@ let g:ale_lint_on_text_changed = 'never'
 let g:ale_lint_on_save = 1
 let g:ale_set_loclist = 1
 let g:ale_set_quickfix = 0
-let g:ale_sign_error = '✗'
-let g:ale_sign_warning = '⚠'
 let g:ale_echo_msg_error_str = 'E'
 let g:ale_echo_msg_warning_str = 'W'
 let g:ale_echo_msg_format = '[%linter%] %s [%severity%]'
@@ -568,7 +572,7 @@ function! CCR()
     command! -bar Z silent set more|delcommand Z
     if cmdline =~ '\v\C^(ls|files|buffers)'
         " like :ls but prompts for a buffer command
-        return "\<CR>:b"
+        return "\<CR>:b "
     elseif cmdline =~ '\v\C/(#|nu|num|numb|numbe|number)$'
         " like :g//# but prompts for a command
         return "\<CR>:"

@@ -182,8 +182,11 @@ export TLDR_COLOoR_COMMAND="white"
 # }}}
 source $HOME/.aliases
 # completion
-autoload -U compinit colors zcalc
+autoload -U compinit colors zcalc bashcompinit
 compinit -d
+# pipx
+bashcompinit
+eval "$(register-python-argcomplete pipx)"
 # SETOPT {{{
 # Completions goodies
 zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'       # Case insensitive tab completion
