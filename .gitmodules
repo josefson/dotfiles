@@ -18,4 +18,4 @@
 	url = https://github.com/zsh-users/zsh-history-substring-search.git
 [submodule "zsh/.zsh/zsh-autosuggestions"]
 	path = zsh/.zsh/zsh-autosuggestions
-	url = https://github.com/josefson/zsh-autosuggestions.git
+	url = https://github.com/zsh-users/zsh-autosuggestions.git
