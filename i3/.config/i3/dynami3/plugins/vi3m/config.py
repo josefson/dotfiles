@@ -1,0 +1,1 @@
+/home/elodin/.config/i3/config.py
