@@ -1,57 +1,103 @@
 general {
-        colors = true
-        interval = 5
+    interval = 1
+    colors = true
+    color_good = '#88b090'
+    color_degraded = '#ccdc90'
+    color_bad = '#e89393'
 }
 
-order += "disk /"
-order += "wireless wlp3s0"
-order += "ethernet enp0s25"
-order += "battery 0"
-order += "cpu_temperature 0"
-order += "load"
+order += "frame whoami"
+order += "frame sys_data"
+order += "netdata"
+#order += "cmus"
+order += "volume_status"
+order += "wifi"
+order += "battery_level"
+order += "keyboard_layout"
 order += "tztime local"
-order += "tztime berlin"
 
-wireless  wlp3s0{
-        format_up = "W: (%quality at %essid, %bitrate) %ip"
-        format_down = "W: down"
+frame sys_data {
+    sysdata {
+        format = " {cpu_usage}%"
+        separator = false
+        separator_block_width = 5
+    }
+    external_script cpu_temp {
+        script_path = "sensors | grep 'Package' | awk '{print $4}' | sed 's/.*\([0-9]\{2\}\).*/\1/'"
+        format = "{output}C"
+        separator = false
+        separator_block_width = 5
+    }
+    external_script used_memory {
+        script_path = "free -h | head -n 2 | tail -n 1 | awk '{print $3}' | sed 's/.$/B/'"
+        format = "{output}"
+    }
 }
-
-ethernet enp0s25{
-        # if you use %speed, i3status requires the cap_net_admin capability
-        format_up = "E: %ip (%speed)"
-        format_down = "E: down"
+frame whoami {
+    whoami {
+        format = " {username}"
+    }
+    external_script hostname {
+        script_path = "hostname"
+        format = " {output}"
+    }
+    uptime {
+    format = " {days} days"
+    }
+    # min_width = 
+    # separator = false
+    # separator_block_width = 600
 }
-
-battery 0 {
-        format = "%status %percentage %remaining %emptytime"
-        format_down = "No battery"
-        status_chr = "⚡ CHR"
-        status_bat = "🔋 BAT"
-        status_unk = "? UNK"
-        status_full = "☻ FULL"
-        path = "/sys/class/power_supply/BAT0/uevent"
-        low_threshold = 10
+netdata {
+    format = '[\?color=down {down}{up}]'
+    color_good = "#ffffff"
+    color_bad = "#ffffff"
 }
-
+arch_updates {
+    hide_if_zero = true
+    format = " {pacman}"
+}
+cmus {
+    format = '[\?if=is_started [\?if=is_playing  ][\?if=is_paused  ] [\?if=is_stopped  ][[{title} - {artist} - {album}] |\?show cmus: waiting for user input]]'
+}
+volume_status {
+    color_good = "#ffffff"
+    color_degraded = "#ffffff"
+    button_down = 3
+    button_up = 1
+    button_mute = 2
+    format = ""
+    format_muted = ""
+    max_volume = 120
+}
+wifi {
+    on_click 1 = "exec urxvt -e nmtui"
+    on_click 3 = "exec urxvt -e nm-connection-editor"
+    threshold = [(75, "good"), (49, "degraded"), (29, "bad")]
+    color_good = "#ffffff"
+    format = " {ssid}"
+    down_color = "bad"
+}
+battery_level {
+    #blocks = "_▁▂▃▄▅▆▇█"
+    blocks = ""
+    charging_character = ""
+    notification = false
+    notify_low_level = true
+    hide_when_full = true
+    format = "{icon}{percent}%"
+    color_charging = '#ffffff'
+    color_good = '#ffffff'
+    color_degraded = '#ccdc90'
+    color_bad = '#e89393'
+}
+keyboard_layout {
+    button_next = 1
+    button_prev = 3
+    layouts = ['us','us -variant intl','br']
+    format = " {layout}"
+    color_us = "#ffffff"
+}
 tztime local {
-        format = "%Y-%m-%d %H:%M:%S"
-}
-
-tztime berlin {
-        format = "%Y-%m-%d %H:%M:%S %Z"
-        timezone = "Europe/Berlin"
-}
-
-load {
-        format = "%5min"
-}
-
-cpu_temperature 0 {
-        format = "T: %degrees °C"
-        path = "/sys/devices/platform/coretemp.0/hwmon/hwmon2/temp1_input"
-}
-
-disk "/" {
-        format = "%free"
+    format = " %a %b %e  %H:%M"
 }
