@@ -33,4 +33,4 @@ fi
 
 # xrandr --auto
 exec i3
-#exec gnome-session
+# exec gnome-session
