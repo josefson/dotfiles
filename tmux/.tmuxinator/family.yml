@@ -1,0 +1,39 @@
+# /home/elodin/.tmuxinator/family.yml
+
+# Project hooks
+# on_project_start: command
+# on_project_first_start: command
+# on_project_restart: command
+# on_project_exit: command
+# on_project_stop: command
+
+# Runs in each window and pane before window/pane specific commands. Useful for setting up interpreter versions.
+# pre_window: rbenv shell 2.0.0-p247
+
+# Tmux hooks
+# tmux_options: -f ~/.tmux.mac.conf
+# tmux_command: byobu
+
+# Specifies (by name or index) which window will be selected on project startup. If not set, the first window is used.
+# startup_window: logs
+
+name: family
+root: ~/Workspace/Python/family
+
+windows:
+  - Vim:
+      layout: main-vertical
+      panes:
+          - editor:
+            - vim -S Session.vim
+          - ipython:
+            - while ! [[ -n $(docker-compose ps | grep web | grep --no-ignore-case Up) ]]; do; sleep 7; done; clear; docker-compose exec web python manage.py shell_plus --settings=app.settings.dev
+  - Webserver:
+      layout: main-vertical
+      panes:
+          - server:
+              - while ! [[ -n $(pgrep docker) ]]; do; sleep 3; done; clear; docker-compose -f docker-compose-dev.yml up
+          - web:
+              - while ! [[ -n $(docker-compose ps | grep web | grep --no-ignore-case Up) ]]; do; sleep 3; done; clear; docker-compose exec web bash
+          - database:
+              - while ! [[ -n $(docker-compose ps | grep database | grep --no-ignore-case Up) ]]; do; sleep 3; done; clear; docker-compose exec database psql $POSTGRES_DB

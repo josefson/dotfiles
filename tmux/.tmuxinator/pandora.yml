@@ -23,11 +23,11 @@ windows:
         layout: even-horizontal
         panes:
             # - sleep 2 && proxychains4 -q -f ~/.proxychains.conf pianobar
-            - sleep 15 && pianobar 
+            - sleep 7 && pianobar
             - ~/.config/pianobar/lyrics.sh
     - Tor:
         layout: even-horizontal
         panes:
             # - ssh -i ~/.ssh/amazon-machine-key.pem -D 5555 -N ubuntu@54.172.165.39
-            - rm ~/.tor/lock; rm ~/.tor/state; tor -f ~/.torrc
+            - pkill -u $USER -x tor; rm ~/.tor/lock; rm ~/.tor/state; tor -f ~/.torrc
             - polipo -c ~/.polipo
