@@ -15,9 +15,12 @@ Session.vim
 *.pyc
 .tags
 .pytags
+tags
+pytags
 #syncthing
 .stignore
 #direnv
 .envrc
 .env
 .venv/*
+.gitignore
