@@ -9,19 +9,17 @@ bindsym $super+Shift+c reload
 # restart i3 inplace
 # bindsym $super+Shift+r restart;
 bindsym $super+Shift+r exec i3-msg restart
-# exit i3
-bindsym $super+Shift+q exec i3-msg exit
-# lightdm
-bindsym $super+Shift+x exec dm-tool lock
-# lock
-# bindsym $super+Shift+x exec i3lock --color 475263
 # exit i3 (logs you out of your X session)
-# bindsym $super+Shift+x exec "i3-nagbar -t warning -m \
-#     'You pressed the exit shortcut. Do you really want to exit i3? \
-#     This will end your X session.' -b 'Yes, exit i3' 'i3-msg exit'"
+bindsym $super+Shift+x exec "i3-nagbar -t warning -m \
+    'You pressed the exit shortcut. Do you really want to exit i3? \
+    This will end your X session.' -b 'Yes, exit i3' 'i3-msg exit'"
+# lock computer
+bindsym $super+Shift+q exec $HOME/bin/i3lock.py
 # }}}
 # APPEARANCE {{{
-font pango:SF Pro Text 17
+set $bar_font_size 8
+set $window_font_size 8
+font pango:SF Pro Text $window_font_size
 hide_edge_borders smart # none|smart|both
 for_window [class="^.*"] border pixel 5
 title_align center
@@ -54,10 +52,10 @@ set $ur #C20000
 
 # COLORS                border  backgrd text    indicator
 # set window colors
-client.focused          $fg     $fg     $tx      $tx     
-client.focused_inactive $in     $in     $tx      $tx     
-client.unfocused        $un     $un     #888888  $tx     
-client.urgent           $ur     $ur     $tx      $tx     
+client.focused          $fg     $fg     $tx      $tx
+client.focused_inactive $in     $in     $tx      $tx
+client.unfocused        $un     $un     #888888  $tx
+client.urgent           $ur     $ur     $tx      $tx
 # }}}
 # GAPS {{{
 smart_gaps on
@@ -69,7 +67,7 @@ gaps outer 0
 # BARS {{{
     bar {
         id bar1
-        font pango:SF Pro Text Medium 13, Symbols Nerd Font 13
+        font pango:SF Pro Text Medium $bar_font_size, Symbols Nerd Font $bar_font_size
         status_command py3status -c ~/.config/i3status/config
         mode dock
         position top
@@ -90,7 +88,7 @@ gaps outer 0
     }
     bar {
         id bar2
-        font pango:SF Pro Text Medium 13, Symbols Nerd Font 13
+        font pango:SF Pro Text Medium $bar_font_size, Symbols Nerd Font $bar_font_size
         colors {
             background $bg
             statusline $tx
@@ -127,9 +125,7 @@ gaps outer 0
     for_window [title="calc"] floating enable, sticky enable, $exec i3-msg $($HOME/bin/resolution.py -r 30 -p top right)
 
     # ASSIGNMENTS windows to workspaces
-    # assign [class="Telegram"] → $w2
-    # assign [class="Skype"] → $w2
-    # assign [class="Discord"] → $w2
+    assign [class="Telegram"] $w1
 # }}}
 # BEHAVIOR {{{
     focus_follows_mouse no
@@ -155,7 +151,7 @@ gaps outer 0
     set $exec     exec --no-startup-id
     set $always   exec_always --no-startup-id
     # Default applications
-    set $filer    ranger
+    set $filer    $HOME/bin/vifmrun
     set $browser  qutebrowser
     set $terminal urxvt
     set $player   mpv
@@ -166,11 +162,12 @@ gaps outer 0
     bindsym XF86AudioMute           $exec pactl set-sink-mute 0 toggle
     bindsym XF86MonBrightnessUp     $exec light -A 20
     bindsym XF86MonBrightnessDown   $exec light -U 20
-    bindsym $super+i                $exec $HOME/bin/invert_colors.sh
-    bindsym $super+$control+i       $exec xrandr-invert-colors
-    bindsym $super+z                $exec $terminal -title calc -e /usr/bin/zsh -c "source $HOME/.zshrc && calc"
+    # bindsym $super+i                $exec $HOME/bin/invert_colors.sh
+    # bindsym $super+$control+i       $exec xrandr-invert-colors
+    # bindsym $super+s        $exec $HOME/bin/say $(xclip -selection primary -o)
+    # bindsym $super+Shift+s  $exec $HOME/bin/say $(xclip -selection clipboard -o)
     # free $super+keys
-    # bindsym y, x, /, ', =
+    # bindsym y, z, x, c, /, ', =, `
     # APP SHORTCUTS {{{
         bindsym $super+t        $exec $terminal
         bindsym $super+b        $exec $browser
@@ -178,13 +175,9 @@ gaps outer 0
         bindsym $super+Shift+m  $exec $HOME/bin/scratchpad.py -c media_player -a "urxvt -name media_player -e ncmpcpp"
         bindsym $super+Shift+p  $exec $HOME/bin/scratchpad.py -c media_player -a "urxvt -name pandora -e tt start pandora"
                                 # rms,lst,fem are the best voices
-        bindsym $super+s        $exec $HOME/bin/say.py $(xclip -selection primary -o)
-        bindsym $super+Shift+s  $exec $HOME/bin/say.py $(xclip -selection clipboard -o)
         bindsym $super+space    $exec rofi -show drun
         bindsym $super+o        $exec rofi -show window
-        bindsym $super+g        $exec $terminal -e ranger 
-        bindsym Print           $exec $HOME/bin/shoot.sh -wc 
-        bindsym $super+Print    $exec $HOME/bin/shoot.sh -sc 
+        bindsym $super+g        $exec $terminal -e $filer
         bindsym $super+Shift+5  $exec "xdotool search --all --pid $(xdotool getwindowpid $(xdotool getactivewindow)) \
                                 --name $(xdotool getwindowname $(xdotool getactivewindow)) set_window --name \
                                 $(zenity --entry --text 'Name last focused window:')"
@@ -259,7 +252,9 @@ gaps outer 0
     # MODES {{{
         bindsym $super+p mode "$vi3m_p"
         bindsym $super+a mode "$vi3m_m"
-        bindsym $super+apostrophe mode "$vi3m_scratchpad"
+        bindsym $super+i mode "$vi3m_u"
+        bindsym $super+s mode "$vi3m_z"
+        bindsym $super+apostrophe mode "$vi3m_c"
         bindsym $super+comma mode "Move: [hjkl|HJKL]"
         bindsym $super+period mode "Resize: [hjkl|HJKL]"
         # bindsym $super+p mode "PrintScreen:  [W]in  [F]ull  [S]el  [I]mgur"
@@ -401,24 +396,6 @@ gaps outer 0
 # }}}
 # }}}
 # AUTOSTART APPS {{{
-    #Display Power Manage - Prevent Display from blanking
-    $exec sleep 1; xset s off -dpms
-    #Caps->Control Alt_L<->Super_L LR_Shift->Caps
-    $exec $HOME/bin/screen.sh
-    $exec $HOME/bin/keyboard.sh
-    #Wallpaper
-    $exec feh --bg-scale ~/.wallpaper
-    $exec wal -i ~/.wallpaper -o ~/bin/pywal-helper.py
-    #Apps
-    $exec transmission-daemon
-    $exec keynav daemonize
-    $exec mpd
-    $exec dunst
-    # $exec synergy -c ~/synergy.conf
-    # $exec syncthing-gtk -m
-    # $exec $HOME/bin/quake.py -n quake_top
-    # $exec $HOME/bin/quake.py -n quake_bottom
-    # $exec $HOME/bin/quake.py -n quake_right
-    # $exec $HOME/bin/quake.py -n quake_left
+    $exec $HOME/bin/i3-autostart.sh
 # }}}
 # vim: fdm=marker nowrap

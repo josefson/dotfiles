@@ -6,31 +6,40 @@ general {
     color_bad = '#e89393'
 }
 
+order += "window"
+order += "mpd_status"
 order += "frame whoami"
 order += "frame sys_data"
-order += "netdata"
-#order += "cmus"
+#order += "netdata"
 order += "volume_status"
 order += "wifi"
 order += "battery_level"
 order += "keyboard_layout"
 order += "tztime local"
 
+window {
+    format = " {title}"
+    hide_title = False
+}
+
 frame sys_data {
     sysdata {
         format = " {cpu_usage}%"
         separator = false
         separator_block_width = 5
+        cache_timeout = 1
     }
     external_script cpu_temp {
         script_path = "sensors | grep 'Package' | awk '{print $4}' | sed 's/.*\([0-9]\{2\}\).*/\1/'"
         format = "{output}C"
         separator = false
         separator_block_width = 5
+        cache_timeout = 1
     }
     external_script used_memory {
         script_path = "free -h | head -n 2 | tail -n 1 | awk '{print $3}' | sed 's/.$/B/'"
         format = "{output}"
+        cache_timeout = 1
     }
 }
 frame whoami {
@@ -57,8 +66,14 @@ arch_updates {
     hide_if_zero = true
     format = " {pacman}"
 }
-cmus {
-    format = '[\?if=is_started [\?if=is_playing  ][\?if=is_paused  ] [\?if=is_stopped  ][[{title} - {artist} - {album}] |\?show cmus: waiting for user input]]'
+mpd_status {
+    state_play= ''
+    state_pause= ''
+    state_stop= ''
+    color_pause = "#ffffff"
+    color_play = "#ffffff"
+    color_stopped = "#ffffff"
+    format = "{state} [[[{artist}] - {title}]]"
 }
 volume_status {
     color_good = "#ffffff"
@@ -66,7 +81,7 @@ volume_status {
     button_down = 3
     button_up = 1
     button_mute = 2
-    format = ""
+    format = " {percentage}%"
     format_muted = ""
     max_volume = 120
 }
@@ -81,6 +96,7 @@ wifi {
 battery_level {
     #blocks = "_▁▂▃▄▅▆▇█"
     blocks = ""
+    cache_timeout = 1
     charging_character = ""
     notification = false
     notify_low_level = true
@@ -92,10 +108,11 @@ battery_level {
     color_bad = '#e89393'
 }
 keyboard_layout {
+    cache_timeout = 1
     button_next = 1
     button_prev = 3
     layouts = ['us','us -variant intl','br']
-    format = " {layout}"
+    format = " {layout} {variant}"
     color_us = "#ffffff"
 }
 tztime local {

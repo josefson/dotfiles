@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 from sys import argv
+import string
+import os
 
 # Variables {{{
 '''
@@ -8,8 +10,8 @@ anywhere but the final character of the string.
 '''
 
 
-USER = 'elodin'
-HOME = f'/home/{USER}'
+USER = os.getenv('USER')
+HOME = os.getenv('HOME')
 BIN = f'{HOME}/bin'
 
 term = 'urxvt'
@@ -36,7 +38,6 @@ def exec_startup(cmd):
 
 def exec_term(cmd):
     return f'exec --no-startup-id {term} -title {cmd} -e {cmd}'
-    pass
 # }}}
 
 
@@ -50,19 +51,24 @@ move_send_focus = {
     for index, i in enumerate('asdfghjkl', start=1)
 }
 
-direction = {'k': 'up', 'j': 'down', 'h': 'left', 'l': 'right'}
-move_c_dir = {f'mc{key}': f'move container to output {value}'
-              for key, value in direction.items()}
-move_w_dir = {f'mw{key}': f'move workspace to output {value}'
-              for key, value in direction.items()}
+marks = {f'z{key}': f'mark --toggle --add {key}' for key in string.ascii_lowercase}
+marks_goto = {f'c{key}': f'[con_mark="{key}"] focus;' for key in string.ascii_lowercase}
+
+# direction = {'k': 'up', 'j': 'down', 'h': 'left', 'l': 'right'}
+# move_c_dir = {f'mc{key}': f'move container to output {value}'
+#               for key, value in direction.items()}
+# move_w_dir = {f'mw{key}': f'move workspace to output {value}'
+#               for key, value in direction.items()}
 
 
 binds = {  # {{{
     **move_focus,
     **move_send,
     **move_send_focus,
-    **move_c_dir,
-    **move_w_dir,
+    **marks,
+    **marks_goto,
+    # **move_c_dir,
+    # **move_w_dir,
     # {{{ OPEN
     'oa': exec(f'{BIN}/arconai.py'),
     'of': exec('firefox'),
@@ -70,40 +76,40 @@ binds = {  # {{{
     'ok': exec('keepassxc'),
     'ol': exec('libreoffice'),
     'ov': exec('virtualbox'),
+    'oc': f'exec --no-startup-id {term} -title calc -e /usr/bin/zsh -c "source {HOME}/.zshrc && calc"',
     # }}}
     # {{{ scratchpad
-    'scratchpadl': exec(f'{BIN}/scratchpad.py -c transmission -a transmission-qt'),
-    'scratchpadt': exec(f'{BIN}/scratchpad.py -t Telegram -a telegram-desktop'),
-    'scratchpadd': exec(f'{BIN}/scratchpad.py -t discordapp.com -a '
-                        f'"qutebrowser https://discordapp.com/channels/@me"'),
-    'scratchpadw': exec(f'{BIN}/scratchpad.py -t web.whatsapp.com -a '
-                        f'"qutebrowser https://web.whatsapp.com/"'),
-    'scratchpadb': exec(f'{BIN}/scratchpad.py -c qute_scratch -a "qutebrowser --basedir'
-                        f' {HOME}/Downloads/tmpdir --qt-arg name qute_scratch"'),
+    'sl': exec(f'{BIN}/scratchpad.py -c transmission -a transmission-qt'),
+    'st': exec(f'{BIN}/scratchpad.py -t Telegram -a telegram-desktop'),
+    'sd': exec(f'{BIN}/scratchpad.py -t discordapp.com -a '
+               f'"qutebrowser https://discordapp.com/channels/@me"'),
+    'sw': exec(f'{BIN}/scratchpad.py -t web.whatsapp.com -a '
+               f'"qutebrowser https://web.whatsapp.com/"'),
+    'sb': exec(f'{BIN}/scratchpad.py -c qute_scratch -a "qutebrowser --basedir'
+               f' {HOME}/Downloads/tmpdir --qt-arg name qute_scratch"'),
     # }}}
-    # {{{ config
-    'xk': exec(f'{BIN}/keyboard.sh'),
-    'xs': exec(f'{BIN}/screen.sh'),
-    'xx': exec([f'{BIN}/keyboard.sh', f'{BIN}/screen.sh']),
+    # {{{ Utils
+    'uss': exec(f'{BIN}/say $xclip -selection primary -o'),  # selection
+    'usc': exec(f'{BIN}/say $xclip -selection clipboard -o'),  # clipboard
+    'uiw': exec(f'{BIN}/invert_colors.sh'),  # inner app
+    'uix': exec('xrandr-invert-colors'),  # around app
+    'ux': exec([f'{BIN}/keyboard.sh', f'{BIN}/screen.sh']),
+    'uwr': exec('feh --randomize --bg-scale $walls/'),
+    'uws': exec('sxiv -r -t ~/Pictures/Wallpapers'),
     # }}}
     # {{{ Workspace
-    'wM': exec('i3-input -P "move to workspace " -F "move to workspace %s"'),
-    'wm': exec("i3-input -P 'move to workspace number ' -F 'move to workspace number %s'"),
-    'wo': exec("i3-input -P 'move workspace to output ' -F 'move workspace to output %s'"),
+    'wM': exec('i3-input -P "move to workspace name: " -F "move to workspace %s"'),
+    'wm': exec("i3-input -P 'move to workspace number: ' -F 'move to workspace number %s'"),
+    'wo': exec("i3-input -P 'move workspace to output: ' -F 'move workspace to output %s'"),
     'wr': exec("i3-input -P 'rename workspace to ' -F 'rename workspace to %s'"),
     # }}}
-    # {{{ wallpaper
-    # 'wr': exec('feh --randomize --bg-scale $walls/'),
-    # 'ws': exec('nitrogen $walls'),
-    'ww': exec('sxiv -r -t ~/Pictures/Wallpapers'),
-    # }}}
     # {{{ music player
-    'mp': exec('mpc toggle'),
-    'mq': exec('mpc stop'),
-    'mn': exec('mpc next'),
-    'mN': exec('mpc previous'),
-    'mr': exec('mpc random'),
-    'mR': exec('mpc repeat'),
+    'dp': exec('mpc toggle'),
+    'dq': exec('mpc stop'),
+    'dn': exec('mpc next'),
+    'dN': exec('mpc previous'),
+    'dr': exec('mpc random'),
+    'dR': exec('mpc repeat'),
     # }}}
     # {{{ screenshot or print
     # clipboard
@@ -116,6 +122,8 @@ binds = {  # {{{
     'pS': exec(f'{BIN}/shoot.sh -s'),
     # imgur
     'pi': exec(f'{BIN}/shoot.sh -i'),
+    # flameshot
+    'pp': exec('flameshot gui'),
     # }}}
     # {{{ quake-style -> urxvt
     'h': exec(f'{BIN}/quake.py -n quake_left'),
