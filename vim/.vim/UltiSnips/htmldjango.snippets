@@ -1,0 +1,12 @@
+priority 999
+global !p
+from vimsnippets import complete
+endglobal
+
+snippet '\w+=\"{' "{}" r
+`!p snip.rv = match.group(0)`{ $1 }}
+endsnippet
+
+snippet { "{}" b
+	{{ ${1:value} }}
+endsnippet
