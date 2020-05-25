@@ -34,7 +34,6 @@ rczathura() { $EDITOR ~/.config/zathura/zathurarc ;}
 rcncmpcpp() { $EDITOR ~/.config/ncmpcpp ;}
 rcpianobar() { $EDITOR ~/.config/pianobar/config ;}
 rcqutebrowser() { $EDITOR ~/.config/qutebrowser/config.py ;}
-rcranger() { $EDITOR ~/.config/ranger ;}
 rchosts() { sudo $EDITOR /etc/hosts ;}
 rcfstab() { sudo $EDITOR /etc/fstab ;}
 rcgrub() { sudo $EDITOR /etc/default/grub ;}
@@ -51,7 +50,10 @@ so-xresources() { xrdb -load ~/.Xresources ;}
 # GENERAL ALIASES {{{
 alias sudo='sudo '          # passing aliases archwiki
 # SHORTCUTS
-alias vim='nvim'
+# alias vim='nvim'
+alias ranger='$HOME/bin/vifmrun'
+alias vifm='$HOME/bin/vifmrun'
+alias n='nvim'
 alias q='exit'
 alias zrc='vim ~/.zshrc'
 alias arc='vim ~/.aliases'
@@ -65,7 +67,6 @@ alias ctl='sudo systemctl'
 alias uctl='systemctl --user'
 alias lyrics='. ~/.config/pianobar/lyrics.sh'
 alias polipo='polipo -c ~/.polipo'
-alias ydlmp3='youtube-dl -i --extract-audio --audio-format mp3'
 alias ydl='youtube-dl'
 alias killentr='kill -9 $(ps -o ppid= $(pgrep entr))'
 alias xev-keycode="xev | grep 'keycode\|button'"
@@ -89,7 +90,8 @@ if [ -x /usr/bin/dircolors ] ; then
     alias ll='ls -la'
     alias lg='ll | grep -i'
     alias dir='dir --color-auto'
-    alias grep='grep --color=auto'
+    # alias grep='grep --color=auto'
+    # messes up git grep
     alias fgrep='fgrep --color=auto'
     alias egrep='egrep --color=auto'
 fi
@@ -131,8 +133,6 @@ alias -g L='| less'
 alias -g H='| head'
 alias -g T='| tail'
 alias -g G='| grep -i'
-alias -g pl='| less'
-alias -g pg='| grep'
 # GIST
 alias -g pasteit='nc termbin.com 9999'
 alias -g gist='2>&1 | pasteit | pbcopy && pbpaste;'
@@ -153,6 +153,20 @@ check-file() { aspell check "$1" ;}
 zombie-process() { ps aux | awk '{ print $8 " " $2 }' | grep -w Z ;}
 peerflix(){ command peerflix "$@" --mpv --path ~/Downloads ;}
 zsh_fix(){ rm ~/.zcompdump*; exec zsh ;}
+# Z and Fzf
+unalias z
+z() {
+  if [[ -z "$*" ]]; then
+    cd "$(_z -l 2>&1 | fzf +s --tac | sed 's/^[0-9,.]* *//')"
+  else
+    _last_z_args="$@"
+    _z "$@"
+  fi
+}
+
+zz() {
+  cd "$(_z -l 2>&1 | sed 's/^[0-9,.]* *//' | fzf -q "$_last_z_args")"
+}
 # Translate Shell
 define() { trans "$@" | less ;}
 deflang() { trans -identify "$@" ;}
@@ -208,10 +222,12 @@ lst() {  # ls order by time, most recent
     | awk '{k=0;for(i=0;i<=8;i++)k+=((substr($1,i+2,1)~/[rwx]/)*2^(8-i));if(k)printf(" %0o ",k);print}' | tac
 }
 calc() {
-    if which python2 &>/dev/null; then
-        python2 -ic "from __future__ import division; from math import *; from random import *"
+    if which ipython &>/dev/null; then
+        ipython -ic "from math import *; import cmath"
     elif which python3 &>/dev/null; then
         python3 -ic "from math import *; import cmath"
+    elif which python2 &>/dev/null; then
+        python2 -ic "from __future__ import division; from math import *; from random import *"
     elif which bc &>/dev/null; then
         bc -q -l
     else
@@ -219,7 +235,7 @@ calc() {
     fi
 }
 pytags(){
-    ctags -R --fields=+l --languages=python --python-kinds=-iv -f ./pytags $(python -c "import os, sys; print(' '.join('{}'.format(d) for d in sys.path if os.path.isdir(d)))")
+    ctags -R --fields=+l --languages=python -f ./.pytags $(python -c "import os, sys; print(' '.join('{}'.format(d) for d in sys.path if os.path.isdir(d)))") ./
 }
 p2k(){
     #command k2pdfopt $1 -w 600 -h 800 -dpi 167 -idpi -2 -wrap -hy -ws 0.375 -x
@@ -257,6 +273,7 @@ if [[ $OS == 'Linux' ]]; then
     export PKMGR=$(find_pckmngr pacman aptitude apt-get yum zypper emerge)
     if [[ "$PKMGR" == "pacman" ]]; then
         pacsearch(){ pacman -Ss "$@";}
+        pacquery(){ pacman -Qs "$@";}
         pacinstall(){ sudo pacman -S "$@" ;}
         pacremove(){ sudo pacman -Rscn "$@" ;}
         pacremoveorphans() { sudo pacman -Rs $(pacman -Qqtd) ;}

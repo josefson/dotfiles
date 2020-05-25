@@ -1,3 +1,14 @@
+# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
+# Initialization code that may require console input (password prompts, [y/n]
+# confirmations, etc.) must go above this block; everything else may go below.
+THEME='p10k'
+# THEME='padawan'
+if [[ $THEME == 'p10k' ]]; then
+    if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+      source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+    fi
+fi
+
 # Disable autorename tmux windows <c-a>+, ranme window
 DISABLE_AUTO_TITLE="true"
 DISABLE_AUTO_UPDATE="true"
@@ -20,29 +31,35 @@ fi
 if [ -d "$HOME/.local/bin" ] ; then
     PATH=$HOME/.local/bin/:$PATH
 fi
-if [ -d "$HOME/bin/pentaho-server" ] ; then
-    PATH=$HOME/bin/pentaho-server/:$PATH
-    if [ -d "$HOME/bin/pentaho-data-integration" ] ; then
-        PATH=$HOME/bin/pentaho-data-integration:$PATH
-    fi
-fi
 # }}}
 # PLUGINS {{{
 source $HOME/.zsh/antigen/antigen.zsh
 antigen use oh-my-zsh
-# antigen bundle gem
-# antigen bundle tmuxinator
-# antigen bundle soimort/translate-shell
-# antigen bundle rbenv
-# antigen bundle pass
-# if [[ $OS == 'Darwin' ]]; then
-#     antigen bundle brew-cask
-#     antigen bundle osx #vncviewer()
-# fi
+if [[ $OS == 'Darwin' ]]; then
+    antigen bundle brew-cask
+    antigen bundle osx #vncviewer()
+fi
+# antigen bundle matthewfranglen/speedread
+source /home/elodin/bin/speedread/speedread.plugin.zsh
 antigen bundle zsh-users/zsh-completions
 antigen bundle zsh-users/zsh-autosuggestions
 antigen bundle zsh-users/zsh-history-substring-search
 antigen bundle zsh-users/zsh-syntax-highlighting
+antigen bundle zsh-users/zaw
+# THEME {{{
+if [[ $THEME == 'p10k' ]]; then
+    # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
+    antigen theme romkatv/powerlevel10k
+    [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+fi
+if [[ $THEME != 'p10k' ]]; then
+    POWERLEVEL9K_DISABLE_CONFIGURATION_WIZARD=true
+    source $HOME/.zsh/padawan_agnoster.zsh-theme
+fi
+# antigen theme #clean #nanotech #edvardm #robbyrussell
+# antigen theme agnoster
+# source $HOME/.zsh/agnoster.zsh-theme
+# }}}
 antigen apply
 
 ZSH_HIGHLIGHT_HIGHLIGHTERS=(main line brackets cursor)
@@ -50,24 +67,10 @@ typeset -A ZSH_HIGHLIGH_STYLES
 ZSH_HIGHLIGHT_STYLES[line]='bold'
 ZSH_HIGHLIGHT_STYLES[default]='fg=red'
 ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE=7
-# THEME {{{
-# antigen theme #clean #nanotech #edvardm #robbyrussell
-# antigen theme agnoster
-# source $HOME/.zsh/agnoster.zsh-theme
-source $HOME/.zsh/padawan_agnoster.zsh-theme
-# }}}
 # }}}
 # 3RD PARTY {{{
 if [[ -f $HOME/bin/z/z.sh ]]; then
     source $HOME/bin/z/z.sh # z  - Recent/Frequent cd
-fi
-if [[ -f $HOME/bin/zaw/zaw.zsh ]]; then
-    source $HOME/bin/zaw/zaw.zsh
-    bindkey '^@' zaw
-fi
-# PYWAL
-if [[ -f $HOME/.cache/wal/colors.sh ]]; then
-    source $HOME/.cache/wal/colors.sh
 fi
 # DIRENV
 eval "$(direnv hook zsh)"
@@ -78,13 +81,15 @@ compctl -K _pip_completion pip3
 # VIM-MODE {{{
 # ZLE - Zsh Line Editor - http://www.cs.elte.hu/zsh-manual/zsh_14.html
 # status/mode on right side of command
-function zle-line-init zle-keymap-select {
-    RPS1="${${KEYMAP/vicmd/-- NORMAL --}/(main|viins)/-- INSERT --}"
-    RPS2=$RPS1
-    zle reset-prompt
-}
-zle -N zle-line-init
-zle -N zle-keymap-select
+if [[ $THEME != 'p10k' ]]; then
+    function zle-line-init zle-keymap-select {
+        RPS1="${${KEYMAP/vicmd/-- NORMAL --}/(main|viins)/-- INSERT --}"
+        RPS2=$RPS1
+        zle reset-prompt
+    }
+    zle -N zle-line-init
+    zle -N zle-keymap-select
+fi
 # VIM-MODE
 export KEYTIMEOUT=1
 set -o vi
@@ -125,10 +130,34 @@ if [[ -f $HOME/bin/fzf/bin/fzf ]]; then
     [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh      # Must be after set -o vi
     export FZF_COMPLETION_TRIGGER='**'
     export FZF_TMUX=1
-    export FZF_DEFAULT_OPTS="--multi --no-height"
+    export FZF_DEFAULT_OPTS="\
+        --multi --no-height\
+        --bind=ctrl-n:unix-line-discard\
+        --bind=ctrl-m:clear-query\
+\
+        --bind=ctrl-h:backward-word\
+        --bind=ctrl-l:forward-word\
+        --bind=ctrl-f:kill-word\
+        --bind=ctrl-b:backward-kill-word\
+\
+        --bind=ctrl-g:top\
+        --bind=ctrl-u:page-up\
+        --bind=ctrl-d:page-down\
+\
+        --bind=ctrl-p:toggle-preview\
+        --bind=ctrl-o:jump\
+        --bind=ctrl-y:yank\
+        --bind=ctrl-c:cancel\
+        --bind=enter:accept\
+\
+        --bind=ctrl-t:toggle-all\
+        --bind=ctrl-z:deselect-all\
+        --bind=tab:toggle+down\
+        --bind=shift-tab:toggle+up\
+    "
     export FZF_CTRL_T_OPTS="--no-height --select-1 --exit-0 --preview '(highlight -O ansi -l {} 2> /dev/null || cat {} || tree -C {}) 2> /dev/null | head -200'"
-    source $HOME/.zsh/fzf_snippets.sh
     export FZF_CTRL_R_OPTS=''
+    source $HOME/.zsh/fzf_snippets.sh
     bindkey -r '^j'
     bindkey -r '^s'
     bindkey -r '^q'
@@ -137,40 +166,20 @@ if [[ -f $HOME/bin/fzf/bin/fzf ]]; then
     bindkey '^s' fz_session     #tmux_session
     bindkey '^q' fzf_kill       #tmux_pane
     # bindkey '^f' fzf-history-widget #replacing autosugges for this
+    bindkey '^o' fzf-cd-widget  #cd fzf
+    bindkey '^@' zaw
 fi
 # }}}
 # PYTHON {{{
 # pip install --user location
 export PYTHONUSERBASE="$HOME/.local"
 export WORKON_HOME="$HOME/.virtualenvs"
-# PIPENV
-# eval "$(pipenv --completion)"
-# eval "$(_PIPENV_COMPLETE=source-zsh pipenv)" # Completions
-# PYENV
-# export VIRTUAL_ENV_DISABLE_PROMPT="true" # let my theme manage the prompt
-# export PROJECT_HOME="$HOME/Workspace/Python"
-# export PYENV_ROOT="$HOME/.pyenv"
-# export PATH="$PYENV_ROOT/bin:$PATH"
-# eval "$(pyenv init -)"
-# eval "$(pyenv virtualenv-init -)"
-# alias py='pyenv'
-# alias pya='pyenv activate'
-# alias pyd='pyenv deactivate'
-# alias pyg='pyenv global'
-# alias pys='pyenv shell'
-# alias pyi='pyenv install'
-# alias pyu='pyenv uninstall'
-# alias pyv='pyenv virtualenvwrapper'
-# pyenv virtualenvwrapper # load virtualenvwrapper for cdv/workon/etc
 # VENVWRAPPER
-if [[ -f $HOME/.local/bin/virtualenvwrapper.sh ]]; then
-    source $HOME/.local/bin/virtualenvwrapper.sh
+if ! [[ -n $TMUX ]]; then
+    if [[ -f $HOME/.local/bin/virtualenvwrapper.sh ]]; then
+        source $HOME/.local/bin/virtualenvwrapper.sh
+    fi
 fi
-# If wanna use pyenv instead of virtualev
-#     export PYENV_VIRTUALENVWRAPPER_PREFER_PYVENV="true"
-#     alias workon='pyenv activate'
-#     alias deactivate='pyenv deactivate'
-#     alias rmvirtualenv='pyenv uninstall'
 # }}}
 # TLDR-PAGES {{{
 # pip install tldr
@@ -218,9 +227,9 @@ setopt IGNORE_EOF
 # do not set this option, otherwise others(dups) will not work
 # setopt INTERACTIVE_COMMENTS  # pound sign in prompt
 export HISTFILE=$HOME/.zsh_history
-export HISTIGNORE="ls:exit:bg:fg:cd:history:clear:echo:print:which"
+export HISTIGNORE="man:ls:exit:bg:fg:cd:history:clear:echo:print:which"
 export HISTSIZE=10000
 export HISTTIMEFORMAT='%Y-%m-%d %T '
 export SAVEHIST=10000
 # }}}
-# vim: fdm=marker 
+# vim: fdm=marker
