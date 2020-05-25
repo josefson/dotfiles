@@ -2,9 +2,9 @@ rofi.matching: regex
 rofi.modi: window,run,ssh,drun,keys,combi
 # Theming
 rofi.show-icons: true
-# rofi.theme: ~/.cache/wal/colors-rofi-dark.rasi
 #                  #bg      #fg      #bgalt   #hlbg    #hlfg
-rofi.color-window: #090C0B, #090C0B, #090C0B, #294557, #090C0B
-rofi.color-normal: #090C0B, #294557, #090C0B, #294557, #090C0B
-rofi.color-active: #090C0B, #294557, #090C0B, #294557, #090C0B
-rofi.color-urgent: #090C0B, #294557, #090C0B, #294557, #090C0B
+# rofi.color-window: #090C0B, #090C0B, #090C0B, #294557, #090C0B
+# rofi.color-normal: #090C0B, #294557, #090C0B, #294557, #090C0B
+# rofi.color-active: #090C0B, #294557, #090C0B, #294557, #090C0B
+# rofi.color-urgent: #090C0B, #294557, #090C0B, #294557, #090C0B
+rofi.theme: solarized_alternate

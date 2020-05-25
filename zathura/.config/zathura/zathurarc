@@ -1,13 +1,32 @@
 set window-title-basename "true"
 set selection-clipboard "primary"
+set recolor "true"
 
 # RECOLOR
 map <C-i> recolor
-map <C-l> feedkeys ":set recolor-lightcolor \#002b36<Return>:set recolor-darkcolor \#839496<Return>:<Esc>"
-map @ feedkeys  ":set recolor-lightcolor \#0a0a12<Return>:set recolor-darkcolor \#ff9900<Return>:<Esc>" # amber on dark slate
-map ! feedkeys  ":set recolor-lightcolor \#ffffff<Return>:set recolor-darkcolor \#000000<Return>:<Esc>" # original (black on white) 
-map \# feedkeys ":set recolor-lightcolor \#000000<Return>:set recolor-darkcolor \#00B800<Return>:<Esc>" # green on black
-map $ feedkeys  ":set recolor-lightcolor \#002b36<Return>:set recolor-darkcolor \#839496<Return>:<Esc>" # bluish (midnight mode)
+# midnight mode
+map <F1> feedkeys ":set recolor-lightcolor \#002b36<Return>"
+map <F2> feedkeys ":set recolor-darkcolor \#839496<Return>"
+map ! feedkeys ":set recolor-lightcolor \#002b36<Return><F2>"
+map <C-l> feedkeys ":set recolor-lightcolor \#002b36<Return><F2>"
+# amber on dark slate
+map <F3> feedkeys ":set recolor-lightcolor \#0a0a12<Return>"
+map <F4> feedkeys ":set recolor-darkcolor \#ff9900<Return>"
+map @ feedkeys ":set recolor-lightcolor \#0a0a12<Return><F4>"
+# green on black
+map <F6> feedkeys ":set recolor-lightcolor \#000000<Return>"
+map <F7> feedkeys ":set recolor-darkcolor \#00B800<Return>"
+map \# feedkeys ":set recolor-lightcolor \#000000<Return><F7>"
+# original (black on white)
+map <F8> feedkeys ":set recolor-lightcolor \#ffffff<Return>"
+map <F9> feedkeys ":set recolor-darkcolor \#000000<Return>"
+map $ feedkeys ":set recolor-lightcolor \#ffffff<Return><F9>"
+
+# map <C-l> feedkeys ":set recolor-lightcolor \#002b36<Return>:set recolor-darkcolor \#839496<Return>:<Esc>"
+# map @ feedkeys  ":set recolor-lightcolor \#0a0a12<Return>:set recolor-darkcolor \#ff9900<Return>:<Esc>" # amber on dark slate
+# map ! feedkeys  ":set recolor-lightcolor \#ffffff<Return>:set recolor-darkcolor \#000000<Return>:<Esc>" # original (black on white) 
+# map \# feedkeys ":set recolor-lightcolor \#000000<Return>:set recolor-darkcolor \#00B800<Return>:<Esc>" # green on black
+# map $ feedkeys  ":set recolor-lightcolor \#002b36<Return>:set recolor-darkcolor \#839496<Return>:<Esc>" # bluish (midnight mode)
 
 # MAPPINGS
 map [index]        q toggle_index
