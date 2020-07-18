@@ -115,14 +115,22 @@ gaps outer 0
     set $w8 8:HeartOfStone
     set $w9 9:Chandrian
     set $w10 0:Lethani
+    workspace "$w1" output VGA1
+    workspace "$w2" output VGA1
+    workspace "$w3" output VGA1
+    workspace "$w4" output HDMI1
     # for_window <criteria> <command>
-    for_window [class="Pavucontrol"] floating enable
-    for_window [window_type="dialog"] floating enable
+    for_window [class="Pavucontrol"] floating enable for_window [window_type="dialog"] floating enable
     for_window [window_type="splash"] floating enable
     for_window [window_type="utility"] floating enable
     for_window [class="mpv"] floating enable, sticky enable, $exec i3-msg $($HOME/bin/resolution.py -r 30 -p top right)
     for_window [title="www.netflix.com"] floating enable, sticky enable, $exec i3-msg $($HOME/bin/resolution.py -r 30 -p top right)
     for_window [title="calc"] floating enable, sticky enable, $exec i3-msg $($HOME/bin/resolution.py -r 30 -p top right)
+    # marks
+    for_window [title="weechat"] mark --add w
+    for_window [class="Telegram"] mark --add t
+    for_window [title="web.whatsapp"] mark --add z
+    for_window [class="mpv"] mark --add p
 
     # ASSIGNMENTS windows to workspaces
     assign [class="Telegram"] $w1
@@ -151,7 +159,7 @@ gaps outer 0
     set $exec     exec --no-startup-id
     set $always   exec_always --no-startup-id
     # Default applications
-    set $filer    $HOME/bin/vifmrun
+    set $filer    $HOME/bin/i3-nnn
     set $browser  qutebrowser
     set $terminal urxvt
     set $player   mpv
@@ -174,6 +182,8 @@ gaps outer 0
         bindsym $super+Shift+b  $exec $HOME/bin/scratchpad.py -c qute_scratch -a "qutebrowser --basedir $HOME/Downloads/tmpdir --qt-arg name qute_scratch"
         bindsym $super+Shift+m  $exec $HOME/bin/scratchpad.py -c media_player -a "urxvt -name media_player -e ncmpcpp"
         bindsym $super+Shift+p  $exec $HOME/bin/scratchpad.py -c media_player -a "urxvt -name pandora -e tt start pandora"
+        # note taking cli/gui
+        # bindsym $super+Shift+n  $exec $HOME/bin/scratchpad.py -c joplin -a "urxvt -name joplin -e joplin"
                                 # rms,lst,fem are the best voices
         bindsym $super+space    $exec rofi -show drun
         bindsym $super+o        $exec rofi -show window
@@ -194,12 +204,12 @@ gaps outer 0
         # SetNext container as: split[h|v], stab, stack
         bindsym $super+bar      split h
         bindsym $super+minus    split v
-        bindsym $super+v       split toggle
+        bindsym $super+v        split toggle
         bindsym $super+Shift+w  split t; layout tabbed
         bindsym $super+Shift+e  split t; layout stacking
         # Float | scratchpad
-        bindsym $super+m        floating toggle
-        bindsym $super+n        focus mode_toggle
+        bindsym $super+Shift+n          floating toggle
+        bindsym $super+n                focus mode_toggle
         bindsym $super+bracketright     scratchpad show
         bindsym $super+bracketleft      move scratchpad
     # }}}
@@ -253,8 +263,8 @@ gaps outer 0
         bindsym $super+p mode "$vi3m_p"
         bindsym $super+a mode "$vi3m_m"
         bindsym $super+i mode "$vi3m_u"
-        bindsym $super+s mode "$vi3m_z"
         bindsym $super+apostrophe mode "$vi3m_c"
+        bindsym $super+m mode "$vi3m_z"
         bindsym $super+comma mode "Move: [hjkl|HJKL]"
         bindsym $super+period mode "Resize: [hjkl|HJKL]"
         # bindsym $super+p mode "PrintScreen:  [W]in  [F]ull  [S]el  [I]mgur"

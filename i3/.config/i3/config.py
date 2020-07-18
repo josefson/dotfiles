@@ -51,8 +51,8 @@ move_send_focus = {
     for index, i in enumerate('asdfghjkl', start=1)
 }
 
-marks = {f'z{key}': f'mark --toggle --add {key}' for key in string.ascii_lowercase}
-marks_goto = {f'c{key}': f'[con_mark="{key}"] focus;' for key in string.ascii_lowercase}
+marks = {f'z{key}': exec(f'{BIN}/i3-marks mark --mark {key}') for key in string.ascii_lowercase}
+marks_goto = {f'c{key}': exec(f'{BIN}/i3-marks goto --mark {key}') for key in string.ascii_lowercase}
 
 # direction = {'k': 'up', 'j': 'down', 'h': 'left', 'l': 'right'}
 # move_c_dir = {f'mc{key}': f'move container to output {value}'
