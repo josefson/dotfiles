@@ -10,8 +10,9 @@ mark q ~/.config/qutebrowser/
 mark t ~/DATA/Torrents/
 mark d ~/Downloads/
 mark D ~/DATA/
-mark m ~/Music
+mark m ~/Music/
 mark p ~/Workspace/Python/
+mark v ~/Videos/
 mark w ~/Workspace/
 
 mark R /
@@ -91,7 +92,7 @@ endif
 " Mappings for faster renaming
 nnoremap I cw<c-a>
 nnoremap cc cw<c-u>
-nnoremap A cw
+nnoremap A cW
 
 " Open console in current directory
 nnoremap ,t :!xterm &<cr>
@@ -192,6 +193,7 @@ set trashdir=~/.trash
 nnoremap r :file <Cr>j
 nnoremap q :q <Cr>
 nnoremap O :sort <Cr>
+nnoremap o :sort <Cr>
 map > :!vifmimg inc<CR>
 map < :!vifmimg dec<CR>
 "}}}
@@ -485,6 +487,12 @@ fileviewer *.tar tar -tf %c
 filetype *.rar
        \ {Mount with rar2fs}
        \ FUSE_MOUNT|rar2fs %SOURCE_FILE %DESTINATION_DIR,
+       \ {Read atool}
+       \ atool --list --each --  %c | less,
+       \ {Extract atool}
+       \ atool --extract --each --  %c,
+       \ {Extract atool child-dir}
+       \ atool --extract --each --subdir -- %c,
 fileviewer *.rar unrar v %c
 
 " IsoMount
