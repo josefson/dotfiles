@@ -1,6 +1,7 @@
 # git 3rd party tools
 git clone https://github.com/rupa/z.git $HOME/bin/z
-# git clone https://github.com/junegunn/fzf.git $HOME/bin/fzf
+git clone https://github.com/pasky/speedread $HOME/bin/speedread
+git clone https://github.com/kevinhwang91/fzf-tmux-script $HOME/.tmux/fzf-tmux-script
 # git clone https://github.com/pyenv/pyenv.git $HOME/.pyenv
 # git clone https://github.com/pyenv/pyenv-virtualenv.git $HOME/.pyenv/plugins/pyenv-virtualenv
 # git clone https://github.com/pyenv/pyenv-virtualenvwrapper.git $HOME/.pyenv/plugins/pyenv-virtualenvwrapper
