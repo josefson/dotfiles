@@ -34,18 +34,17 @@ fi
 # }}}
 # PLUGINS {{{
 source $HOME/.zsh/antigen/antigen.zsh
+# fzf-tab must come before all plugins to glob every completion
+antigen bundle Aloxaf/fzf-tab 
 antigen use oh-my-zsh
-if [[ $OS == 'Darwin' ]]; then
-    antigen bundle brew-cask
-    antigen bundle osx #vncviewer()
-fi
-# antigen bundle matthewfranglen/speedread
-source /home/elodin/bin/speedread/speedread.plugin.zsh
 antigen bundle zsh-users/zsh-completions
 antigen bundle zsh-users/zsh-autosuggestions
 antigen bundle zsh-users/zsh-history-substring-search
 antigen bundle zsh-users/zsh-syntax-highlighting
 antigen bundle zsh-users/zaw
+# antigen bundle matthewfranglen/speedread
+# antigen bundle wfxr/forgit
+source /home/elodin/bin/speedread/speedread.plugin.zsh
 # THEME {{{
 if [[ $THEME == 'p10k' ]]; then
     # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
@@ -56,12 +55,10 @@ if [[ $THEME != 'p10k' ]]; then
     POWERLEVEL9K_DISABLE_CONFIGURATION_WIZARD=true
     source $HOME/.zsh/padawan_agnoster.zsh-theme
 fi
-# antigen theme #clean #nanotech #edvardm #robbyrussell
-# antigen theme agnoster
-# source $HOME/.zsh/agnoster.zsh-theme
 # }}}
 antigen apply
 
+# Must exist after antigen apply
 ZSH_HIGHLIGHT_HIGHLIGHTERS=(main line brackets cursor)
 typeset -A ZSH_HIGHLIGH_STYLES
 ZSH_HIGHLIGHT_STYLES[line]='bold'
@@ -73,10 +70,27 @@ if [[ -f $HOME/bin/z/z.sh ]]; then
     source $HOME/bin/z/z.sh # z  - Recent/Frequent cd
 fi
 # DIRENV
-eval "$(direnv hook zsh)"
+if command -v direnv &> /dev/null; then
+    eval "$(direnv hook zsh)"
+fi
 # PIP
-eval "`pip completion --zsh`"
-compctl -K _pip_completion pip3
+if command -v pip3 &> /dev/null; then
+    eval "`pip completion --zsh`"
+    compctl -K _pip_completion pip3
+fi
+# nnn
+if command -v nnn &> /dev/null; then
+    source $HOME/.config/nnn/exports.sh
+fi
+# TLDR
+if command -v tldr &> /dev/null; then
+    # pip install tldr
+    export TLDR_COLOR_BLANK="white"
+    export TLDR_COLOR_NAME="cyan"
+    export TLDR_COLOR_DESCRIPTION="white"
+    export TLDR_COLOR_EXAMPLE="green"
+    export TLDR_COLOoR_COMMAND="white"
+fi
 # }}}
 # VIM-MODE {{{
 # ZLE - Zsh Line Editor - http://www.cs.elte.hu/zsh-manual/zsh_14.html
@@ -130,13 +144,13 @@ if [[ -f $HOME/bin/fzf/bin/fzf ]]; then
     [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh      # Must be after set -o vi
     export FZF_COMPLETION_TRIGGER='**'
     export FZF_TMUX=1
+        # --bind=ctrl-h:backward-word\
+        # --bind=ctrl-l:forward-word\
     export FZF_DEFAULT_OPTS="\
         --multi --no-height\
         --bind=ctrl-n:unix-line-discard\
         --bind=ctrl-m:clear-query\
 \
-        --bind=ctrl-h:backward-word\
-        --bind=ctrl-l:forward-word\
         --bind=ctrl-f:kill-word\
         --bind=ctrl-b:backward-kill-word\
 \
@@ -157,17 +171,14 @@ if [[ -f $HOME/bin/fzf/bin/fzf ]]; then
     "
     export FZF_CTRL_T_OPTS="--no-height --select-1 --exit-0 --preview '(highlight -O ansi -l {} 2> /dev/null || cat {} || tree -C {}) 2> /dev/null | head -200'"
     export FZF_CTRL_R_OPTS=''
-    source $HOME/.zsh/fzf_snippets.sh
-    bindkey -r '^j'
-    bindkey -r '^s'
-    bindkey -r '^q'
-    # bindkey -r '^f'
-    bindkey '^j' fz_pane        #tmux_pane
-    bindkey '^s' fz_session     #tmux_session
-    bindkey '^q' fzf_kill       #tmux_pane
-    # bindkey '^f' fzf-history-widget #replacing autosugges for this
-    bindkey '^o' fzf-cd-widget  #cd fzf
-    bindkey '^@' zaw
+    if [ -f $HOME/.zsh/fzf_snippets.sh ]; then
+        source $HOME/.zsh/fzf_snippets.sh
+        bindkey -r '^j'
+        bindkey '^jk' fzf_kill              # fzf kill processes
+        bindkey '^jg' fda                   # fzf cd -a(include hidden)
+        bindkey '^o' fzf-cd-widget  #cd fzf
+        bindkey '^@' zaw
+    fi
 fi
 # }}}
 # PYTHON {{{
@@ -175,19 +186,11 @@ fi
 export PYTHONUSERBASE="$HOME/.local"
 export WORKON_HOME="$HOME/.virtualenvs"
 # VENVWRAPPER
-if ! [[ -n $TMUX ]]; then
-    if [[ -f $HOME/.local/bin/virtualenvwrapper.sh ]]; then
-        source $HOME/.local/bin/virtualenvwrapper.sh
-    fi
-fi
-# }}}
-# TLDR-PAGES {{{
-# pip install tldr
-export TLDR_COLOR_BLANK="white"
-export TLDR_COLOR_NAME="cyan"
-export TLDR_COLOR_DESCRIPTION="white"
-export TLDR_COLOR_EXAMPLE="green"
-export TLDR_COLOoR_COMMAND="white"
+# if ! [[ -n $TMUX ]]; then
+#     if [[ -f $HOME/.local/bin/virtualenvwrapper.sh ]]; then
+#         source $HOME/.local/bin/virtualenvwrapper.sh
+#     fi
+# fi
 # }}}
 source $HOME/.aliases
 # completion
@@ -227,7 +230,7 @@ setopt IGNORE_EOF
 # do not set this option, otherwise others(dups) will not work
 # setopt INTERACTIVE_COMMENTS  # pound sign in prompt
 export HISTFILE=$HOME/.zsh_history
-export HISTIGNORE="man:ls:exit:bg:fg:cd:history:clear:echo:print:which"
+export HISTIGNORE="man:ls:exit:bg:fg:cd:history:clear:echo:print:which:peerflix"
 export HISTSIZE=10000
 export HISTTIMEFORMAT='%Y-%m-%d %T '
 export SAVEHIST=10000

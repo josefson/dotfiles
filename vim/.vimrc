@@ -7,6 +7,7 @@ call plug#begin('~/.vim/bundle')
     Plug 'tpope/vim-obsession'                                              " Persistent session manager
     Plug 'tpope/vim-commentary'                                             " Comment
     Plug 'tpope/vim-surround'                                               " Parenthesis, quotes, tags, etc... as text objects
+    " Plug 'vim-scripts/ReplaceWithRegister'                                  " [count][\"register]gr{motion}
     " Plug 'tpope/vim-eunuch'                                             " :sudo[edits|writes],Locate,Find,Move,Chmod,Remove,Rename,Mkdir,Unlink
     Plug 'mattn/webapi-vim' | Plug 'mattn/gist-vim'                         " Gist and dependency
     Plug 'tommcdo/vim-lion'                                                 " gl|L[ip|i{] Alight left|right gl/pattern/
@@ -15,13 +16,16 @@ call plug#begin('~/.vim/bundle')
 " REFACTORING
     Plug 'markonm/traces.vim'                                               " Preview substitute/replacement on buffer
     Plug 'romainl/vim-qf'
+    Plug 'fcpg/vim-kickfix'
     Plug 'ludovicchabant/vim-gutentags'
     " Plug 'tpope/vim-abolish'                                            " :Abolish {despa,sepe}rat{e,es,ed,ing,ely,ion,ions,or}  {despe,sepa}rat{}
 " IDE
     Plug 'tpope/vim-dispatch'                                               " Async shit
+    Plug 'hauleth/asyncdo.vim'                                              " Async shit
     Plug 'sjl/gundo.vim'                                                    " UndoTree
     Plug 'majutsushi/tagbar'                                                " Lateral tagbar
-    Plug 'rhysd/devdocs.vim'                                                " Documentation Plugin
+    " Plug 'rhysd/devdocs.vim'                                                " Documentation Plugin
+    Plug 'romainl/vim-devdocs'
     Plug 'junegunn/vim-peekaboo'                                            " live show registers: \"; @ ; Ctrl-R
 " GIT
     Plug 'tpope/vim-fugitive'                                               " Git inside vim
@@ -39,17 +43,20 @@ call plug#begin('~/.vim/bundle')
     Plug 'Vimjas/vim-python-pep8-indent'
     Plug 'vim-python/python-syntax'
     " Plug 'alfredodeza/pytest.vim'
+" VUE
+    Plug 'posva/vim-vue', { 'for': 'vue' }
 " HTML
     Plug 'Valloric/MatchTagAlways'                                          " Highlight html/xml tags when between text
     Plug 'mattn/emmet-vim'                                                  " html snippets
     Plug 'vim-scripts/django.vim', { 'for': 'django' }                      " syntax highlight for django templates
 " TMUX
-    Plug 'jalvesaq/vimcmdline', { 'for': 'python' }
+    Plug 'jpalardy/vim-slime', { 'for': 'python' }
 " COLORSCHEMES
     " Plug 'lifepillar/vim-colortemplate'                                 " template to create colorshcemes
     Plug 'ryanoasis/vim-devicons'
     Plug 'sjl/badwolf'
     Plug 'morhetz/gruvbox'
+    Plug 'vim-airline/vim-airline' | Plug 'vim-airline/vim-airline-themes'
     Plug 'tomasr/molokai'
     Plug 'dunckr/vim-monokai-soda'
     Plug 'crusoexia/vim-monokai'
@@ -72,21 +79,17 @@ syntax on                   "syntax highlight and colorscheme
 " set nocompatible
 
 if executable('rg')
-    set grepprg=rg\ -i\ --vimgrep
+    set grepprg=rg\ --vimgrep
+else
+    set grepprg=grep\ -nr
 endif
 set grepformat^=%f:%l:%c:%m
 
 " GENERAL STUFF
 set path=.,,**                      " Search relative to current file + directory
-set wildcharm=<C-z>
+set wildcharm=<C-z>                 " Tab for command-line-expansion in mappings
 set termencoding=utf-8
 set encoding=utf-8
-" UI - USER INTERFACE
-try
-    colorscheme monokai
-catch
-    set background=dark
-endtry
 set exrc                            " enable to read local .vimrc
 set mouse=a                         " enable mouse features
 " Show block cursor in Normal mode and line cursor in Insert mode
@@ -146,7 +149,7 @@ set wrap  	                    " enable wrap mode to see long code lines
 set linebreak                   " when wrapping, wrap at word boundaries (vs last char)
 set breakindent                 " preserves the indent level of wrapped lines
 set whichwrap=b,~,<,>,[,],h,l   " More intuitive arrow movements
-set showbreak=>\ 
+set showbreak=>\
 set list
 set listchars=tab:»\ ,extends:›,precedes:‹,nbsp:·,trail:·
 set textwidth=0
@@ -165,89 +168,89 @@ set history=9999
 set diffopt+=context:4,vertical
 set splitright                    " when :vs focus goes to right
 set splitbelow                    " when :sp focus goes bottom
-" STATUSLINE {{{
-" Functions {{{
-function! StatusMode()
-    let l:modes={
-        \'n' : 'Normal',
-        \'no' : 'N·Operator Pending',
-        \'v' : 'Visual',
-        \'V' : 'V·Line',
-        \'^V' : 'V·Block',
-        \'s' : 'Select',
-        \'S': 'S·Line',
-        \'^S' : 'S·Block',
-        \'i' : 'Insert',
-        \'R' : 'Replace',
-        \'Rv' : 'V·Replace',
-        \'c' : 'Command',
-        \'cv' : 'Vim Ex',
-        \'ce' : 'Ex',
-        \'r' : 'Prompt',
-        \'rm' : 'More',
-        \'r?' : 'Confirm',
-        \'!' : 'Shell',
-        \'t' : 'Terminal '
-    \}
-    let l:current_mode = mode()
-    return get(l:modes, l:current_mode, 'Visual Block')
-endfunction
-" Function: display errors from Ale in statusline
-function! LinterStatus() abort
-   let l:counts = ale#statusline#Count(bufnr(''))
-   let l:all_errors = l:counts.error + l:counts.style_error
-   let l:all_non_errors = l:counts.total - l:all_errors
-   return l:counts.total == 0 ? '' : printf(
-   \ 'W:%d E:%d',
-   \ l:all_non_errors,
-   \ l:all_errors
-   \)
-endfunction
-function! LinterStatus2() abort
-    let l:qlist_items = len(getqflist())
-    let l:llist_items = len(getloclist(0))
-    if l:qlist_items > 0 || l:llist_items > 0
-        return "Qf[".l:qlist_items."]Loc[".l:llist_items."]"
-    else
-        return ''
-    endif
-endfunction
-function! StatusBranch()
-  return system("git rev-parse --abbrev-ref HEAD 2>/dev/null | tr -d '\n'")
-endfunction
-function! StatuslineGit()
-    let l:branchname = system("git rev-parse --abbrev-ref HEAD 2>/dev/null | tr -d '\n'")
-    return strlen(l:branchname) > 0?"".l:branchname.' ':''
-endfunction
-" }}}
-hi Search cterm=NONE ctermbg=202 ctermfg=black
-hi IncSearch cterm=NONE ctermbg=white ctermfg=black
-hi User1 ctermbg=70 ctermfg=black
-hi User2 cterm=standout ctermbg=magenta ctermfg=black
-hi User3 cterm=standout,italic ctermbg=70 ctermfg=black
-hi User4 cterm=standout ctermbg=darkred ctermfg=black
-hi User9 cterm=NONE ctermbg=brown ctermfg=black
-hi StatusLineNC cterm=reverse ctermbg=white ctermfg=black
-hi StatusLine cterm=NONE ctermbg=black ctermfg=white
-set statusline=                                                   " clear the statusline for when vimrc is reloaded
-set statusline+=%#ErrorMsg#%{&paste?'paste/':''}%*                " errors if any
-set statusline+=%1*\ %{StatusMode()}\ %*                          " vim mode
-set statusline+=%2*[%(%W%H%R,%)%M%n]%*                             " flags and buf no
-set statusline+=%4*\ %{StatuslineGit()}%*                         " branch if any
-set statusline+=%3*\ %10f                                         " file name
-set statusline+=%4*%(%{gutentags#statusline('[',']')}%)%*
-set statusline+=%=                                                " right align
-if &rtp =~ 'coc.vim'
-    set statusline+=%<%{coc#status()}%{get(b:,'coc_current_function','')}
-endif
-set statusline+=%4*\ %{strlen(&ft)?&ft:'none'}\ %*                " filetype
-set statusline+=%2*\ %{strlen(&fenc)?&fenc:&enc}%*                " encoding
-set statusline+=%2*[%{&fileformat}]\ %*                           " file format
-" set statusline+=%(%9*\ %{LinterStatus()}\ %*%)
-set statusline+=%9*%(\ %{LinterStatus2()}\ %)%*
-set statusline+=%1*[%c,%l/%L]%*                                   " position in buffer
+" " STATUSLINE {{{
+" " Functions {{{
+" function! StatusMode()
+"     let l:modes={
+"         \'n' : 'Normal',
+"         \'no' : 'N·Operator Pending',
+"         \'v' : 'Visual',
+"         \'V' : 'V·Line',
+"         \'^V' : 'V·Block',
+"         \'s' : 'Select',
+"         \'S': 'S·Line',
+"         \'^S' : 'S·Block',
+"         \'i' : 'Insert',
+"         \'R' : 'Replace',
+"         \'Rv' : 'V·Replace',
+"         \'c' : 'Command',
+"         \'cv' : 'Vim Ex',
+"         \'ce' : 'Ex',
+"         \'r' : 'Prompt',
+"         \'rm' : 'More',
+"         \'r?' : 'Confirm',
+"         \'!' : 'Shell',
+"         \'t' : 'Terminal '
+"     \}
+"     let l:current_mode = mode()
+"     return get(l:modes, l:current_mode, 'Visual Block')
+" endfunction
+" " Function: display errors from Ale in statusline
+" function! LinterStatus() abort
+"    let l:counts = ale#statusline#Count(bufnr(''))
+"    let l:all_errors = l:counts.error + l:counts.style_error
+"    let l:all_non_errors = l:counts.total - l:all_errors
+"    return l:counts.total == 0 ? '' : printf(
+"    \ 'W:%d E:%d',
+"    \ l:all_non_errors,
+"    \ l:all_errors
+"    \)
+" endfunction
+" function! LinterStatus2() abort
+"     let l:qlist_items = len(getqflist())
+"     let l:llist_items = len(getloclist(0))
+"     if l:qlist_items > 0 || l:llist_items > 0
+"         return "Qf[".l:qlist_items."]Loc[".l:llist_items."]"
+"     else
+"         return ''
+"     endif
+" endfunction
+" function! StatusBranch()
+"   return system("git rev-parse --abbrev-ref HEAD 2>/dev/null | tr -d '\n'")
+" endfunction
+" function! StatuslineGit()
+"     let l:branchname = system("git rev-parse --abbrev-ref HEAD 2>/dev/null | tr -d '\n'")
+"     return strlen(l:branchname) > 0?"".l:branchname.' ':''
+" endfunction
+" " }}}
+" hi Search cterm=NONE ctermbg=202 ctermfg=black
+" hi IncSearch cterm=NONE ctermbg=white ctermfg=black
+" hi User1 ctermbg=70 ctermfg=black
+" hi User2 cterm=standout ctermbg=magenta ctermfg=black
+" hi User3 cterm=standout,italic ctermbg=70 ctermfg=black
+" hi User4 cterm=standout ctermbg=darkred ctermfg=black
+" hi User9 cterm=NONE ctermbg=brown ctermfg=black
+" hi StatusLineNC cterm=reverse ctermbg=white ctermfg=black
+" hi StatusLine cterm=NONE ctermbg=black ctermfg=white
+" set statusline=                                                   " clear the statusline for when vimrc is reloaded
+" set statusline+=%#ErrorMsg#%{&paste?'paste/':''}%*                " errors if any
+" set statusline+=%1*\ %{StatusMode()}\ %*                          " vim mode
+" set statusline+=%2*[%(%W%H%R,%)%M%n]%*                             " flags and buf no
+" set statusline+=%4*\ %{StatuslineGit()}%*                         " branch if any
+" set statusline+=%3*\ %10f                                         " file name
+" set statusline+=%4*%(%{gutentags#statusline('[',']')}%)%*
+" set statusline+=%=                                                " right align
+" if &rtp =~ 'coc.vim'
+"     set statusline+=%<%{coc#status()}%{get(b:,'coc_current_function','')}
+" endif
+" set statusline+=%4*\ %{strlen(&ft)?&ft:'none'}\ %*                " filetype
+" set statusline+=%2*\ %{strlen(&fenc)?&fenc:&enc}%*                " encoding
+" set statusline+=%2*[%{&fileformat}]\ %*                           " file format
+" " set statusline+=%(%9*\ %{LinterStatus()}\ %*%)
+" set statusline+=%9*%(\ %{LinterStatus2()}\ %)%*
+" set statusline+=%1*[%c,%l/%L]%*                                   " position in buffer
 
-" }}}
+" " }}}
 " }}}
 " MAPPINGS ---------------------------------------------------------------- [[[
 " NORMAL {{{
@@ -303,6 +306,7 @@ nnoremap <space>wO <c-w>o
 " Smooth scrolling
 nnoremap <silent> <c-u> :call utils#SmoothScroll(1)<cr>
 nnoremap <silent> <c-d> :call utils#SmoothScroll(0)<cr>
+nnoremap <space>sb HmhLml<c-w>v'lzt:set scrollbind<CR>
 " }}}
 " YANK PASTE {{{
 " make Y consistent with C and D.
@@ -362,20 +366,20 @@ set pastetoggle=<F10>               " Use <F10> to toggle paste modes
 " Often utilize vertical splits
 nnoremap ,b :buffer *
 nnoremap ,e :e **/*
+nnoremap ,f :find *
 nnoremap ,s :sfind *
 nnoremap ,v :vert sfind *
-nnoremap ,f :find *
+nnoremap ,t :tabfind *
 nnoremap ,F :find <C-R>=fnameescape(expand('%:p:h')).'/**/*'<CR>
 nnoremap ,V :vert sfind <C-R>=fnameescape(expand('%:p:h')).'/**/*'<CR>
 nnoremap ,S :sfind <C-R>=fnameescape(expand('%:p:h')).'/**/*'<CR>
-nnoremap ,t :tabfind *
 " Utils/Internals
 cnoremap <expr> <CR> romainl#CCR()
 nmap ,c :changes<CR>
 nmap ,r :registers<CR>
 nmap ,j :jumps<CR>
 nmap ,m :marks<CR>
-nnoremap ,t :tjump /
+" nnoremap ,t :tjump /
 nnoremap ,d :dlist /
 nnoremap ,i :ilist /
 nnoremap ,g :g//#<Left><Left>
@@ -388,7 +392,8 @@ nnoremap <space>on :<c-u>setlocal number!<cr>
 nnoremap <space>or :<c-u>setlocal relativenumber!<cr>
 nnoremap <space>oc :<c-u>setlocal cursorline!<cr>
 nnoremap <space>ow :<c-u>setlocal wrap!<cr>
-nnoremap <space>os :<c-u>setlocal spell! \| set spell?<cr>
+nnoremap <space>osp :<c-u>setlocal spell! \| set spell?<cr>
+nnoremap <space>osb :<c-u>setlocal scrollbind!<cr>
 nnoremap <space>of :<c-u>setlocal ft=
 nnoremap <space>oh :<c-u>setlocal hlsearch!<cr>
 nnoremap <space>ob :<c-u>set background=dark<cr>
@@ -416,22 +421,13 @@ if &rtp =~ 'vim-qf'
     nmap <space>ql <Plug>(qf_loc_toggle_stay)
     nmap <space>qq <Plug>(qf_qf_toggle_stay)
 endif
-if &rtp =~ 'vimcmdline'
-    let cmdline_map_start          = '<LocalLeader>s'
-    let cmdline_map_send           = '<Space>'
-    let cmdline_map_send_and_stay  = '<LocalLeader><Space>'
-    let cmdline_map_source_fun     = '<LocalLeader>sf'
-    let cmdline_map_send_paragraph = '<LocalLeader>sp'
-    let cmdline_map_send_block     = '<LocalLeader>sb'
-    let cmdline_map_quit           = '<LocalLeader>sq'
-endif
 " }}}
 " FZF-BINDINGS {{{
 " fzf denite clap etc
 if &rtp =~ 'fzf'
     " nnoremap <leader>e :FzfFiles<CR>
     " nnoremap <leader>f :Fzf
-    " nnoremap <space>ff:FzfFiles<CR>
+    nnoremap <space>ff :FzfFiles<CR>
     nnoremap <space>e :FzfGFiles<CR>
     nnoremap <space>b :FzfBuffers<CR>
     nnoremap <space>L :FzfLines<CR>
@@ -440,8 +436,7 @@ if &rtp =~ 'fzf'
     nnoremap <space>t :FzfBTags<CR>
     nnoremap <space>h :FzfHelptags<cr>
     nnoremap <space>r :RG<cr>
-    " nnoremap <leader>u :FzfSnippets<CR>
-    " inoremap <C-u> <Esc>:FzfSnippets<CR>
+    nnoremap <space>u :FzfSnippets<CR>
 
     nnoremap <space>fm :FzfMarks<cr>
     nnoremap <space>fM :FzfMaps<cr>
@@ -450,6 +445,7 @@ if &rtp =~ 'fzf'
     nnoremap <space>fx :FzfCommands<cr>
     nnoremap <space>fc :FzfCommits<CR>
     nnoremap <space>fb :FzfBCommits<CR>
+    nnoremap <space>fs :FzfSnippets<CR>
 
     " Mapping selecting mappings
     nmap <leader><tab> <plug>(fzf-maps-n)
@@ -474,6 +470,11 @@ let g:fzf_action = {
 \}
 " }}}
 " ULTISNIPS --------------------------------------------------------------- {{{
+if has('python3')
+    let g:UltiSnipsUsePythonVersion=3
+elseif has('python')
+    let g:UltiSnipsUsePythonVersion=2
+endif
 let g:UltiSnipsEditSplit = "vertical"
 let g:UltiSnipsSnippetDirectories = ["UltiSnips"]
 " let g:UltiSnipsSnippetDirectories = ["bundle/vim-snippets/UltiSnips"]
@@ -481,20 +482,14 @@ let g:UltiSnipsJumpForwardTrigger = "<C-j>"
 let g:UltiSnipsJumpBackwardTrigger = "<C-k>"
 let g:UltiSnipsExpandTrigger = "<C-b>"
 let g:UltiSnipsListSnippets = "<C-u>" "replaced by fzf one
-if has('python3')
-    let g:UltiSnipsUsePythonVersion=3
-elseif has('python')
-    let g:UltiSnipsUsePythonVersion=2
-endif
 inoremap <silent> <C-j> <C-r>=utils#LoadUltiSnipsAndExpand()<CR>
+inoremap <c-f> <Esc>:FzfSnippets<CR>
 " }}}
 " EMMET-VIM --------------------------------------------------------------- {{{
-let g:user_emmet_mode='n'    "only enable normal mode functions.
-let g:user_emmet_mode='inv'  "enable all functions, which is equal to
+" let g:user_emmet_mode='n'    "only enable normal mode functions.
+" let g:user_emmet_mode='inv'  "enable all functions, which is equal to
 let g:user_emmet_mode='a'    "enable all function in all mode.
-let g:user_emmet_install_global = 0
-autocmd FileType html,css EmmetInstall
-let g:user_emmet_leader_key='<C-Z>'
+let g:user_emmet_leader_key=','
 " }}}
 " JEDI-VIM ---------------------------------------------------------------- {{{
     if &rtp =~ 'supertab'
@@ -516,6 +511,7 @@ let g:user_emmet_leader_key='<C-Z>'
     " let g:jedi#use_splits_not_buffers = ""  "goto in splits: top,left,right,bottom
 " }}}
 " COC {{{
+" :cocinstall coc-marketplace, coc-ultisnips, coc-python
 " Use <c-space> to trigger completion.
 inoremap <silent><expr> <c-space> coc#refresh()
 " Use K to show documentation in preview window.
@@ -576,7 +572,39 @@ if &rtp =~ 'vim-qf'
     " O - open entry and close the location/quickfix window
     " p - open entry in a preview window
 endif
+" }}}
+" GRUVBOX ------------------------------------------------------------------ {{{
+let g:gruvbox_italic = 1
+let g:gruvbox_hls_cursor = 'orange'
+let g:gruvbox_contrast_dark = 'hard'
 
+" UI - USER INTERFACE
+try
+    colorscheme gruvbox
+catch
+    set background=dark
+endtry
+" }}}
+" AIRLINE ----------------------------------------------------------------- {{{
+if !exists('g:airline_symbols')
+    let g:airline_symbols = {}
+endif
+
+let g:airline_left_sep = ''
+let g:airline_left_alt_sep = ''
+let g:airline_right_sep = ''
+let g:airline_right_alt_sep = ''
+let g:airline_symbols.branch = ''
+let g:airline_symbols.readonly = ''
+let g:airline_symbols.crypt = ''
+let g:airline_symbols.linenr = ''
+let g:airline_symbols.maxlinenr = ''
+let g:airline_symbols.paste = 'Þ'
+let g:airline_symbols.spell = '暈'
+let g:airline_symbols.notexists = 'Ɇ'
+let g:airline_symbols.whitespace = 'Ξ'
+let g:airline_symbols.dirty='⚡'
+let g:airline#extensions#whitespace#enabled = 1
 " }}}
 " ONELINE-PLUGINS ------------------------------------------------------------- {{{
 let g:gundo_prefer_python3 = 1
@@ -588,10 +616,8 @@ let g:gutentags_project_info = []
 call add(g:gutentags_project_info, {'type': 'python', 'file': 'manage.py'})
 call add(g:gutentags_project_info, {'type': 'python', 'file': 'pyproject.toml'})
 " Repl
-" let cmdline_vsplit = 1      " Split the window vertically
-let cmdline_app = {}
-let cmdline_app['python'] = 'ipython'
-let cmdline_app['sh'] = 'zsh'
+let g:slime_target = "tmux"
+let g:slime_python_ipython = 1
 " }}}
 " COMMANDS ---------------------------------------------------------------- {{{
 " sharing is caring{{{
@@ -609,6 +635,11 @@ command! -nargs=1 -complete=command Redir silent call romainl#Redir(<q-args>)
 command! -bar -nargs=* GitJump cexpr system('GIT_EDITOR= git-jump ' . expand(<q-args>))
 " :Global pattern, Puts every instance of pattern on % inside locationlist; Change lgetexpr for cgetexpr for quickfixlist
 command! -nargs=1 Global lgetexpr filter(map(getline(1,'$'), {key, val -> expand("%") . ":" . (key + 1) . ":1 " . val }), { idx, val -> val =~ <q-args> })
+"Async grep: Making |:grep| to run asynchronously is also quite trivial with:
+command! -bang -nargs=* -complete=dir Grep call asyncdo#run(
+            \ <bang>0,
+            \ { 'job': &grepprg, 'errorformat': &grepformat },
+            \ <f-args>)
 " Fzf User Commands
 command! -bang Colors
     \ call fzf#vim#colors({'left': '15%', 'options': '--reverse --margin 30%,0'}, <bang>0)
@@ -635,19 +666,19 @@ nnoremap gqq gqq
 
 " Found this gist that would be possible to acomplish the same as above but quite didn't understand how to use/map it
 " nnoremap <silent> gq :set opfunc=OpfuncSteady<CR>gq
-function! OpfuncSteady()
-  if !empty(&operatorfunc)
-    call winrestview(w:opfuncview)
-    unlet w:opfuncview
-    noautocmd set operatorfunc=
-  endif
-endfunction
+" function! OpfuncSteady()
+"   if !empty(&operatorfunc)
+"     call winrestview(w:opfuncview)
+"     unlet w:opfuncview
+"     noautocmd set operatorfunc=
+"   endif
+" endfunction
 
-augroup OpfuncSteady
-  autocmd!
-  autocmd OptionSet operatorfunc let w:opfuncview = winsaveview()
-  autocmd CursorMoved * call OpfuncSteady()
-augroup END
+" augroup OpfuncSteady
+"   autocmd!
+"   autocmd OptionSet operatorfunc let w:opfuncview = winsaveview()
+"   autocmd CursorMoved * call OpfuncSteady()
+" augroup END
 " how to handle swapfiles (stolen from blueyed) {{{
 augroup swapfile_handling
     au!

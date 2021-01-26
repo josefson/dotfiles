@@ -4,6 +4,9 @@
 [submodule "tmux/.tmux/tpm"]
 	path = tmux/.tmux/tpm
 	url = https://github.com/tmux-plugins/tpm.git
+[submodule "tmux/.tmux/fzf-tmux-script"]
+	path = tmux/.tmux/fzf-tmux-script
+	url = https://github.com/kevinhwang91/fzf-tmux-script.git
 [submodule "zsh/.zsh/antigen"]
 	path = zsh/.zsh/antigen
 	url = https://github.com/zsh-users/antigen.git
