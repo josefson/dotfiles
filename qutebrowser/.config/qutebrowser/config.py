@@ -7,8 +7,6 @@ from qutebrowser.api import interceptor
 from qutebrowser.config.config import ConfigContainer  # noqa: F401
 from qutebrowser.config.configfiles import ConfigAPI  # noqa: F401
 
-sys.path.append(os.path.join(sys.path[0], "jblock"))
-config.source("jblock/jblock/integrations/qutebrowser.py")
 
 config = config  # type: ConfigAPI # noqa: F821
 c = c  # type: ConfigAPI # noqa: F821
@@ -44,8 +42,8 @@ c.url.searchengines = {
     "br": "https://www.google.com/search?q={}&lr=lang_pt",
     "wk": "https://en.wikipedia.org/wiki/{}",
     "yt": "https://www.youtube.com/results?search_query={}",
-    "git": "https://github.com/search?q={}",
-    "gist": "https://gist.github.com/search?q={}",
+    "ggit": "https://github.com/search?q={}",
+    "ggist": "https://gist.github.com/search?q={}",
     "def": "https://www.google.com/search?q=define {}",
     "gmaps": "https://www.google.com/maps/place/{}",
     "imdb": "https://www.imdb.com/find?q={}",
@@ -107,12 +105,12 @@ c.content.ssl_strict = False
 c.content.pdfjs = True
 # c.content.webgl = False
 c.content.plugins = True
-c.content.host_blocking.enabled = False
+c.content.host_blocking.enabled = True
 c.content.host_blocking.lists = [
     "https://easylist.to/easylist/easylist.txt",
     "https://easylist.to/easylist/easyprivacy.txt",
-    "https://testpages.adblockplus.org/en/abp-testcase-subscription.txt",
-    "/home/elodin/.config/qutebrowser/blocklist.txt",
+    # "https://testpages.adblockplus.org/en/abp-testcase-subscription.txt",
+    # "/home/elodin/.config/qutebrowser/blocklist.txt",
 ]
 # }}}
 # DOMAIN CONFIG {{{
@@ -164,9 +162,9 @@ config.bind(
 )
 # keepass
 if sys.platform == "darwin":
-    keepass_command = "spawn --userscript ~/.config/qutebrowser/userscripts/qute-keepass -p ~/Sync/keepass.kdbx"
+    keepass_command = "spawn --userscript ~/.config/qutebrowser/userscripts/qute-keepass -p ~/Sync/keepass/keepass.kdbx"
 elif sys.platform == "linux":
-    keepass_command = "spawn --userscript /usr/share/qutebrowser/userscripts/qute-keepass -p ~/Sync/keepass.kdbx"
+    keepass_command = "spawn --userscript /usr/share/qutebrowser/userscripts/qute-keepass -p ~/Sync/keepass/keepass.kdbx"
 config.bind(",k", keepass_command, mode="normal")
 config.bind("<Ctrl-k>", keepass_command, mode="insert")
 # mpv
@@ -218,6 +216,7 @@ c.bindings.commands["normal"][";b"] = "hint all tab-bg"
 c.bindings.commands["normal"][";r"] = "hint --rapid links tab-bg"
 c.bindings.commands["normal"][";R"] = "hint --rapid links window"
 c.bindings.commands["normal"][";w"] = "hint all window"
+c.bindings.commands["normal"][";W"] = "hint links run open -p {hint-url}"
 c.bindings.commands["normal"][";y"] = "hint links yank"
 c.bindings.commands["normal"][";a"] = "hint inputs"
 c.bindings.commands["normal"][";i"] = "hint images"
@@ -426,7 +425,6 @@ def filter_yt(info: interceptor.Request):
             print(command)
             c.content.auto_play = False
             # info.block()
-
-
 # interceptor.register(filter_yt)
+config.source('pids.py')
 # vim: fo=tcq fdm=marker tw=0

@@ -9,8 +9,8 @@ setlocal tags=tags,.tags,pytags,.pytags
 if &rtp =~ 'jedi-vim'
     setlocal completefunc=jedi#completions
     setlocal omnifunc=python3complete#Complete
-    nnoremap <silent> <buffer> gd :call jedi#usages()<cr>
-    nnoremap <silent> <buffer> gr :call jedi#go_to_definition()<cr>
+    nnoremap <silent> <buffer> gr :call jedi#usages()<cr>
+    nnoremap <silent> <buffer> gd :call jedi#go_to_definition()<cr>
 endif
 setlocal makeprg=flake8\ %
 setlocal formatprg=black\ --quiet\ -\ 2>\ /dev/null
@@ -25,6 +25,7 @@ let g:pyindent_continue = ''
 " PLUGIN VARS
 let b:dispatch = 'python %'
 let b:vcm_tab_complete = "user"
+let g:slime_python_ipython = 1
 
 " MAPPINGS
 " Method like objects
@@ -41,6 +42,8 @@ nnoremap <buffer> <F6> :Format<cr>
 nnoremap <buffer> <space>pb o__import__('ipdb').set_trace()<Esc>
 nnoremap <buffer> <space>pB O__import__('ipdb').set_trace()<Esc>
 inoremap <buffer> <c-k> <c-o>:call PyHelper()<CR>
+" Devdocs mappings
+nnoremap <buffer> <c-k> :DD 
 " autocmd FileType python nmap <buffer>K <Plug>(devdocs-under-cursor-all)
 
 " COMMANDS

@@ -53,7 +53,7 @@ alias sudo='sudo '          # passing aliases archwiki
 # alias vim='nvim'
 alias ranger='$HOME/bin/vifmrun'
 alias vifm='$HOME/bin/vifmrun'
-alias n='nvim'
+alias n='nnn'
 alias q='exit'
 alias zrc='vim ~/.zshrc'
 alias arc='vim ~/.aliases'
@@ -74,6 +74,7 @@ alias mime='xdg-mime'
 alias mountls='mount | column -t'
 alias zm='cd /media'
 alias zl='cd /dev/disk/by-label/'
+alias joplin='joplin-cli'
 # CHANGE INNER BEHAVIOUR
 alias bc='bc -q -l'     # quiet
 alias df='df -Th --total'   #human
@@ -113,15 +114,14 @@ alias pips='pip search '
 #fzf
 alias fzv='vim $(fzf-tmux -m -x)'
 # git
-alias gs='git status '
-alias ga='git add '
-# alias gb='git branch '
-alias gca='git commit -a'
-alias gcm='git commit -m'
-alias gco='git checkout '
-alias gl='git log --oneline --graph --decorate --all'
-# brew
-alias starwars="telnet towel.blinkenlights.nl" #starwars ascii
+alias fgadd='forgit::add'
+alias fglog='forgit::log'
+alias fgdiff='forgit::diff'
+alias fgreset='forgit::reset::head'
+alias fgrestore='forgit::restore'
+alias fgignore='forgit::ignore'
+alias fgclean='forgit::clean'
+alias fgstashshow='forgit::stash::show'
 # }}}
 # GLOBAL ALIASES {{{
 alias -g ehco='echo'
@@ -143,8 +143,9 @@ pbselect() { xclip -selection primary -o ;}
 alias pbnoformatting='xclip -selection clipboard -o | xclip -selection clipboard'
 #}}}
 # GENERAL FUNCTIONS --------------------------------------------------------------- {{{
-fzdo() { "$@" $(fzf-tmux -m -x) ;}
-fzopen() { "$@" "$(fzf-tmux -m -x)" ;}
+fzdo() { "$@" "$(fzf-tmux -m -x)" ;}
+fzlibre() { zathura "$(find ~/Calibre\ Library -type f -name "*.pdf" | fzf-tmux -m -x)" ;}
+fzlibre() { find ~/Calibre\ Library -type f -name "*.pdf" | fzf-tmux -m -x --bind='enter:execute-silent:zathura {}' ;}
 mpd-kill() { kill -9 $(cat ~/.mpd/mpd.pid) ;}
 mpd-restart() { kill -9 $(cat ~/.mpd/mpd.pid) && mpd ;}
 check-word() { echo "$1" | aspell -a ;}

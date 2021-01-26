@@ -35,5 +35,8 @@ if [[ $# -eq 0 ]]; then
     elif echo $VGA_STATUS | grep "disconnected" && echo $HDMI_STATUS | grep "connected"; then
         xrandr --output "$VGA" --off --output "$HDMI" --primary --auto --output "$DEFAULT" --auto --left-of "$HDMI"
         update_wallpaper
+    elif echo $VGA_STATUS | grep "connected" && echo $HDMI_STATUS | grep "connected"; then
+        xrandr --output "$DEFAULT" --off --output "$HDMI" --primary --auto --output "$VGA" --auto --left-of "$HDMI"
+        update_wallpaper
     fi
 fi

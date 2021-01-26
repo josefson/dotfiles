@@ -237,10 +237,10 @@ gaps outer 0
         # bindsym $super+$control+9 move container to workspace 9; workspace 9
         # bindsym $super+$control+0 move container to workspace 10; workspace 10
         # move focused container to the directional output
-        bindsym $super+Shift+h move container to output left
-        bindsym $super+Shift+j move container to output down
-        bindsym $super+Shift+k move container to output up
-        bindsym $super+Shift+l move container to output right
+        bindsym $super+Shift+h move container to output left; focus output left
+        bindsym $super+Shift+j move container to output down; focus output down
+        bindsym $super+Shift+k move container to output up; focus output up
+        bindsym $super+Shift+l move container to output right; focus output right
         # move the whole workspace to the directional output
         bindsym $super+$control+h move workspace to output left
         bindsym $super+$control+j move workspace to output down

@@ -14,3 +14,29 @@
 	tool = vimdiff
 [difftool]
 	prompt = false
+[alias]
+    cl = clone
+    s = status
+	co = checkout
+    cob = checkout -b
+    com = checkout master
+
+    b = branch
+    bd = branch -D
+    bdr = branch -D
+
+    ci = commit
+    cim = commit -m
+    cia = commit -a
+    cima = commit -ma
+    ciam = commit --ammend
+    ciamne = commit --ammend --no-edit
+    log = log --oneline --graph --decorate --all
+
+    rv = revert
+    rs = reset
+    rsh = reset --hard
+
+    st = stash save
+    sta = stash apply
+    std = stash drop

@@ -1,6 +1,9 @@
 {
     "snippets.snipmate.enable": false,
     "snippets.ultisnips.enable": true,
+    "coc.preferences.hoverTarget": "float",
+    "coc.preferences.rootPatterns": [".git", ".hg"],
+    "coc.preferences.jumpCommand": "vsplit",
     "python.jediEnabled": true,
     "python.linting.pylintEnabled": false,
     "python.linting.flake8Enabled": true,
@@ -10,8 +13,5 @@
     "python.formatting.provider": "black",
     "python.sortImports.path": "isort",
     "python.venvFolders": ["envs", ".pyenv", ".direnv", ".virtualenvs", ".venv"],
-    "python.venvPath": "",
-    "coc.preferences.hoverTarget": "float",
-    "coc.preferences.rootPatterns": [".git", ".hg"],
-    "coc.preferences.jumpCommand": "vsplit"
+    "python.venvPath": ""
 }
