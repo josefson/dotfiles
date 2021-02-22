@@ -25,7 +25,7 @@ URxvt*loginShell            :   true
 /* URxvt*termName              :   screen-256color */
 ! perl extensions
 URxvt*perl-ext              :   default,url-select
-URxvt*perl-ext-common       :   default,resize-font,clipboard
+URxvt*perl-ext-common       :   default,resize-font,clipboard,osc-xterm,clipboard
 /* matcher */
 /* URxvt.url-launcher          :   /usr/bin/xdg-open */
 /* URxvt.matcher.button        :   1 */
