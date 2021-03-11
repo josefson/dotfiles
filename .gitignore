@@ -20,3 +20,10 @@ vim/.vim/.netrwhist
 
 /* ranger */
 ranger/.config/ranger/plugins/__pycache__/**
+
+/* pianobar */
+pianobar/.config/pianobar/config
+pianobar/.config/pianobar/proxy*
+pianobar/.config/pianobar/scrobble.py
+pianobar/.config/pianobar/state
+pianobar/.config/pianobar/lyrics.sh
