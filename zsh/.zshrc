@@ -197,8 +197,10 @@ source $HOME/.aliases
 autoload -U compinit colors zcalc bashcompinit
 compinit -d
 # pipx
-bashcompinit
-eval "$(register-python-argcomplete pipx)"
+if command -v pipx &> /dev/null; then
+    bashcompinit
+    eval "$(register-python-argcomplete pipx)"
+fi
 # SETOPT {{{
 # Completions goodies
 zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'       # Case insensitive tab completion
