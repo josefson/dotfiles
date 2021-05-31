@@ -51,8 +51,8 @@ move_send_focus = {
     for index, i in enumerate('asdfghjkl', start=1)
 }
 
-marks = {f'z{key}': exec(f'{BIN}/i3-marks mark --mark {key}') for key in string.ascii_lowercase}
-marks_goto = {f'c{key}': exec(f'{BIN}/i3-marks goto --mark {key}') for key in string.ascii_lowercase}
+marks = {f'zz{key}': exec(f'{BIN}/i3-marks mark --mark {key}') for key in string.ascii_lowercase}
+marks_goto = {f'zx{key}': exec(f'{BIN}/i3-marks goto --mark {key}') for key in string.ascii_lowercase}
 
 # direction = {'k': 'up', 'j': 'down', 'h': 'left', 'l': 'right'}
 # move_c_dir = {f'mc{key}': f'move container to output {value}'
@@ -62,15 +62,15 @@ marks_goto = {f'c{key}': exec(f'{BIN}/i3-marks goto --mark {key}') for key in st
 
 
 binds = {  # {{{
-    **move_focus,
-    **move_send,
-    **move_send_focus,
+    **move_focus,       # m{a-;}
+    **move_send,        # mm{a-;}
+    **move_send_focus,  # M{a-;}
     **marks,
     **marks_goto,
     # **move_c_dir,
     # **move_w_dir,
     # {{{ OPEN
-    'oa': exec(f'{BIN}/arconai.py'),
+    # 'oa': exec(f'{BIN}/arconai.py'),
     'of': exec('firefox'),
     'op': exec_term('ipython'),
     'ok': exec('keepassxc'),
@@ -85,17 +85,25 @@ binds = {  # {{{
                f'"qutebrowser https://discordapp.com/channels/@me"'),
     'sw': exec(f'{BIN}/scratchpad.py -t web.whatsapp.com -a '
                f'"qutebrowser https://web.whatsapp.com/"'),
-    'sb': exec(f'{BIN}/scratchpad.py -c qute_scratch -a "qutebrowser --basedir'
-               f' {HOME}/Downloads/tmpdir --qt-arg name qute_scratch"'),
+    'sq': exec([f'{BIN}/scratchpad.py -c qute_scratch -a "qutebrowser --basedir'
+               f' {HOME}/Downloads/tmpdir -C {HOME}/.config/qutebrowser/config.py'
+               f' --qt-arg name qute_scratch"', f'{BIN}/resolution.py -r 60 -p center']),
+    'sm': exec(f'{BIN}/scratchpad.py -c ncmpcpp -a "urxvt -name ncmpcpp -e ncmpcpp"'),
     # }}}
     # {{{ Utils
-    'uss': exec(f'{BIN}/say $xclip -selection primary -o'),  # selection
-    'usc': exec(f'{BIN}/say $xclip -selection clipboard -o'),  # clipboard
+    'uss': exec(f'{BIN}/say $(xclip -selection primary -o)'),  # selection
+    'usc': exec(f'{BIN}/say $(xclip -selection clipboard -o)'),  # clipboard
     'uiw': exec(f'{BIN}/invert_colors.sh'),  # inner app
     'uix': exec('xrandr-invert-colors'),  # around app
     'ux': exec([f'{BIN}/keyboard.sh', f'{BIN}/screen.sh']),
     'uwr': exec('feh --randomize --bg-scale $walls/'),
     'uws': exec('sxiv -r -t ~/Pictures/Wallpapers'),
+    # Dunst
+    'udh': exec('dunstctl history-pop'),
+    'udc': exec('dunstctl close-all'),
+    'udp': exec('dunstctl set-paused toggle'),
+    'uds': exec('dunstctl set-paused false'),
+    'udq': exec('dunstctl set-paused true'),
     # }}}
     # {{{ Workspace
     'wM': exec('i3-input -P "move to workspace name: " -F "move to workspace %s"'),
@@ -104,26 +112,41 @@ binds = {  # {{{
     'wr': exec("i3-input -P 'rename workspace to ' -F 'rename workspace to %s'"),
     # }}}
     # {{{ music player
-    'dp': exec('mpc toggle'),
-    'dq': exec('mpc stop'),
-    'dn': exec('mpc next'),
-    'dN': exec('mpc previous'),
-    'dr': exec('mpc random'),
-    'dR': exec('mpc repeat'),
+    # Pianobar
+    'pbp': exec(f'{HOME}/.config/pianobar/control.py play'),
+    'pbq': exec(f'{HOME}/.config/pianobar/control.py quit'),
+    'pbn': exec(f'{HOME}/.config/pianobar/control.py next'),
+    'pbl': exec(f'{HOME}/.config/pianobar/control.py love'),
+    'pbb': exec(f'{HOME}/.config/pianobar/control.py ban'),
+    'pbt': exec(f'{HOME}/.config/pianobar/control.py tired'),
+    'pbe': exec(f'{HOME}/.config/pianobar/control.py explain'),
+    'pbi': exec(f'{HOME}/.config/pianobar/control.py info'),
+    'pbh': exec(f'{HOME}/.config/pianobar/control.py history'),
+    'pbk': exec(f'{HOME}/.config/pianobar/control.py volume_up'),
+    'pbj': exec(f'{HOME}/.config/pianobar/control.py volume_down'),
+    'pbr': exec(f'{HOME}/.config/pianobar/control.py volume_reset'),
+    'pbc': exec(f'{HOME}/.config/pianobar/control.py change'),
+    #Media plyaer
+    'pdp': exec('mpc toggle'),
+    'pdq': exec('mpc stop'),
+    'pdn': exec('mpc next'),
+    'pdN': exec('mpc previous'),
+    'pdr': exec('mpc random'),
+    'pdR': exec('mpc repeat'),
     # }}}
     # {{{ screenshot or print
     # clipboard
-    'pw': exec(f'{BIN}/shoot.sh -wc'),
-    'pf': exec(f'{BIN}/shoot.sh -fc'),
-    'ps': exec(f'{BIN}/shoot.sh -sc'),
+    'ssw': exec(f'{BIN}/shoot.sh -wc'),
+    'ssf': exec(f'{BIN}/shoot.sh -fc'),
+    'sss': exec(f'{BIN}/shoot.sh -sc'),
     # clipboard and file
-    'pW': exec(f'{BIN}/shoot.sh -w'),
-    'pF': exec(f'{BIN}/shoot.sh -f'),
-    'pS': exec(f'{BIN}/shoot.sh -s'),
+    'ssW': exec(f'{BIN}/shoot.sh -w'),
+    'ssF': exec(f'{BIN}/shoot.sh -f'),
+    'ssS': exec(f'{BIN}/shoot.sh -s'),
     # imgur
-    'pi': exec(f'{BIN}/shoot.sh -i'),
+    'ssi': exec(f'{BIN}/shoot.sh -i'),
     # flameshot
-    'pp': exec('flameshot gui'),
+    'ssp': exec('flameshot gui'),
     # }}}
     # {{{ quake-style -> urxvt
     'h': exec(f'{BIN}/quake.py -n quake_left'),
@@ -132,6 +155,7 @@ binds = {  # {{{
     'j': exec(f'{BIN}/quake.py -n quake_bottom'),
     # }}}
     # {{{ quake-style -> float sticky position size
+    'aa': exec(f'{BIN}/resolution.py -r 60 -p center'),
     'ah': exec(f'{BIN}/resolution.py -r 50 -p left'),
     'al': exec(f'{BIN}/resolution.py -r 50 -p right'),
     'ak': exec(f'{BIN}/resolution.py -r 50 -p top'),

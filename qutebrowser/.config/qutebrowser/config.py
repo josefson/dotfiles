@@ -10,6 +10,7 @@ from qutebrowser.config.configfiles import ConfigAPI  # noqa: F401
 
 config = config  # type: ConfigAPI # noqa: F821
 c = c  # type: ConfigAPI # noqa: F821
+config.load_autoconfig(False)
 
 # PATH {{{
 if sys.platform == "darwin":
@@ -65,6 +66,8 @@ c.url.searchengines = {
     "aur": "https://aur.archlinux.org/packages/?O=0&K={}",
     "yts": "https://yts.mx/browse-movies/{}",
     "libgen": "http://gen.lib.rus.ec/search.php?req={}&open=0&res=25&view=simple",
+    "harp_song": "https://www.harptabs.com/searchsong.php?Name={}",
+    "harp_artist": "https://www.harptabs.com/searchsong.php?Author={}",
 }
 # Completions
 c.completion.web_history.exclude = [
@@ -77,7 +80,8 @@ c.completion.web_history.exclude = [
     "*://yts.mx/*",
 ]
 c.completion.cmd_history_max_items = 20
-c.completion.web_history.max_items = -1
+# c.completion.web_history.max_items = -1
+c.completion.web_history.max_items = 0
 c.completion.height = "100%"
 c.completion.shrink = True
 # Hints
@@ -98,24 +102,18 @@ c.content.headers.custom = {
 c.content.headers.accept_language = "en-US,en;q=0.5"
 c.content.geolocation = False
 c.content.headers.do_not_track = True
-c.content.host_blocking.enabled = True
-c.content.notifications = False
-c.content.javascript.enabled = True
-c.content.ssl_strict = False
+c.content.blocking.enabled = True
+# c.content.notifications = 'ask'
+c.content.javascript.enabled = False
 c.content.pdfjs = True
 # c.content.webgl = False
 c.content.plugins = True
-c.content.host_blocking.enabled = True
-c.content.host_blocking.lists = [
-    "https://easylist.to/easylist/easylist.txt",
-    "https://easylist.to/easylist/easyprivacy.txt",
-    # "https://testpages.adblockplus.org/en/abp-testcase-subscription.txt",
-    # "/home/elodin/.config/qutebrowser/blocklist.txt",
-]
+c.content.blocking.enabled = True
+c.content.blocking.method = 'auto'
 # }}}
 # DOMAIN CONFIG {{{
 config.set("content.autoplay", False, "*.youtube.com")
-c.content.host_blocking.whitelist = [
+c.content.blocking.whitelist = [
     "thepiratebay.org",
 ]
 ALLOWED = """
@@ -145,6 +143,10 @@ config.set(
     "web.whatsapp.com",
 )
 # }}}
+# ALIASES
+c.aliases["tt"] = "tab-take"
+c.aliases["tg"] = "tab-give"
+
 # BINDINGS
 c.bindings.commands["normal"] = {}
 # USERSCRIPTS {{{
@@ -198,8 +200,8 @@ config.bind(
 config.bind(";v", "hint links spawn -v -d firefox {hint-url}", mode="normal")
 # }}}
 # LEADER UNITE/DENITE LIKE {{{
-c.bindings.commands["normal"]["b"] = "set-cmd-text -s :buffer"
-c.bindings.commands["normal"][",b"] = "set-cmd-text -s :buffer "
+c.bindings.commands["normal"]["b"] = "set-cmd-text -s :tab-select"
+c.bindings.commands["normal"][",b"] = "set-cmd-text -s :tab-select "
 c.bindings.commands["normal"][",h"] = "set-cmd-text -s :help "
 c.bindings.commands["normal"][",q"] = "set-cmd-text :quickmark-"
 c.bindings.commands["normal"][",m"] = "set-cmd-text :bookmark-"
@@ -241,17 +243,17 @@ c.bindings.commands["command"] = {
     "<Shift-Tab>": "completion-item-focus prev",
     "<Ctrl-P>": "command-history-prev",
     "<Ctrl-N>": "command-history-next",
-    "<Escape>": "leave-mode",
+    "<Escape>": "mode-leave",
     "<Return>": "command-accept",
 }
 # }}}
 # CARET MODE {{{
 c.bindings.commands["caret"] = {
-    "<Escape>": "leave-mode",
-    "c": "enter-mode normal",
-    "v": "toggle-selection",
-    "<Space>": "toggle-selection",
-    "<Ctrl-Space>": "drop-selection",
+    "<Escape>": "mode-leave",
+    "c": "mode-enter normal",
+    "v": "selection-toggle",
+    "<Space>": "selection-toggle",
+    "<Ctrl-Space>": "selection-drop",
     "y": "yank selection",
     "Y": "yank selection -s",
     "<Return>": "yank selection",
@@ -277,8 +279,8 @@ c.bindings.commands["caret"] = {
 }
 # }}}
 # INSERT: {{{
-config.bind("<Ctrl-E>", "open-editor", mode="insert")
-config.bind("<Escape>", "leave-mode", mode="insert")
+config.bind("<Ctrl-E>", "edit-text", mode="insert")
+config.bind("<Escape>", "mode-leave", mode="insert")
 config.bind("<Shift-Ins>", "insert-text {primary}", mode="insert")
 # }}}
 # NORMAL MODE {{{
@@ -309,7 +311,7 @@ c.bindings.commands["normal"]["ZZ"] = "quit --save"
 c.bindings.commands["normal"][
     "<Escape>"
 ] = "clear-keychain ;; search ;; fullscreen --leave"
-c.bindings.commands["normal"]["<Return>"] = "follow-selected"
+c.bindings.commands["normal"]["<Return>"] = "selection-follow"
 # }}}
 # Search {{{
 c.bindings.commands["normal"]["/"] = "set-cmd-text /"
@@ -326,15 +328,15 @@ c.bindings.commands["normal"]["-"] = "zoom-out"
 # }}}
 # Modes ENTER/EXIT {{{
 # ENTER
-config.bind("i", "enter-mode insert", mode="normal")
-config.bind("v", "enter-mode caret", mode="normal")
-config.bind("`", "enter-mode set_mark", mode="normal")
-config.bind("''", "enter-mode jump_mark", mode="normal")
-config.bind("<Ctrl-V>", "enter-mode passthrough", mode="normal")
+config.bind("i", "mode-enter insert", mode="normal")
+config.bind("v", "mode-enter caret", mode="normal")
+config.bind("`", "mode-enter set_mark", mode="normal")
+config.bind("''", "mode-enter jump_mark", mode="normal")
+config.bind("<Ctrl-V>", "mode-enter passthrough", mode="normal")
 # EXIT
-config.bind("<Escape>", "leave-mode", mode="hint")
-config.bind("<Ctrl-V>", "leave-mode", mode="register")
-config.bind("<Ctrl-V>", "enter-mode passthrough", mode="normal")
+config.bind("<Escape>", "mode-leave", mode="hint")
+config.bind("<Ctrl-V>", "mode-leave", mode="register")
+config.bind("<Ctrl-V>", "mode-enter passthrough", mode="normal")
 # }}}
 # TABS{{{
 c.bindings.commands["normal"]["T"] = "tab-focus"
@@ -400,7 +402,7 @@ c.bindings.commands["prompt"] = {
     "<Ctrl-X>": "prompt-open-download",
     "<Ctrl-Y>": "rl-yank",
     "<Down>": "prompt-item-focus next",
-    "<Escape>": "leave-mode",
+    "<Escape>": "mode-leave",
     "<Return>": "prompt-accept",
     "<Shift-Tab>": "prompt-item-focus prev",
     "<Tab>": "prompt-item-focus next",

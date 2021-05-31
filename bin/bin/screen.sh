@@ -28,15 +28,21 @@ update_wallpaper(){
 if [[ $# -eq 0 ]]; then
     if echo $VGA_STATUS | grep "disconnected" && echo $HDMI_STATUS | grep "disconnected"; then
         xrandr --output "$VGA" --off --output "$HDMI" --off --output "$DEFAULT" --primary --auto
+        echo xrandr --output "$VGA" --off --output "$HDMI" --off --output "$DEFAULT" --primary --auto
         update_wallpaper
     elif echo $VGA_STATUS | grep "connected" && echo $HDMI_STATUS | grep "disconnected"; then
         xrandr --output "$VGA" --primary --auto --output "$HDMI" --off --output "$DEFAULT" --auto --left-of "$VGA"
+        echo xrandr --output "$VGA" --primary --auto --output "$HDMI" --off --output "$DEFAULT" --auto --left-of "$VGA"
         update_wallpaper
     elif echo $VGA_STATUS | grep "disconnected" && echo $HDMI_STATUS | grep "connected"; then
         xrandr --output "$VGA" --off --output "$HDMI" --primary --auto --output "$DEFAULT" --auto --left-of "$HDMI"
+        echo xrandr --output "$VGA" --off --output "$HDMI" --primary --auto --output "$DEFAULT" --auto --left-of "$HDMI"
         update_wallpaper
     elif echo $VGA_STATUS | grep "connected" && echo $HDMI_STATUS | grep "connected"; then
-        xrandr --output "$DEFAULT" --off --output "$HDMI" --primary --auto --output "$VGA" --auto --left-of "$HDMI"
+        # xrandr --output "$DEFAULT" --off --output "$HDMI" --primary --auto --output "$VGA" --auto --left-of "$HDMI"
+        # echo xrandr --output "$DEFAULT" --off --output "$HDMI" --primary --auto --output "$VGA" --auto --left-of "$HDMI"
+        xrandr --output "$DEFAULT" --auto --left-of "$VGA" --output "$HDMI" --primary --auto --output "$VGA" --auto --left-of "$HDMI"
+        echo xrandr --output "$DEFAULT" --auto --left-of "$VGA" --output "$HDMI" --primary --auto --output "$VGA" --auto --left-of "$HDMI"
         update_wallpaper
     fi
 fi

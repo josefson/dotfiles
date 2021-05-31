@@ -48,6 +48,25 @@ so-locatedb() { sudo updatedb ;}
 so-xresources() { xrdb -load ~/.Xresources ;}
 # }}}
 # GENERAL ALIASES {{{
+# Replacements
+if [ -x /usr/bin/dircolors ] ; then
+    alias ls='ls --color=auto -h'
+    alias ll='ls -la'
+    alias lg='ll | grep -i'
+    alias dir='dir --color-auto'
+    # alias grep='grep --color=auto'
+    # messes up git grep
+    alias fgrep='fgrep --color=auto'
+    alias egrep='egrep --color=auto'
+fi
+if command -v exa &> /dev/null; then
+    alias ls='exa -G'
+    alias ll='exa -la'
+    alias ltree='exa -l -T'
+fi
+if command -v bat &> /dev/null; then
+    alias cat='bat'
+fi
 alias sudo='sudo '          # passing aliases archwiki
 # SHORTCUTS
 # alias vim='nvim'
@@ -74,7 +93,7 @@ alias mime='xdg-mime'
 alias mountls='mount | column -t'
 alias zm='cd /media'
 alias zl='cd /dev/disk/by-label/'
-alias joplin='joplin-cli'
+# alias joplin='joplin-cli'
 # CHANGE INNER BEHAVIOUR
 alias bc='bc -q -l'     # quiet
 alias df='df -Th --total'   #human
@@ -86,16 +105,6 @@ mkcd() {mkdir "$@" && cd "$@" ;}
 alias rm='rm -v'
 alias wget='wget -N -c'
 alias youtube-viewer='youtube-viewer -C -f -4 --results=6'  # color|fullscreen|480p
-if [ -x /usr/bin/dircolors ] ; then
-    alias ls='ls --color=auto -h'
-    alias ll='ls -la'
-    alias lg='ll | grep -i'
-    alias dir='dir --color-auto'
-    # alias grep='grep --color=auto'
-    # messes up git grep
-    alias fgrep='fgrep --color=auto'
-    alias egrep='egrep --color=auto'
-fi
 # Tmux
 alias tt='tmuxinator'
 alias tnew='tmux new-session'
@@ -122,6 +131,31 @@ alias fgrestore='forgit::restore'
 alias fgignore='forgit::ignore'
 alias fgclean='forgit::clean'
 alias fgstashshow='forgit::stash::show'
+# TASK/TIME Warrior
+alias tk='task'
+alias tui='taskwarrior-tui'
+alias tw='timew'
+alias tws='timew summary :ids'
+alias twsy='timew summary :ids :yesterday'
+alias twsw='timew summary :ids :week'
+alias twsm='timew summary :ids :month'
+alias twa='timew start'
+alias two='timew stop'
+alias twc='timew continue'
+alias twt='timew track'
+alias twl='timew lengthen'
+alias twsh='timew shorten'
+alias twm='timew modify'
+alias twma='timew modify start'
+alias twmo='timew modify end'
+alias twrs='timew resize'
+alias twz='timew undo'
+alias twd='timew delete'
+# pomodoro
+timer() { sleep $(($1 * 60)) && notify-send -u critical "${*:2}" }
+alias pomo='sleep 1500 && notify-send -u critical "Take a Break"'
+alias doro='sleep 300 && notify-send -u critical "Break is Over"'
+alias doroo='sleep 900 && notify-send -u critical "Break is Over"'
 # }}}
 # GLOBAL ALIASES {{{
 alias -g ehco='echo'
@@ -137,7 +171,7 @@ alias -g G='| grep -i'
 alias -g pasteit='nc termbin.com 9999'
 alias -g gist='2>&1 | pasteit | pbcopy && pbpaste;'
 alias pbgist='pbpaste | gist'
-pbcopy() { xclip -selection clipboard ;}
+pbcopy() { xclip -r -selection clipboard ;}
 pbpaste() { xclip -selection clipboard -o ;}
 pbselect() { xclip -selection primary -o ;}
 alias pbnoformatting='xclip -selection clipboard -o | xclip -selection clipboard'
@@ -152,7 +186,8 @@ check-word() { echo "$1" | aspell -a ;}
 check-list() { cat "$1" | aspell list ;}
 check-file() { aspell check "$1" ;}
 zombie-process() { ps aux | awk '{ print $8 " " $2 }' | grep -w Z ;}
-peerflix(){ command peerflix "$@" --mpv --path ~/Downloads ;}
+peerflix() { command peerflix "$@" --mpv --path ~/Downloads ;}
+matrix() { DISPLAY= mpv --quiet -vo caca "$@"}
 zsh_fix(){ rm ~/.zcompdump*; exec zsh ;}
 # Z and Fzf
 unalias z
@@ -311,4 +346,6 @@ if [[ $OS == 'Darwin' ]]; then
     # alias vim='/Applications/MacVim.app/Contents/MacOS/Vim'
 fi
 # }}}
+alias colorpicker='colorpicker --one-shot --short | pbcopy'
+alias pdfgrep="pdfgrep '.'"
 # vim: fdm=marker ft=zsh

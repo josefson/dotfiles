@@ -16,6 +16,7 @@ URxvt*scrollWithBuffer      :   false
 URxvt*scrollTtyKeypress     :   true
 URxvt*scrollBar             :   false
 URxvt*visualBell            :   false
+URxvt.bell-command          :   notify-send "urxvt: bell!"
 URxvt*fading                :   10
 /* Bindings */
 URxvt.keysym.Shift-Control-V: eval:paste_clipboard
@@ -25,7 +26,7 @@ URxvt*loginShell            :   true
 /* URxvt*termName              :   screen-256color */
 ! perl extensions
 URxvt*perl-ext              :   default,url-select
-URxvt*perl-ext-common       :   default,resize-font,clipboard,osc-xterm,clipboard
+URxvt*perl-ext-common       :   default,resize-font,clipboard,osc-xterm-clipboard,bell-command
 /* matcher */
 /* URxvt.url-launcher          :   /usr/bin/xdg-open */
 /* URxvt.matcher.button        :   1 */

@@ -47,7 +47,7 @@ frame whoami {
         format = " {username}"
     }
     external_script hostname {
-        script_path = "hostname"
+        script_path = "cat /etc/hostname"
         format = " {output}"
     }
     uptime {
@@ -101,7 +101,8 @@ battery_level {
     notification = false
     notify_low_level = true
     hide_when_full = true
-    format = "{icon}{percent}%"
+    hide_seconds = true
+    format = "{icon}{percent}% - {time_remaining}"
     color_charging = '#ffffff'
     color_good = '#ffffff'
     color_degraded = '#ccdc90'

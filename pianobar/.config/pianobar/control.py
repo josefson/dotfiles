@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+import subprocess
+import shlex
 import sys
 import os
 
@@ -7,45 +9,39 @@ ctl_file = f'{os.getenv("HOME")}/.config/pianobar/ctl'
 remote_cmd = sys.argv[1]
 
 
+def run_cmd(shortcut):
+    cmd = f'echo -n "{shortcut}" > {ctl_file}'
+    os.system(cmd)
+
+
 if remote_cmd == 'play':
-    cmd = f'echo -n "p" > {ctl_file}'
-    os.system(cmd)
+    run_cmd('p')
 elif remote_cmd == 'quit':
-    cmd = f'echo -n "q" > {ctl_file}'
-    os.system(cmd)
+    run_cmd('q')
 elif remote_cmd == 'next':
-    cmd = f'echo -n "n" > {ctl_file}'
-    os.system(cmd)
+    run_cmd('n')
 elif remote_cmd == 'love':
-    cmd = f'echo -n "+" > {ctl_file}'
-    os.system(cmd)
+    run_cmd('+')
 elif remote_cmd == 'ban':
-    cmd = f'echo -n "-" > {ctl_file}'
-    os.system(cmd)
+    run_cmd('-')
 elif remote_cmd == 'explain':
-    cmd = f'echo -n "e" > {ctl_file}'
-    os.system(cmd)
+    run_cmd('e')
 elif remote_cmd == 'tired':
-    cmd = f'echo -n "t" > {ctl_file}'
-    os.system(cmd)
-elif remote_cmd == 'current':
-    cmd = f'echo -n "t" > {ctl_file}'
-    os.system(cmd)
+    run_cmd('t')
 elif remote_cmd == 'info':
-    cmd = f'echo -n "i" > {ctl_file}'
-    os.system(cmd)
+    run_cmd('i')
 elif remote_cmd == 'history':
-    cmd = f'echo -n "h" > {ctl_file}'
-    os.system(cmd)
+    run_cmd('h')
+elif remote_cmd == 'volume_up':
+    run_cmd(')')
+elif remote_cmd == 'volume_down':
+    run_cmd('(')
+elif remote_cmd == 'volume_reset':
+    run_cmd('^')
 elif remote_cmd == 'change':
+    zenity = subprocess.run(shlex.split('zenity --entry --entry-text="Search station:" --text="eg: Pink Floyd"'), capture_output=True)
+    station = zenity.stdout.decode('utf-8')
     cmd = f'echo -n "s" > {ctl_file}'
     os.system(cmd)
-elif remote_cmd == 'volume_up':
-    cmd = f'echo -n ")" > {ctl_file}'
-    os.system(cmd)
-elif remote_cmd == 'volume_down':
-    cmd = f'echo -n "(" > {ctl_file}'
-    os.system(cmd)
-elif remote_cmd == 'volume_reset':
-    cmd = f'echo -n "^" > {ctl_file}'
+    cmd = f'echo -n "{station}" > {ctl_file}'
     os.system(cmd)

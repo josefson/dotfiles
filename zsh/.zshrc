@@ -73,11 +73,11 @@ fi
 if command -v direnv &> /dev/null; then
     eval "$(direnv hook zsh)"
 fi
-# PIP
-if command -v pip3 &> /dev/null; then
-    eval "`pip completion --zsh`"
-    compctl -K _pip_completion pip3
-fi
+# # PIP had to disable cuz it was making zsh startup SLOW
+# if command -v pip3 &> /dev/null; then
+#     eval "`pip completion --zsh`"
+#     compctl -K _pip_completion pip3
+# fi
 # nnn
 if command -v nnn &> /dev/null; then
     source $HOME/.config/nnn/exports.sh

@@ -49,6 +49,9 @@ call plug#begin('~/.vim/bundle')
     Plug 'Valloric/MatchTagAlways'                                          " Highlight html/xml tags when between text
     Plug 'mattn/emmet-vim'                                                  " html snippets
     Plug 'vim-scripts/django.vim', { 'for': 'django' }                      " syntax highlight for django templates
+" DATABASES
+    Plug 'tpope/vim-dadbod'
+    Plug 'kristijanhusak/vim-dadbod-ui'
 " TMUX
     Plug 'jpalardy/vim-slime', { 'for': 'python' }
 " COLORSCHEMES
@@ -62,15 +65,14 @@ call plug#begin('~/.vim/bundle')
     Plug 'crusoexia/vim-monokai'
     Plug 'flazz/vim-colorschemes'
 " Testing
+    Plug 'tpope/vim-dotenv'
     Plug 'itspriddle/vim-shellcheck', { 'for': 'sh' }
+    Plug 'vim-scripts/ansiesc.vim'
+    Plug 'vimwiki/vimwiki'
     " Plug sheerun/vim-polyglot"
     " Plug 'rhysd/vim-grammarous'                                         " :GrammarousCheck
     " Plug 'lifepillar/pgsql.vim'
         " let g:sql_type_default = 'pgsql'
-    " Plug 'tpope/vim-dadbod'
-    " Plug 'kristijanhusak/vim-dadbod-ui'
-        " g:db_ui_use_nerd_fonts = 1
-        " :CocInstall coc-db
 call plug#end()
 " }}}
 " VIM OPTIONS ------------------------------------------------------------- {{{
@@ -252,6 +254,8 @@ set splitbelow                    " when :sp focus goes bottom
 
 " " }}}
 " }}}
+set background=dark
+colorscheme gruvbox
 " MAPPINGS ---------------------------------------------------------------- [[[
 " NORMAL {{{
 " -------------- GENERAL SHIT
@@ -271,6 +275,10 @@ nmap Q @q
 " Select last pasted text
 nnoremap gp '[V']'<Esc>
 " unimpaired
+nnoremap [b :bprevious<CR>
+nnoremap ]b :bnext<CR>
+nnoremap ]B :blast<CR>
+nnoremap [B :bfirst<CR>
 nnoremap [l :lprevious<CR>
 nnoremap ]l :lnext<CR>
 nnoremap [L :lfirst<CR>
@@ -279,6 +287,10 @@ nnoremap [q :cprevious<CR>
 nnoremap ]q :cnext<CR>
 nnoremap [Q :cfirst<CR>
 nnoremap ]Q :clast<CR>
+nnoremap [<space> O<Esc>j
+nnoremap ]<space> o<Esc>k
+nnoremap [e "zdd k"zp
+nnoremap ]e "zdd j"zp
 " swap current to below/above
 nnoremap >p p'[V']'<Esc>>w
 nnoremap >P P'[V']'<Esc>>w
@@ -286,9 +298,6 @@ nnoremap <p p'[V']'<Esc><w
 nnoremap <P P'[V']'<Esc><w
 nnoremap =P P'[V']'<Esc>=w
 nnoremap =P P'[V']'<Esc>=w
-" add line above/below current line
-nnoremap [<space> mmO<esc>'m
-nnoremap ]<space> mmo<esc>'m
 " move current line/selection above/below
 nnoremap <expr> [e ":move ".eval('line(".")-2')."<CR>"
 nnoremap <expr> ]e ":move ".eval('line(".")+1')."<CR>"
@@ -483,7 +492,6 @@ let g:UltiSnipsJumpBackwardTrigger = "<C-k>"
 let g:UltiSnipsExpandTrigger = "<C-b>"
 let g:UltiSnipsListSnippets = "<C-u>" "replaced by fzf one
 inoremap <silent> <C-j> <C-r>=utils#LoadUltiSnipsAndExpand()<CR>
-inoremap <c-f> <Esc>:FzfSnippets<CR>
 " }}}
 " EMMET-VIM --------------------------------------------------------------- {{{
 " let g:user_emmet_mode='n'    "only enable normal mode functions.
@@ -577,13 +585,6 @@ endif
 let g:gruvbox_italic = 1
 let g:gruvbox_hls_cursor = 'orange'
 let g:gruvbox_contrast_dark = 'hard'
-
-" UI - USER INTERFACE
-try
-    colorscheme gruvbox
-catch
-    set background=dark
-endtry
 " }}}
 " AIRLINE ----------------------------------------------------------------- {{{
 if !exists('g:airline_symbols')
@@ -618,6 +619,9 @@ call add(g:gutentags_project_info, {'type': 'python', 'file': 'pyproject.toml'})
 " Repl
 let g:slime_target = "tmux"
 let g:slime_python_ipython = 1
+" dadbod-ui
+let g:db_ui_use_nerd_fonts = 1
+" :CocInstall coc-db
 " }}}
 " COMMANDS ---------------------------------------------------------------- {{{
 " sharing is caring{{{

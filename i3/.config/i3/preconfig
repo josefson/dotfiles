@@ -114,7 +114,7 @@ gaps outer 0
     set $w7 7:SpinningLeaf
     set $w8 8:HeartOfStone
     set $w9 9:Chandrian
-    set $w10 0:Lethani
+    set $w10 10:Lethani
     workspace "$w1" output VGA1
     workspace "$w2" output VGA1
     workspace "$w3" output VGA1
@@ -127,13 +127,14 @@ gaps outer 0
     for_window [title="www.netflix.com"] floating enable, sticky enable, $exec i3-msg $($HOME/bin/resolution.py -r 30 -p top right)
     for_window [title="calc"] floating enable, sticky enable, $exec i3-msg $($HOME/bin/resolution.py -r 30 -p top right)
     # marks
-    for_window [title="weechat"] mark --add w
+    for_window [title="web.whatsapp"] mark --add w
+    for_window [title="weechat"] mark --add i
+    for_window [title="pianobar"] mark --add m
     for_window [class="Telegram"] mark --add t
-    for_window [title="web.whatsapp"] mark --add z
-    for_window [class="mpv"] mark --add p
+    for_window [class="mpv"] mark --add v
 
     # ASSIGNMENTS windows to workspaces
-    assign [class="Telegram"] $w1
+    # assign [class="Telegram"] $w3
 # }}}
 # BEHAVIOR {{{
     focus_follows_mouse no
@@ -170,20 +171,19 @@ gaps outer 0
     bindsym XF86AudioMute           $exec pactl set-sink-mute 0 toggle
     bindsym XF86MonBrightnessUp     $exec light -A 20
     bindsym XF86MonBrightnessDown   $exec light -U 20
-    # bindsym $super+i                $exec $HOME/bin/invert_colors.sh
-    # bindsym $super+$control+i       $exec xrandr-invert-colors
-    # bindsym $super+s        $exec $HOME/bin/say $(xclip -selection primary -o)
-    # bindsym $super+Shift+s  $exec $HOME/bin/say $(xclip -selection clipboard -o)
     # free $super+keys
-    # bindsym y, z, x, c, /, ', =, `
+    # bindsym $super+backslash
+    # bindsym $super+y
+    # bindsym $super+z
+    # bindsym $super+x
+    # bindsym $super+c
+    bindsym $super+Escape $exec "~/.local/bin/i3-instant-layout --list | rofi -dmenu -i | i3-instant-layout -"
+
     # APP SHORTCUTS {{{
         bindsym $super+t        $exec $terminal
+        bindsym $super+Return   $exec $terminal
         bindsym $super+b        $exec $browser
-        bindsym $super+Shift+b  $exec $HOME/bin/scratchpad.py -c qute_scratch -a "qutebrowser --basedir $HOME/Downloads/tmpdir --qt-arg name qute_scratch"
-        bindsym $super+Shift+m  $exec $HOME/bin/scratchpad.py -c media_player -a "urxvt -name media_player -e ncmpcpp"
-        bindsym $super+Shift+p  $exec $HOME/bin/scratchpad.py -c media_player -a "urxvt -name pandora -e tt start pandora"
-        # note taking cli/gui
-        # bindsym $super+Shift+n  $exec $HOME/bin/scratchpad.py -c joplin -a "urxvt -name joplin -e joplin"
+        bindsym $super+slash    [urgent=latest] focus
                                 # rms,lst,fem are the best voices
         bindsym $super+space    $exec rofi -show drun
         bindsym $super+o        $exec rofi -show window
@@ -193,8 +193,8 @@ gaps outer 0
                                 $(zenity --entry --text 'Name last focused window:')"
     # }}}
     # TREE {{{
-        bindsym $super+u        focus parent
-        bindsym $super+d        focus child
+        bindsym $super+equal            focus parent
+        bindsym $super+Shift+equal      focus child
         bindsym $super+f        fullscreen  toggle
         bindsym $super+Shift+f  fullscreen  toggle global
         # Change container layout (stacked, tabbed, default)
@@ -260,13 +260,23 @@ gaps outer 0
         bindsym $alt+l   move  right
     # }}}
     # MODES {{{
-        bindsym $super+p mode "$vi3m_p"
-        bindsym $super+a mode "$vi3m_m"
-        bindsym $super+i mode "$vi3m_u"
-        bindsym $super+apostrophe mode "$vi3m_c"
-        bindsym $super+m mode "$vi3m_z"
-        bindsym $super+comma mode "Move: [hjkl|HJKL]"
-        bindsym $super+period mode "Resize: [hjkl|HJKL]"
+        # Print / Screenshot
+        bindsym $super+p          mode "$vi3m_ss"
+        # Player/Pianobar
+        bindsym $super+Shift+p    mode "$vi3m_pb"
+        # quake floating
+        bindsym $super+a          mode "$vi3m_m"
+        # utils
+        bindsym $super+u          mode "$vi3m_u"
+        # scratchpad
+        bindsym $super+s          mode "$vi3m_s"
+        # marks go-to
+        bindsym $super+apostrophe mode "$vi3m_zx"
+        # marks set
+        bindsym $super+m          mode "$vi3m_zz"
+
+        bindsym $super+comma      mode "Move: [hjkl|HJKL]"
+        bindsym $super+period     mode "Resize: [hjkl|HJKL]"
         # bindsym $super+p mode "PrintScreen:  [W]in  [F]ull  [S]el  [I]mgur"
         # bindsym $super+semicolon mode "Normal"
         # bindsym $alt+q mode "Quake"
@@ -360,17 +370,6 @@ gaps outer 0
                 bindsym f $exec $HOME/bin/shoot.sh -fc; mode "default"
                 bindsym s $exec $HOME/bin/shoot.sh -sc; mode "default"
                 bindsym i $exec $HOME/bin/shoot.sh -i; mode "default"
-            }
-        # }}}
-        # MUSIC {{{
-            mode "Music" {
-                # Get back from inception
-                bindsym $super+semicolon mode "default"
-                bindsym BackSpace mode "default"
-                bindsym Return mode "default"
-                bindsym Escape mode "default"
-                bindsym $control+c mode "default"
-                # Actions
             }
         # }}}
         # KEYBOARD {{{
