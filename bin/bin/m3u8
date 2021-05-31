@@ -1,0 +1,191 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+import argparse
+import os
+import shlex
+import subprocess
+import time
+
+from selenium import webdriver
+
+SLEEP = 5
+
+class Browser:
+
+    def __init__(self, driver, url):
+        self.stream = False
+        self.url = url
+        self.driver = driver
+
+    def __del__(self):
+        self.driver.close()
+        self.driver.quit()
+
+    def __bool__(self):
+        if 'm3u8' in self.stream:
+            return True
+        else:
+            return False
+
+    def load(self):
+        return self._read_stream()
+
+    def _read_stream(self):
+        stream = None
+        count = 0
+        while not stream and count < 10:
+            print(f"loading: {self.url}")
+            self.driver.get(self.url)
+            time.sleep(SLEEP)
+            timings = self.driver.execute_script("return window.performance.getEntries();")
+            stream = []
+            for json in timings:
+                for value in json.values():
+                        print(f"Stream found: {value}")
+                        stream.append(value)
+        if stream:
+            self.stream = stream[-1]
+            return self.stream
+        print(f"Nothing was found on:\n{timings}")
+        return False
+        return stream
+
+
+class Qello(Browser):
+
+    login_url = 'https://qello.com/#modal/user/login'
+    email = 'josefson.br@gmail.com'
+    password = 'jz85myR59JxEcoe\n'
+
+    def __init__(self, driver, url):
+        super().__init__(driver, url)
+
+
+    def load(self):
+        self._login()
+        return self._read_stream(), self.title
+
+    def _login(self):
+        print(f'loading: {self.login_url}')
+        self.driver.get(self.login_url)
+        time.sleep(SLEEP)
+        self.driver.find_element_by_id('email').send_keys(self.email)
+        self.driver.find_element_by_id('password').send_keys(self.password)
+
+    def _read_stream(self):
+        stream = None
+        count = 0
+        while not stream and count < 10:
+            print(f"loading: {self.url}")
+            self.driver.get(self.url)
+            time.sleep(SLEEP)
+            self.title = self.driver.title.split('|')[1].strip(' ').replace(' ', '').replace(':', '-')
+            timings = self.driver.execute_script("return window.performance.getEntries();")
+            stream = []
+            for json in timings:
+                for value in json.values():
+                    if type(value) is str and "m3u8" in value:
+                        stream.append(value)
+                        print(f"Stream found: {value}")
+        if stream:
+            self.stream = stream[-1]
+            if 'tracks' in stream:
+                stream = stream.split('tracks/')[0] + 'bw' + stream.split('/bw')[-1]
+            print(f'chosen stream: {stream}')
+            return self.stream
+        print(f"Nothing was found on:\n{timings}")
+        return False
+
+
+def parse():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("url", nargs=1, help="Url to be processed.")
+    parser.add_argument(
+        "-y",
+        "--ytdl",
+        action="store_true",
+        help="Downloads the stream through youtube-dl."
+    )
+    parser.add_argument(
+        "-m", "--mpv", action="store_true", help="Starts stream with mpv player."
+    )
+    parser.add_argument(
+        "-c",
+        "--clipboard",
+        action="store_true",
+        help="Stores the stream link in the clipboard.",
+    )
+    parser.add_argument(
+        "-s",
+        "--streamlink",
+        action="store_true",
+        help="Starts streamlink with the stream link.",
+    )
+    parser.add_argument(
+        "-d",
+        "--display",
+        action="store_false",
+        help="Do not run selenium in headless mode",
+    )
+    parser.add_argument(
+        '-b',
+        '--browser',
+        action='store_false',
+        help="Change browser: from chrome to firefox."
+    )
+    args = parser.parse_args()
+    return args
+
+
+def main():
+    args = parse()
+    # setup
+    url = args.url[0]
+    if args.display:
+        firefox_options = webdriver.FirefoxOptions()
+        firefox_options.add_argument('--headless')
+        chrome_options = webdriver.ChromeOptions()
+        chrome_options.add_argument('headless')
+    else:
+        firefox_options = webdriver.FirefoxOptions()
+        firefox_options.add_argument()
+        chrome_options = webdriver.ChromeOptions()
+        chrome_options.add_argument()
+
+    if args.browser:
+        driver = webdriver.Chrome(options=chrome_options)
+    else:
+        driver = webdriver.Firefox(options=firefox_options)
+
+    # read
+    stream = None
+    if 'qello' in url:
+        qello = Qello(driver, url)
+        stream, title = qello.load()
+        del(qello)
+    else:
+        browser = Browser(driver, url)
+        stream = browser.load()
+        del(browser)
+
+    # actions
+    if args.ytdl:
+        command = f"youtube-dl {stream} --output '{title}.%(ext)s'"
+        print(f"Launching: {command}")
+        subprocess.Popen(shlex.split(command))
+    elif args.streamlink:
+        command = (
+            f"streamlink -p mpv --title streamlink --http-no-ssl-verify {stream} best"
+        )
+        print(f"Launching: {command}")
+        subprocess.Popen(shlex.split(command))
+    elif args.mpv:
+        command = f"mpv {stream}"
+        print(f"Launching: {command}")
+        subprocess.Popen(shlex.split(command))
+    elif args.clipboard:
+        subprocess.Popen(f"echo {stream} | xclip -selection clipboard -i", shell=True)
+
+
+if __name__ == "__main__":
+    main()

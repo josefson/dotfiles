@@ -1,0 +1,43 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+import subprocess
+import argparse
+import shlex
+
+
+def run(command):
+    output = subprocess.run(shlex.split(command), capture_output=True)
+    stdout = output.stdout.decode('utf-8')
+    stderr = output.stderr.decode('utf-8')
+    return (stdout, stderr)
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-d', '--destination', dest='destination',
+                        required=True, type=str,
+                        help='Required: Un|Mounting point.')
+    parser.add_argument('-u', '--umount', dest='umount', default=False,
+                        action="store_true", help='Optional: Flag to umount.')
+    args = parser.parse_args()
+
+    if args.umount is False:
+        print(f'mounting device at {args.destination}')
+        stdout, stderr = run(f'ifuse {args.destination}')
+        if stderr:
+            print(f'stderr: {stderr}')
+        else:
+            print(f'stdout: {stdout}')
+            subprocess.run(shlex.split(f'ranger {args.destination}'))
+    elif args.umount is True:
+        print(f'umounting {args.destination}')
+        stdout, stderr = run(f'fusermount -u {args.destination}')
+        if stdout:
+            print(f'stdout: {stdout}')
+        elif stderr:
+            print(f'stderr: {stderr}')
+        subprocess.run(shlex.split(f'ls {args.destination}'))
+
+
+if __name__ == "__main__":
+    main()

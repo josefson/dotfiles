@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+# sub(){
+help(){
+    echo "Something went wrong, showing helper:"
+    echo "Example: sub [LANG:default:en|br|pt|all] [FILE]"
+}
+if [[ $# -eq 1 ]]; then
+    if [[ -f $1 ]]; then
+        echo "downloading subtitle for $1 in english..."
+        subliminal download -p opensubtitles -r metadata -r omdb -r tvdb -l en -f $1
+    else
+        help
+    fi
+elif [[ $# -eq 2 ]]; then
+    if [[ $1 == 'en' ]]; then
+        echo "downloading subtitle for $2 in english..."
+        subliminal download -p opensubtitles -r metadata -r omdb -r tvdb -f -l en $2
+    elif [[ $1 == 'br' ]]; then
+        echo "downloading subtitle for $2 in pt-br..."
+        subliminal download -p opensubtitles -r metadata -r omdb -r tvdb -f -l pt-br $2
+    elif [[ $1 == 'pt' ]]; then
+        echo "downloading subtitle for $2 in pt..."
+        subliminal download -p opensubtitles -r metadata -r omdb -r tvdb -f -l pt $2
+    elif [[ $1 == 'all' ]]; then
+        echo "downloading subtitle for $2 in en, pt, and pt-br..."
+        subliminal download -p opensubtitles -r metadata -r omdb -r tvdb -f -l en -l pt-br -l pt $2
+    else
+        help
+    fi
+else
+    help
+fi
+# }

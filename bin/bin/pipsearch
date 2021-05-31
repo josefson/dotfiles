@@ -1,0 +1,41 @@
+#!/usr/bin/env python
+import os
+import sys
+import json
+import shlex
+import subprocess
+
+
+SPIDER_NAME = 'pip_spider.py'
+SPIDER = f'{os.getenv("HOME")}/bin/{SPIDER_NAME}'
+OUTPUT = '/tmp/pipsearch'
+
+
+def pip_search(args):
+    query = f'{"+".join(args)}'
+    crawl = f'scrapy runspider {SPIDER} -a query={query} -o {OUTPUT} -t jsonlines'
+    subprocess.run(shlex.split(crawl), capture_output=True)
+
+
+def pip_results():
+    with open(OUTPUT, 'r') as output:
+        packages = [json.loads(line) for line in output.readlines()]
+    print(f'total:{len(packages)}\n{"-"*80}')
+    for package in packages:
+        print(f'\n{package["title"]}\t{package["version"]}\n\t{package["description"]}')
+
+
+def main():
+    args = sys.argv[1:]
+    nargs = len(args)
+
+    if nargs == 0:
+        sys.exit('No argument was passed.\nUsage: pip_search something')
+    else:
+        pip_search(args)
+        pip_results()
+        os.remove(OUTPUT)
+
+
+if __name__ == "__main__":
+    main()

@@ -1,0 +1,46 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+import os
+import shlex
+import subprocess
+import click
+from pathlib import Path
+
+
+HISTFILE = f'{Path("~/").expanduser().as_posix()}/.zsh_history'
+
+
+def run2(cmd):
+    split = shlex.split(cmd)
+    output = subprocess.run(split, capture_output=True, shell=True)
+    output = output.stdout.decode('utf-8')
+    __import__('ipdb').set_trace()
+    return output
+
+
+def count_lines(filename):
+    # need communicate and popen to handle '|' pipes
+    cmd = f'cat {filename} | wc -l'
+    ps = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE,
+                          stderr=subprocess.STDOUT)
+    output = int(ps.communicate()[0].decode('utf8').strip())
+    return output
+
+
+def purge(pattern):
+    purge = ' '.join(pattern)
+    purge_cmd = f"LC_ALL=C sed -i '/{purge}/d' {HISTFILE}"
+    os.system(purge_cmd)
+
+
+@click.command()
+@click.argument('command', nargs=-1)
+def purge_hist(command):
+    lines_before = count_lines(HISTFILE)
+    purge(command)
+    lines_after = count_lines(HISTFILE)
+    print(f'Removed {lines_before - lines_after} lines of {lines_before}.')
+
+
+if __name__ == "__main__":
+    purge_hist()

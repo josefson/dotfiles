@@ -1,0 +1,48 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+from collections import namedtuple
+
+import sys
+import requests
+from bs4 import BeautifulSoup
+
+root_url = "https://xkcd.com"
+
+
+def scrap(url):
+    response = requests.get(url)
+    if response.ok:
+        return response.content
+    else:
+        raise (f"Response from {url} not ok: {response.status_code}")
+
+
+def clean(content):
+    Comic = namedtuple("Comic", "text href")
+
+    soup = BeautifulSoup(content, "html.parser")
+    soup = soup.find(id="middleContainer")
+    links = soup.find_all("a")
+    comics = []
+    for link in links:
+        comics.append(Comic(text=link.text.lower(), href=link.get("href")))
+    return comics
+
+
+def search(comics, patterns):
+    for comic in comics:
+        for pattern in patterns:
+            if pattern in comic.text:
+                print(f'{comic.text} : {root_url}{comic.href}')
+
+
+def main():
+    url = f"{root_url}/archive/"
+    soup = scrap(url)
+    comics = clean(soup)
+    patterns = sys.argv[1:]
+    search(comics, patterns)
+
+
+if __name__ == "__main__":
+    main()

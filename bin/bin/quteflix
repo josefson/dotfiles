@@ -1,0 +1,67 @@
+#!/usr/bin/env python
+import argparse
+import os
+import shlex
+import subprocess
+import time
+from pathlib import Path
+
+
+DOWNLOADS_FOLDER = os.environ["HOME"] + "/Downloads"
+PEERFLIX = "command peerflix {} --mpv --path {}"
+SUBLIMINAL = (
+    "subliminal download "
+    "-p opensubtitles -r metadata -r omdb -r tvdb -f "
+    "-l pt -l pt-br -l en {}"
+)
+
+
+def parse():
+    args = argparse.ArgumentParser()
+    args.add_argument(
+        "url", nargs=1,
+        help="Magnetic link or torrent url surrounded by quotes."
+    )
+    args = args.parse_args()
+    return args
+
+
+def start_peerflix(url):
+    peerflix_cmd = f'urxvt -title peerflix -e peerflix "{url}" --mpv --path {os.environ["HOME"]}/Downloads'
+    subprocess.Popen(shlex.split(peerflix_cmd))
+    for i in range(20):
+        print(f"Waiting for peerflix to create the videofile... {i} from 20")
+        time.sleep(1)
+
+
+def latest(dir_path):
+    downaload = Path(dir_path)
+    most_recent = max(downaload.iterdir(), key=os.path.getctime)
+    return most_recent
+
+
+def download_subtitles(most_recent):
+    if most_recent.is_dir():
+        find_command = (
+            f"find {shlex.quote(most_recent.as_posix())} -type f -exec file -N -i -- {{}} +"
+        )
+        files_in_folder = (
+            subprocess.run(shlex.split(find_command), capture_output=True)
+            .stdout.decode("utf-8")
+            .splitlines()
+        )
+        video = [video for video in files_in_folder if "video" in video][0]
+        video = shlex.quote(video.split(":")[0])
+        subprocess.run(shlex.split(SUBLIMINAL.format(video)))
+    else:
+        subprocess.run(shlex.split(SUBLIMINAL.format(most_recent.as_posix())))
+
+
+def main():
+    args = parse()
+    start_peerflix(args.url[0])
+    download_subtitles(latest(DOWNLOADS_FOLDER))
+
+
+if __name__ == "__main__":
+    main()

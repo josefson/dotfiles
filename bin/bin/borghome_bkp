@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+
+dry_run=0
+exclude_file=$HOME/.borg_exclude
+repo_path='/media/iomega-bkp'
+data=$HOME
+repo_name='haven-{user}-{now}'
+repo="${repo_path}::${repo_name}"
+
+HELP(){
+    echo '
+    ./script [-d]
+        for --dry-run
+    ./script
+        for real run
+    '
+    exit 0
+}
+
+while getopts 'dsfadfh' FLAG; do
+    case $FLAG in
+        d)
+            dry_run=1
+            ;;
+        h)
+            HELP
+            ;;
+    esac
+done
+
+mount(){
+    if [[ ! -d $repo_path ]]; then
+        echo "Repository path isn't avaliable, trying to mount it..."
+        udevil mount /dev/disk/by-label/iomega-bkp
+        udevil mount /dev/disk/by-label/iomega-data
+    else
+        echo "$repo_path is ready to borg backup!"
+    fi
+}
+
+if mount; then
+    echo "Mount was successful!"
+fi
+
+if [[ $dry_run -eq 0 ]]; then
+    borg create --list --exclude-from $exclude_file $repo $data
+elif [[ $dry_run -eq 1 ]]; then
+    borg create --dry-run --list --exclude-from $exclude_file $repo \
+        $HOME \
+        $HOME/.local/share/*
+fi

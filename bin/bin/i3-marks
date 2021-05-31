@@ -1,0 +1,57 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""
+Author: Elodin
+Place: irc@freenote#i3
+"""
+import sys
+import argparse
+import i3ipc
+
+
+connection = i3ipc.Connection()
+tree = connection.get_tree()
+
+
+def is_fullscren(container):
+    if container.fullscreen_mode == 1:
+        return True
+    return False
+
+
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('action', choices=['goto', 'mark'])
+    parser.add_argument('-m', '--mark', dest='mark', default=None, required=True, type=str)
+    return parser.parse_args()
+
+
+def main():
+    args = parse_args()
+    mark = args.mark
+    current_container = tree.find_focused()
+    if args.action == 'mark':
+        current_container.command(f'mark --add {mark}')
+    elif args.action == 'goto':
+        if args.mark == 'p':
+            try:
+                last_container = tree.find_marked('^p$')[0]
+            except IndexError:
+                sys.exit(1)
+            last_container.command('focus')
+            # if not is_fullscren(last_container):
+            #     last_container.command('fullscreen')
+            current_container.command('mark --add p')
+        else:
+            try:
+                next_container = tree.find_marked(f'^{mark}$')[0]
+            except IndexError:
+                sys.exit(1)
+            current_container.command(f'mark --add p')
+            next_container.command('focus')
+            # if not is_fullscren(next_container):
+            #     next_container.command('fullscreen')
+
+
+if __name__ == "__main__":
+    main()
