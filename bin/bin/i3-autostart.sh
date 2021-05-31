@@ -33,7 +33,8 @@ i3-msg "exec --no-startup-id keynav daemonize"
 i3-msg "exec --no-startupd-id unclutter"
 i3-msg "exec --no-startup-id dunst"
 
-# $exec synergy -c ~/synergy.conf
+$exec barrierc --name haven --no-restart --enable-drag-drop --enable-crypto --daemon 192.168.0.60
+$exec syncthing
 # $exec syncthing-gtk -m
 # $exec $HOME/bin/quake.py -n quake_top
 # $exec $HOME/bin/quake.py -n quake_bottom
